@@ -1,0 +1,229 @@
+/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7 /Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_of_blur.py
+
+----------> IMAGES <----------
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8_mfb.JPG
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9_mb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9_fb.JPG
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9_mfb.JPG
+
+Вычисление std для каждого изображения
+
+----------> Calc of std <----------
+
+Diff of std:
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1.JPG
+diff = 1.0
+diff = 0.462484052771
+diff = 0.380251841032
+diff = 0.425345842949
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10.JPG
+diff = 1.0
+diff = 0.442387375317
+diff = 0.42188251862
+diff = 0.386875412593
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11.JPG
+diff = 1.0
+diff = 0.460204621799
+diff = 0.359323454337
+diff = 0.279380578852
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12.JPG
+diff = 1.0
+diff = 0.511023386057
+diff = 0.460545458488
+diff = 0.419755562725
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13.JPG
+diff = 1.0
+diff = 0.416048947451
+diff = 0.385149481453
+diff = 0.354519197639
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14.JPG
+diff = 1.0
+diff = 0.613549072067
+diff = 0.393437396003
+diff = 0.361337692569
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2.JPG
+diff = 1.0
+diff = 0.223634487692
+diff = 0.291476229048
+diff = 0.207712401318
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3.JPG
+diff = 1.0
+diff = 0.598397604878
+diff = 0.381376856552
+diff = 0.313578743201
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4.JPG
+diff = 1.0
+diff = 0.462396254256
+diff = 0.358991330774
+diff = 0.337734455399
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5.JPG
+diff = 1.0
+diff = 0.407787927154
+diff = 0.533933137197
+diff = 0.428942411661
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6.JPG
+diff = 1.0
+diff = 0.405668892131
+diff = 0.199202242536
+diff = 0.200279500669
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7.JPG
+diff = 1.0
+diff = 0.626066168518
+diff = 0.325179486483
+diff = 0.346804239694
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8.JPG
+diff = 1.0
+diff = 0.553813875574
+diff = 0.447204622446
+diff = 0.478827793982
+
+/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9.JPG
+diff = 1.0
+diff = 0.588425811438
+diff = 0.391751959707
+diff = 0.388282488976
+
+
+Mean of diff std:
+1.0
+0.483706319793
+0.380693286763
+0.35209830873
+
+
+Вычисляем размытие движения!
+Результат:
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1.JPG', 27, 0.46248405277086718, 0.40787402600269057]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10.JPG', 27, 0.4423873753167395, 0.44222556778640049]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11.JPG', 27, 0.46020462179877208, 0.37542903521631821]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12.JPG', 19, 0.51102338605684428, 0.46967286206907111]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13.JPG', 27, 0.41604894745118537, 0.4160304901724548]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14.JPG', 19, 0.6135490720668606, 0.49685929347728885]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2.JPG', 67, 0.22363448769153157, 0.21589141957842542]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3.JPG', 19, 0.59839760487845572, 0.53376579647224009]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4.JPG', 19, 0.4623962542561651, 0.43176227159066127]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5.JPG', 43, 0.40778792715422313, 0.39476829142931874]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6.JPG', 27, 0.40566889213071755, 0.38228339341892426]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7.JPG', 19, 0.62606616851765473, 0.48652371445070974]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8.JPG', 27, 0.55381387557416162, 0.48617414102188194]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9.JPG', 19, 0.58842581143824058, 0.50156533794855684]
+min:19
+max:67
+
+
+Вычисляем фокусное размытие!
+Результат:
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1.JPG', 35, 0.38025184103181131, 0.36561712764424159]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10.JPG', 35, 0.42188251862020737, 0.41961116726081776]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11.JPG', 43, 0.35932345433723312, 0.31727026107172074]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12.JPG', 35, 0.46054545848849698, 0.42912555170026978]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13.JPG', 43, 0.3851494814534101, 0.35600549477261989]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14.JPG', 51, 0.3934373960028788, 0.35171903520803105]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2.JPG', 43, 0.29147622904764769, 0.28489605198656892]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3.JPG', 35, 0.3813768565522454, 0.38123796375447916]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4.JPG', 43, 0.35899133077369344, 0.32774638554069546]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5.JPG', 27, 0.53393313719685409, 0.47168063840757085]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6.JPG', 67, 0.19920224253575811, 0.18264803223619772]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7.JPG', 51, 0.3251794864827186, 0.29766545568227076]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8.JPG', 43, 0.44720462244649611, 0.41622307817485305]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9.JPG', 35, 0.39175195970707138, 0.38476256413581378]
+min:27
+max:67
+
+
+Вычисляем фокусное размытие + размытие движения!
+Результат:
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/1.JPG', 19, 0.42534584294938044, 0.36407180960632651]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/10.JPG', 27, 0.38687541259268704, 0.3413899215057028]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/11.JPG', 27, 0.27938057885213996, 0.23976448681491502]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/12.JPG', 19, 0.41975556272463443, 0.38195154280400895]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/13.JPG', 27, 0.35451919763915124, 0.31722148884315837]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/14.JPG', 27, 0.36133769256894072, 0.31451607751742022]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/2.JPG', 35, 0.20771240131757487, 0.19445664037712324]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/3.JPG', 27, 0.31357874320061463, 0.288320771083526]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/4.JPG', 27, 0.33773445539899366, 0.28381971318596205]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/5.JPG', 19, 0.42894241166051794, 0.38268252900355115]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/6.JPG', 35, 0.20027950066864567, 0.18715789217994849]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/7.JPG', 27, 0.3468042396935283, 0.29053638424373723]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/8.JPG', 19, 0.47882779398214426, 0.44748856610282911]
+['/Users/dmitryoleynik/PycharmProjects/DeBlurringWithCNN/evaluation_foto/9.JPG', 19, 0.38828248897629175, 0.38489355718767482]
+min:19
+max:35

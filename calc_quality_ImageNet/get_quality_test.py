@@ -56,6 +56,9 @@ if __name__ == "__main__":
     get_image_paths(path, good_img_paths, bad_img_paths, img_std, img_mean)
 
     save_path = 'test/'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
     numpy.save(save_path+'good_img_paths.npy', numpy.array(good_img_paths))
     numpy.save(save_path+'bad_img_paths.npy', numpy.array(bad_img_paths))
     numpy.save(save_path+'img_std.npy', numpy.array(img_std))

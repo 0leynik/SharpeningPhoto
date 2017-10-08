@@ -1,3 +1,7 @@
 nohup python get_quality_train.py > train.txt &
 nohup python get_quality_test.py > test.txt &
 nohup python get_quality_val.py > val.txt &
+
+nohup python get_quality_train.py > train_500.txt &
+nohup python get_quality_test.py > test_500.txt &
+nohup python get_quality_val.py > val_500.txt &

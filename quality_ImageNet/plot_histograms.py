@@ -23,21 +23,24 @@ if __name__ == "__main__":
         if not os.path.exists(path_to_save):
             os.makedirs(path_to_save)
 
+        threshold_std = img_std.mean() + img_std.std()
+        threshold_mean = img_mean.mean() + img_mean.std()
+
         for n_img in range(len(good_img_paths)):
-            if img_std[n_img] >= 45.0 and img_mean[n_img] >= 22.0:
+            if img_std[n_img] >= threshold_std and img_mean[n_img] >= threshold_mean:
                 filtered_img_paths[i].append(good_img_paths[n_img])
-                # print(good_img_paths[n_img] + ' -> ' + str(len(filtered_img_paths[i])))
-                # shutil.copy(good_img_paths[n_img], path_to_save + str(len(filtered_img_paths[i])) + '.JPEG')
+                print(good_img_paths[n_img] + ' -> ' + str(len(filtered_img_paths[i])))
+                shutil.copy(good_img_paths[n_img], path_to_save + str(len(filtered_img_paths[i])) + '.JPEG')
 
         print('Отобранные резкие : ' + str(len(filtered_img_paths[i])) + '\n')
 
         print('img_std mean = ' + str(img_std.mean()))
         print('img_std std = ' + str(img_std.std()))
-        print('\nimg_std mean + std = ' + str(img_std.mean()+img_std.std()) + '\n')
+        print('\nimg_std mean + std = ' + str(threshold_std) + '\n')
 
         print('img_mean mean = ' + str(img_mean.mean()))
         print('img_mean std = ' + str(img_mean.std()))
-        print('\nimg_mean mean + std = ' + str(img_mean.mean() + img_mean.std()) + '\n\n')
+        print('\nimg_mean mean + std = ' + str(threshold_mean) + '\n\n')
 
         # plt.figure(type_hist[i])
         # plt.hist(img_std, bins = 500, histtype = 'stepfilled', color='b', alpha = 0.5)  # plt.hist passes it's arguments to np.histogram

@@ -187,7 +187,7 @@ def blur_and_noise_images(path):
 
     files = glob.glob(path)
     for f in files:
-        if os.path.isfile(f) and f.lower().endswith(".jpg"):
+        if os.path.isfile(f) and f.lower().endswith(".jpeg"):
             img = cv2.imread(f)
             height, width, channels = img.shape
             if height >= 512 or width >= 512:
@@ -208,17 +208,17 @@ def blur_and_noise_images(path):
                 img_fb_wn = add_noise(img_fb)
                 img_mfb_wn = add_noise(img_mfb)
 
-                cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb)
-                cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb)
-                cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb)
+                # cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb)
+                # cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb)
+                # cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb)
 
-                cv2.imwrite(path_to_save + '/' + name + '_mb_wn' + ext, img_mb_wn)
-                cv2.imwrite(path_to_save + '/' + name + '_fb_wn' + ext, img_fb_wn)
-                cv2.imwrite(path_to_save + '/' + name + '_mfb_wn' + ext, img_mfb_wn)
+                cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb_wn)
+                cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb_wn)
+                cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb_wn)
 
         elif os.path.isdir(f):
             blur_and_noise_images(f + "/*")
 
 
 if __name__ == "__main__":
-    blur_and_noise_images('/Users/dmitryoleynik/Desktop/test/*')
+    blur_and_noise_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/train_512/images/*')

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     size_img = 512
     do_copy = False
 
-    filtered_img_paths = [[],[],[]]
+    selected_img_paths = [[], [], []]
     type_hist = ['train_'+str(size_img),'val_'+str(size_img),'test_'+str(size_img)]
 
     for i in range(3):
@@ -31,12 +31,12 @@ if __name__ == "__main__":
 
         for n_img in range(len(good_img_paths)):
             if img_std[n_img] >= threshold_std and img_mean[n_img] >= threshold_mean:
-                filtered_img_paths[i].append(good_img_paths[n_img])
+                selected_img_paths[i].append(good_img_paths[n_img])
                 if do_copy:
-                    print(good_img_paths[n_img] + ' -> ' + str(len(filtered_img_paths[i])))
-                    shutil.copy(good_img_paths[n_img], path_to_save + str(len(filtered_img_paths[i])) + '.JPEG')
+                    print(good_img_paths[n_img] + ' -> ' + str(len(selected_img_paths[i])))
+                    shutil.copy(good_img_paths[n_img], path_to_save + str(len(selected_img_paths[i])) + '.JPEG')
 
-        print('Отобранные резкие : ' + str(len(filtered_img_paths[i])) + '\n')
+        print('Отобранные резкие : ' + str(len(selected_img_paths[i])) + '\n')
 
         print('img_std mean = ' + str(img_std.mean()))
         print('img_std std = ' + str(img_std.std()))

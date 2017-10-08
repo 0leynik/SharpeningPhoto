@@ -6,8 +6,10 @@ import shutil
 
 if __name__ == "__main__":
 
+    size_img = 512
+
     filtered_img_paths = [[],[],[]]
-    type_hist = ['train','val','test']
+    type_hist = ['train_'+str(size_img),'val_'+str(size_img),'test_'+str(size_img)]
 
     for i in range(3):
         path = type_hist[i] + '/'

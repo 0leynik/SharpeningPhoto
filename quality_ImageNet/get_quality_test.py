@@ -6,9 +6,10 @@ import cv2
 
 ksize_laplacian = 3
 ksize_median = 3
+size_img = 500
 
 def calc_of_laplacian(gray_img, type_of_calc):
-    gray_img = cv2.resize(gray_img, (512, 512), interpolation=cv2.INTER_CUBIC)
+    gray_img = cv2.resize(gray_img, (size_img, size_img), interpolation=cv2.INTER_CUBIC)
     median = cv2.medianBlur(gray_img, ksize_median)
     laplacian = cv2.Laplacian(median, -1, ksize=ksize_laplacian)
     if type_of_calc == 'std':
@@ -27,7 +28,7 @@ def get_image_paths(path, good_img_paths, bad_img_paths, img_std, img_mean):
             img = cv2.imread(f, 0)
             height, width = img.shape
 
-            if height >= 500 or width >= 500:
+            if height >= size_img or width >= size_img:
                 std = calc_of_laplacian(img, 'std')
                 mean = calc_of_laplacian(img, 'mean')
 
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     path = '/home/image-net/ILSVRC2015/Data/CLS-LOC/test/*'
     get_image_paths(path, good_img_paths, bad_img_paths, img_std, img_mean)
 
-    save_path = 'test_500/'
+    save_path = 'test_' + str(size_img) + '/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 

@@ -7,6 +7,7 @@ import shutil
 if __name__ == "__main__":
 
     size_img = 512
+    do_copy = False
 
     filtered_img_paths = [[],[],[]]
     type_hist = ['train_'+str(size_img),'val_'+str(size_img),'test_'+str(size_img)]
@@ -31,8 +32,9 @@ if __name__ == "__main__":
         for n_img in range(len(good_img_paths)):
             if img_std[n_img] >= threshold_std and img_mean[n_img] >= threshold_mean:
                 filtered_img_paths[i].append(good_img_paths[n_img])
-                print(good_img_paths[n_img] + ' -> ' + str(len(filtered_img_paths[i])))
-                shutil.copy(good_img_paths[n_img], path_to_save + str(len(filtered_img_paths[i])) + '.JPEG')
+                if do_copy:
+                    print(good_img_paths[n_img] + ' -> ' + str(len(filtered_img_paths[i])))
+                    shutil.copy(good_img_paths[n_img], path_to_save + str(len(filtered_img_paths[i])) + '.JPEG')
 
         print('Отобранные резкие : ' + str(len(filtered_img_paths[i])) + '\n')
 

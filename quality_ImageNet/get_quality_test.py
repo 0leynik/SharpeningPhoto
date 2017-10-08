@@ -27,7 +27,7 @@ def get_image_paths(path, good_img_paths, bad_img_paths, img_std, img_mean):
             img = cv2.imread(f, 0)
             height, width = img.shape
 
-            if height >= 512 or width >= 512:
+            if height >= 500 or width >= 500:
                 std = calc_of_laplacian(img, 'std')
                 mean = calc_of_laplacian(img, 'mean')
 
@@ -52,10 +52,10 @@ if __name__ == "__main__":
     img_std = []
     img_mean = []
 
-    path = '/home/image-net/ILSVRC2015/Data/CLS-LOC/val/*'
+    path = '/home/image-net/ILSVRC2015/Data/CLS-LOC/test/*'
     get_image_paths(path, good_img_paths, bad_img_paths, img_std, img_mean)
 
-    save_path = 'val/'
+    save_path = 'test_500/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 

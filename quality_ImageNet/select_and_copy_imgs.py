@@ -6,7 +6,7 @@ import shutil
 
 if __name__ == "__main__":
 
-    size_img = 512
+    size_img = 500
     do_copy = False
 
     selected_img_paths = [[], [], []]

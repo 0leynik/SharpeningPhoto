@@ -1,0 +1,45 @@
+*** Набор train_512 ***
+Все файлы : 155388
+Отобранные резкие : 18118
+
+img_std mean = 32.1944608078
+img_std std = 11.8413237294
+
+img_std mean + std = 44.0357845372
+
+img_mean mean = 13.4794937316
+img_mean std = 7.08941340764
+
+img_mean mean + std = 20.5689071393
+
+
+*** Набор val_512 ***
+Все файлы : 4348
+Отобранные резкие : 491
+
+img_std mean = 30.8272085191
+img_std std = 11.4584289432
+
+img_std mean + std = 42.2856374624
+
+img_mean mean = 12.7206842463
+img_mean std = 6.86018383661
+
+img_mean mean + std = 19.5808680829
+
+
+*** Набор test_512 ***
+Все файлы : 8428
+Отобранные резкие : 998
+
+img_std mean = 30.5965647802
+img_std std = 11.4966958982
+
+img_std mean + std = 42.0932606783
+
+img_mean mean = 12.656208729
+img_mean std = 6.82122668413
+
+img_mean mean + std = 19.4774354132
+
+

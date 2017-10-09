@@ -7,7 +7,7 @@ import shutil
 if __name__ == "__main__":
 
     size_img = 500
-    do_copy = False
+    do_copy = True
 
     selected_img_paths = [[], [], []]
     type_hist = ['train_'+str(size_img),'val_'+str(size_img),'test_'+str(size_img)]

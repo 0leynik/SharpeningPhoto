@@ -1,0 +1,45 @@
+*** Набор train_500 ***
+Все файлы : 1058245
+Отобранные резкие : 133527
+
+img_std mean = 33.6034186707
+img_std std = 12.643679889
+
+img_std mean + std = 46.2470985597
+
+img_mean mean = 14.6298646037
+img_mean std = 7.78831432636
+
+img_mean mean + std = 22.41817893
+
+
+*** Набор val_500 ***
+Все файлы : 46769
+Отобранные резкие : 5936
+
+img_std mean = 34.0045743314
+img_std std = 12.6830841805
+
+img_std mean + std = 46.6876585119
+
+img_mean mean = 14.7673202083
+img_mean std = 7.80247802389
+
+img_mean mean + std = 22.5697982321
+
+
+*** Набор test_500 ***
+Все файлы : 93578
+Отобранные резкие : 11853
+
+img_std mean = 34.057779095
+img_std std = 12.6028673928
+
+img_std mean + std = 46.6606464879
+
+img_mean mean = 14.7874574552
+img_mean std = 7.74909365196
+
+img_mean mean + std = 22.5365511071
+
+

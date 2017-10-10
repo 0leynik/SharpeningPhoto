@@ -20,11 +20,12 @@ def get_size_imgs(path, w, h):
         elif os.path.isdir(f):
             get_size_imgs(f + "/*", w, h)
 
+
 if __name__ == "__main__":
 
     w = []
     h = []
-    path = '/home/image-net/ILSVRC2015/Data/CLS-LOC/train/*'
+    path = 'train_500/images/*'
     get_size_imgs(path, w, h)
 
     print('w_mean = ' + str( numpy.array(w).mean() ))

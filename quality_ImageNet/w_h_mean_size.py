@@ -28,5 +28,11 @@ if __name__ == "__main__":
     path = 'train_500/images/*'
     get_size_imgs(path, w, h)
 
+    path = 'test_500/images/*'
+    get_size_imgs(path, w, h)
+
+    path = 'val_500/images/*'
+    get_size_imgs(path, w, h)
+
     print('w_mean = ' + str( numpy.array(w).mean() ))
     print('h_mean = ' + str( numpy.array(h).mean() ))

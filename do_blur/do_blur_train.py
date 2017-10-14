@@ -190,35 +190,34 @@ def blur_and_noise_images(path):
         if os.path.isfile(f) and f.lower().endswith(".jpeg"):
             img = cv2.imread(f)
             height, width, channels = img.shape
-            if height >= 512 or width >= 512:
-                print f
-                path_to_save, basename = os.path.split(f)
-                # name, ext = os.path.splitext(os.path.basename(f))
-                name, ext = os.path.splitext(basename)
+            print f
+            path_to_save, basename = os.path.split(f)
+            # name, ext = os.path.splitext(os.path.basename(f))
+            name, ext = os.path.splitext(basename)
 
-                global blur_type
-                blur_type = 1
-                img_mb = do_motion_blur(img)
-                blur_type = 2
-                img_fb = do_focus_blur(img)
-                blur_type = 3
-                img_mfb = do_motion_focus_blur(img)
+            global blur_type
+            blur_type = 1
+            img_mb = do_motion_blur(img)
+            blur_type = 2
+            img_fb = do_focus_blur(img)
+            blur_type = 3
+            img_mfb = do_motion_focus_blur(img)
 
-                img_mb_wn = add_noise(img_mb)
-                img_fb_wn = add_noise(img_fb)
-                img_mfb_wn = add_noise(img_mfb)
+            img_mb_wn = add_noise(img_mb)
+            img_fb_wn = add_noise(img_fb)
+            img_mfb_wn = add_noise(img_mfb)
 
-                # cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb)
-                # cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb)
-                # cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb)
+            # cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb)
+            # cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb)
+            # cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb)
 
-                cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb_wn)
-                cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb_wn)
-                cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb_wn)
+            cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb_wn)
+            cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb_wn)
+            cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb_wn)
 
         elif os.path.isdir(f):
             blur_and_noise_images(f + "/*")
 
 
 if __name__ == "__main__":
-    blur_and_noise_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/train_512/images/*')
+    blur_and_noise_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/*')

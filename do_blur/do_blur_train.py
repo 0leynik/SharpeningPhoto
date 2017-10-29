@@ -180,6 +180,30 @@ def do_motion_focus_blur(img):
 
 
 '''
+ОБРЕЗКА ФОТО ДО 500x375
+'''
+const_w = 500
+const_h = 375
+
+def crop_img(img):
+    height, width = img.shape[:2]
+
+    # поворот наибольшей стороной по горизонтали
+    if height > width:
+        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        height, width = img.shape[:2]
+
+    if height >= const_h:
+        img = img[:const_h, :const_w]
+    else:
+        img = img[:, :const_w]
+        bottom_size = const_h - height
+        img = cv2.copyMakeBorder(img, 0, bottom_size, 0, 0, cv2.BORDER_REFLECT_101)
+
+    return img
+
+
+'''
 ИТОГОВАЯ ГЕНЕРАЦИЯ РАЗМЫТИЯ + ШУМА
 '''
 

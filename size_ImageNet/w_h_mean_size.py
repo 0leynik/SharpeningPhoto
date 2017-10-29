@@ -28,19 +28,19 @@ def get_size_imgs(path, w, h):
 
 if __name__ == "__main__":
 
-    w = []
-    h = []
-    path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/*'
-    get_size_imgs(path, w, h)
-
-    path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/*'
-    get_size_imgs(path, w, h)
-
-    path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/val_500/images/*'
-    get_size_imgs(path, w, h)
-
-    numpy.save('w.npy', numpy.array(w))
-    numpy.save('h.npy', numpy.array(h))
+    # w = []
+    # h = []
+    # path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/*'
+    # get_size_imgs(path, w, h)
+    #
+    # path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/*'
+    # get_size_imgs(path, w, h)
+    #
+    # path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/val_500/images/*'
+    # get_size_imgs(path, w, h)
+    #
+    # numpy.save('w.npy', numpy.array(w))
+    # numpy.save('h.npy', numpy.array(h))
 
 
     w = numpy.load('w.npy')

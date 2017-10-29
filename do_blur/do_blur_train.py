@@ -231,13 +231,21 @@ def blur_and_noise_images(path):
             img_fb_wn = add_noise(img_fb)
             img_mfb_wn = add_noise(img_mfb)
 
+            crop_mb = crop_img(img_mb_wn)
+            crop_fb = crop_img(img_fb_wn)
+            crop_mfb = crop_img(img_mfb_wn)
+
             # cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb)
             # cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb)
             # cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb)
 
-            cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb_wn)
-            cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb_wn)
-            cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb_wn)
+            # cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, img_mb_wn)
+            # cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, img_fb_wn)
+            # cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, img_mfb_wn)
+
+            cv2.imwrite(path_to_save + '/' + name + '_mb' + ext, crop_mb)
+            cv2.imwrite(path_to_save + '/' + name + '_fb' + ext, crop_fb)
+            cv2.imwrite(path_to_save + '/' + name + '_mfb' + ext, crop_mfb)
 
         elif os.path.isdir(f):
             blur_and_noise_images(f + "/*")

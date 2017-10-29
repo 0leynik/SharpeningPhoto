@@ -30,13 +30,13 @@ if __name__ == "__main__":
 
     w = []
     h = []
-    path = 'train_500/images/*'
+    path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/*'
     get_size_imgs(path, w, h)
 
-    path = 'test_500/images/*'
+    path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/*'
     get_size_imgs(path, w, h)
 
-    path = 'val_500/images/*'
+    path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/val_500/images/*'
     get_size_imgs(path, w, h)
 
     numpy.save('w.npy', numpy.array(w))

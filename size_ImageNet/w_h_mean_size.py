@@ -43,14 +43,17 @@ if __name__ == "__main__":
     numpy.save('h.npy', numpy.array(h))
 
 
-    # w = numpy.load('w.npy')
-    # h = numpy.load('h.npy')
-    #
-    # print('w_mean = ' + str( w.mean() ))
-    # print('h_mean = ' + str( h.mean() ))
-    #
-    # plt.figure('w')
-    # plt.hist(w, bins = 1000, histtype = 'stepfilled', color='b')
-    # plt.figure('h')
-    # plt.hist(h, bins = 1000, histtype = 'stepfilled', color='b')
-    # plt.show()
+    w = numpy.load('w.npy')
+    h = numpy.load('h.npy')
+
+    print('w_min = ' + str( w.min() ))
+    print('h_min = ' + str( h.min() ))
+
+    print('w_mean = ' + str( w.mean() ))
+    print('h_mean = ' + str( h.mean() ))
+
+    plt.figure('w')
+    plt.hist(w, bins = 1000, histtype = 'stepfilled', color='b')
+    plt.figure('h')
+    plt.hist(h, bins = 1000, histtype = 'stepfilled', color='b')
+    plt.show()

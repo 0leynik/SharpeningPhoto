@@ -36,9 +36,16 @@ def generate_list_lmdb(type_dataset, N):
     np.savetxt('data/'+type_dataset+'_sharp.txt', sharp_img_names, fmt='%s')
     print
     print blur_img_names
+    print blur_img_names.shape
     print sharp_img_names
+    print sharp_img_names.shape
 
 if __name__ == '__main__':
+    print 'train'
     generate_list_lmdb('train', 133527)
+    print 'test'
     generate_list_lmdb('test', 11853)
+    print 'val'
     generate_list_lmdb('val', 5936)
+
+    print 'Complete!'

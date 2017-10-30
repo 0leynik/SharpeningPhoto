@@ -36,12 +36,20 @@ def crop_images(path, N):
     img_names = range(1, N+1)
 
     for img_name in img_names:
-        img = cv2.imread(path+img_name+ext)
-        crop_img = crop_img(img)
-        cv2.imwrite(path + img_name + '_sh' + ext, crop_img)
+        str_name = str(img_name)
+        print str_name
+
+        img = cv2.imread(path + str_name + ext)
+        croped = crop_img(img)
+        cv2.imwrite(path + str_name + '_sh' + ext, croped)
 
 
 if __name__ == "__main__":
+    print 'train'
     crop_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/', 133527)
+    print 'train'
     crop_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/', 11853)
+    print 'train'
     crop_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/val_500/images/', 5936)
+
+    print 'Complete!'

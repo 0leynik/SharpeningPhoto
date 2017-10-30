@@ -47,9 +47,9 @@ def crop_images(path, N):
 if __name__ == "__main__":
     print 'train'
     crop_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/', 133527)
-    print 'train'
+    print 'test'
     crop_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/', 11853)
-    print 'train'
+    print 'val'
     crop_images('/home/doleinik/SharpeningPhoto/quality_ImageNet/val_500/images/', 5936)
 
     print 'Complete!'

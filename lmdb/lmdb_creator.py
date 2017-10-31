@@ -51,7 +51,7 @@ const_h = 375
 def create_lmdb(db_name, img_folder, img_names, N):
 
     # NumBytes = NumImages * 3(mb+fb+mfb) * shape[0] * shape[1] * shape[2] * sizeof(datatype) * sizeof(label)
-    map_size = N * 3 * 3 * const_h * const_w * np.dtype(np.uint8).itemsize * np.dtype(np.int32).itemsize * 3
+    map_size = N * 3 * 3 * const_h * const_w * np.dtype(np.uint8).itemsize * np.dtype(np.int32).itemsize * 10
     # 300 435 750 000 bytes * (коэффициент 3 на всякий случай)
 
     env = lmdb.open(db_name, map_size=map_size)

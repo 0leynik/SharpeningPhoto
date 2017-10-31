@@ -46,37 +46,51 @@ def gen_shuffle_names(N):
 
 const_w = 500
 const_h = 375
-
+batch_size = 1024
 
 def create_lmdb(db_name, img_folder, img_names, N):
 
     # NumBytes = NumImages * 3(mb+fb+mfb) * shape[0] * shape[1] * shape[2] * sizeof(datatype) * sizeof(label)
-    map_size = N * 3 * 3 * const_h * const_w * np.dtype(np.uint8).itemsize * np.dtype(np.int32).itemsize * 10
+    map_size = N * 3 * 3 * const_h * const_w * np.dtype(np.uint8).itemsize * np.dtype(np.int32).itemsize * 3
     # 300 435 750 000 bytes * (коэффициент 3 на всякий случай)
 
     env = lmdb.open(db_name, map_size=map_size)
     print 'LMDB \"' + db_name + '\" opened.\nStart writing!'
 
-    with env.begin(write=True) as txn:
-        for i in range(N):
-            print i
-            img = cv2.imread(img_folder + img_names[i])
-            # height, width, channels = img.shape
+    # with env.begin(write=True) as txn:
+    txn = env.begin(write=True)
+    img_id = 0
+    for i in range(N):
+        img_id = i
+        print img_id
+        img = cv2.imread(img_folder + img_names[img_id])
+        # height, width, channels = img.shape
 
-            # HxWxC -> CxHxW
-            img = np.transpose(img, (2, 0, 1))
-            channels, height, width = img.shape
+        # HxWxC -> CxHxW
+        img = np.transpose(img, (2, 0, 1))
+        channels, height, width = img.shape
 
-            datum = caffe.proto.caffe_pb2.Datum()
-            datum.channels = channels
-            datum.height = height
-            datum.width = width
-            datum.data = img.tostring()
-            # datum.data = img.tobytes()  # or .tostring() if numpy < 1.9
-            datum.label = int(0)
-            key_str = '{:08}'.format(i)
+        datum = caffe.proto.caffe_pb2.Datum()
+        datum.channels = channels
+        datum.height = height
+        datum.width = width
+        datum.data = img.tostring()
+        # datum.data = img.tobytes()  # or .tostring() if numpy < 1.9
+        datum.label = int(0)
+        key_str = '{:08}'.format(img_id)
 
-            txn.put(key_str.encode('ascii'), datum.SerializeToString())
+        txn.put(key_str.encode('ascii'), datum.SerializeToString())
+
+        if img_id % batch_size == 0:
+            txn.commit()
+            if img_id != (N - 1):
+                txn = env.begin(write=True)
+            print 'Commit img_id=' + str(img_id)
+
+    if img_id % batch_size != 0:
+        txn.commit()
+        print 'Commit img_id=' + str(img_id)
+
     print 'Writing to \"' + db_name + '\" done!'
 
     env.close()

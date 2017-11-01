@@ -15,7 +15,7 @@ ext = '.JPEG'
 def gen_shuffle_names(N):
     print '\nGen shuffle names:'
     img_names = []
-    for i in range(1, N+1):
+    for i in range(1, N + 1):
         i_str = str(i)
 
         sh = i_str + '_sh' + ext
@@ -46,13 +46,14 @@ def gen_shuffle_names(N):
 
 const_w = 500
 const_h = 375
+const_c = 3
 batch_size = 1024
 
 def create_lmdb(db_name, img_folder, img_names, N):
 
-    # NumBytes = NumImages * 3(mb+fb+mfb) * shape[0] * shape[1] * shape[2] * sizeof(datatype) * sizeof(label)
-    map_size = N * 3 * 3 * const_h * const_w * np.dtype(np.uint8).itemsize * np.dtype(np.int32).itemsize * 3
-    # 300 435 750 000 bytes * (коэффициент 3 на всякий случай)
+    # NumBytes = NumImages * shape[0] * shape[1] * shape[2] * sizeof(datatype) * sizeof(label)
+    map_size = N * const_c * const_h * const_w * np.dtype(np.uint8).itemsize * np.dtype(np.int32).itemsize * 3
+    # 901 307 250 000 bytes * 3 (коэффициент 3 на всякий случай)
 
     env = lmdb.open(db_name, map_size=map_size)
     print '\nLMDB \"' + db_name + '\" opened.\nStart writing!'
@@ -107,11 +108,11 @@ if __name__ == '__main__':
     create_lmdb('train_blur_lmdb',
                 img_folder,
                 names[:, 0],
-                N)
+                N * 3)  # (mb+fb+mfb)
     create_lmdb('train_sharp_lmdb',
                 img_folder,
                 names[:, 1],
-                N)
+                N * 3)  # (mb+fb+mfb)
 
     print '*** test ***'
     N = 11853
@@ -121,11 +122,11 @@ if __name__ == '__main__':
     create_lmdb('test_blur_lmdb',
                 img_folder,
                 names[:, 0],
-                N)
+                N * 3)  # (mb+fb+mfb)
     create_lmdb('test_sharp_lmdb',
                 img_folder,
                 names[:, 1],
-                N)
+                N * 3)  # (mb+fb+mfb)
 
     print '*** val ***'
     N = 5936
@@ -135,10 +136,10 @@ if __name__ == '__main__':
     create_lmdb('val_blur_lmdb',
                 img_folder,
                 names[:, 0],
-                N)
+                N * 3)  # (mb+fb+mfb)
     create_lmdb('val_sharp_lmdb',
                 img_folder,
                 names[:, 1],
-                N)
+                N * 3)  # (mb+fb+mfb)
 
-    print '\n\nComplete!'
+    print '\nComplete!'

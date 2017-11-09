@@ -1,0 +1,2 @@
+Loss: Mean Squared Error(MSE).
+Loss is minimized by using stochastic gradient descent with regular backpropagation algorithm.

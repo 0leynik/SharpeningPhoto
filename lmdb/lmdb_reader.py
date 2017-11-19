@@ -14,7 +14,7 @@ import cv2
 visualize = False
 lmdb_path = "/home/doleinik/l4/lmdb/train_lmdb"
 
-env = lmdb.open(lmdb_path)
+env = lmdb.open(lmdb_path, readonly=True)
 with env.begin() as txn:
     with txn.cursor() as curs:
         datum = caffe.proto.caffe_pb2.Datum()
@@ -29,7 +29,10 @@ with env.begin() as txn:
 
             # if label == 999:
             print "key: ", key
+            print "key type: ", type(key)
             # print "value ", value
+            print "value type: ", type(value)
+
             print "datum.label ", label
             # print "datum.data ", data
             # print type(data)

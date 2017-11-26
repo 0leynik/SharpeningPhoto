@@ -1,8 +1,4 @@
-'''Train a simple deep CNN on the CIFAR10 small images dataset.
-
-It gets to 75% validation accuracy in 25 epochs, and 79% after 50 epochs.
-(it's still underfitting at that point, though).
-'''
+# -*- coding: utf-8 -*-
 
 from __future__ import print_function
 import keras
@@ -14,19 +10,120 @@ from keras.layers import Conv2D, MaxPooling2D
 import numpy as np
 import os
 
+import matplotlib.pyplot as plt
+import cv2
+import lmdb
+import caffe
+
+
+def gen_batch_keylists(N, batch_size):
+    '''
+    формирование батчей в виде списков ключей в формате '{:08}'
+    '''
+
+    keys = np.arange(N)
+    np.random.shuffle(keys)
+    keys = map(lambda key: '{:08}'.format(key), keys)
+
+    batches = []
+    k = 1;
+    while k*batch_size < N:
+        batches.append( keys[(k-1)*batch_size : k*batch_size] )
+        k += 1
+    if k*batch_size >= N:
+        batches.append( keys[(k-1)*batch_size : N] )
+
+    return batches
+
+
+def get_data_from_keys(blur_lmdb_path, sharp_lmdb_path, keylist):
+    '''
+
+    :param lmdb_path:
+    :param keylist:
+    :return: [np_blur_data, np_sharp_data]
+    '''
+
+    paths = [blur_lmdb_path, sharp_lmdb_path]
+    batch_size = len(keylist)
+
+    blur_data = np.empty((batch_size, 3, 375, 500), dtype=np.uint8)
+    sharp_data = np.empty((batch_size, 3, 375, 500), dtype=np.uint8)
+    ret_data = [blur_data, sharp_data]
+
+
+    datum = caffe.proto.caffe_pb2.Datum()
+    for i in range(2):
+
+        env = lmdb.open(paths[i], readonly=True)
+        txn = env.begin() # можно делать get() из txn
+        # curs = txn.cursor() # можно делать get() из txn.cursor
+        # value = curs.get(key)
+
+        # Conv2D
+        # data_format: channels_first
+        # shape(batch, channels, height, width)
+
+        for j in range(batch_size):
+            value = txn.get(keylist[j])
+            datum.ParseFromString(value)
+            data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
+            ret_data[i][j] = data
+
+            print(type(data))
+            print(data.dtype)
+            print(data.shape)
+            if visualize:
+                # CxHxW -> HxWxC
+                img = np.transpose(data, (1, 2, 0))
+                # BGR -> RGB
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+                # matplotlib.pyplot.imshow()
+                # HxWx3 – RGB (float or uint8 array)
+                plt.imshow(img)
+                plt.show()
+
+
+#************ LMDB *************
+
+visualize = False
+
+lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
+train_path = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
+test_path = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
+val_path = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
+
+
+
+
+
+#****************************************
+
+
+
 batch_size = 32
 num_classes = 10
 epochs = 100
-data_augmentation = True
+data_augmentation = False
 num_predictions = 20
 save_dir = os.path.join(os.getcwd(), 'saved_models')
+print(save_dir)
 model_name = 'keras_cifar10_trained_model.h5'
 
 # The data, shuffled and split between train and test sets:
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
 print('x_train shape:', x_train.shape)
+# x_train(n_imgs, H, W, C) RBG-images
+print('y_train shape:', y_train.shape)
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
+
+for i in range(20):
+    plt.figure(i)
+    plt.imshow(x_train[i, ...])
+
+plt.show()
 
 # Convert class vectors to binary class matrices.
 y_train = keras.utils.to_categorical(y_train, num_classes)
@@ -67,6 +164,8 @@ x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
+
+print(x_train.dtype)
 
 if not data_augmentation:
     print('Not using data augmentation.')

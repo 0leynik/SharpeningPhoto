@@ -42,6 +42,7 @@ with env.begin() as txn:
             if visualize:
                 # CxHxW -> HxWxC
                 img = np.transpose(data, (1, 2, 0))
+                print "img.shape ", img.shape
                 # BGR -> RGB
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 

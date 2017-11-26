@@ -19,6 +19,7 @@ import caffe
 def gen_batch_keylists(N, batch_size):
     '''
     формирование батчей в виде списков ключей в формате '{:08}'
+    :return [['00000000','00000001',...],['','',...],['','',...]]
     '''
 
     keys = np.arange(N)
@@ -36,15 +37,15 @@ def gen_batch_keylists(N, batch_size):
     return batches
 
 
-def get_data_from_keys(blur_lmdb_path, sharp_lmdb_path, keylist):
+def get_data_from_keys(lmdb_paths, keylist):
     '''
-
-    :param lmdb_path:
-    :param keylist:
+    формирование списка из np-данных на input и loss
+    :param lmdb_paths: [blur_lmdb_path, sharp_lmdb_path]
+    :param keylist: список ключей в формате '{:08}'
     :return: [np_blur_data, np_sharp_data]
     '''
 
-    paths = [blur_lmdb_path, sharp_lmdb_path]
+    visualize = False
     batch_size = len(keylist)
 
     blur_data = np.empty((batch_size, 3, 375, 500), dtype=np.uint8)
@@ -55,7 +56,7 @@ def get_data_from_keys(blur_lmdb_path, sharp_lmdb_path, keylist):
     datum = caffe.proto.caffe_pb2.Datum()
     for i in range(2):
 
-        env = lmdb.open(paths[i], readonly=True)
+        env = lmdb.open(lmdb_paths[i], readonly=True)
         txn = env.begin() # можно делать get() из txn
         # curs = txn.cursor() # можно делать get() из txn.cursor
         # value = curs.get(key)
@@ -84,23 +85,33 @@ def get_data_from_keys(blur_lmdb_path, sharp_lmdb_path, keylist):
                 plt.imshow(img)
                 plt.show()
 
+    return ret_data
+
 
 #************ LMDB *************
 
-visualize = False
 
 lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
-train_path = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
-test_path = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
-val_path = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
+train_paths = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
+test_paths = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
+val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
+epochs = 100
+batch_size = 1024
+N_train = 133527 * 3
+N_test = 11853 * 3
+N_val = 5936 * 3
 
+for i in range(epochs):
+    batch_keylists = gen_batch_keylists(N_train, batch_size)
 
+    for keylist in batch_keylists:
+        train_blur_data, train_sharp_data = get_data_from_keys(train_paths, keylist)
+
+        # fit
 
 
 #****************************************
-
-
 
 batch_size = 32
 num_classes = 10

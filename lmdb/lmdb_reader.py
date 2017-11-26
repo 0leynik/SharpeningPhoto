@@ -11,8 +11,8 @@ import cv2
 # http://research.beenfrog.com/code/2015/12/30/write-read-lmdb-example.html
 # http://shengshuyang.github.io/hook-up-lmdb-with-caffe-in-python.html
 
-visualize = False
-lmdb_path = "/home/doleinik/l4/lmdb/train_lmdb"
+visualize = True
+lmdb_path = "/home/doleinik/l4/lmdb/train_blur_lmdb"
 
 env = lmdb.open(lmdb_path, readonly=True)
 with env.begin() as txn:
@@ -34,10 +34,10 @@ with env.begin() as txn:
             print "value type: ", type(value)
 
             print "datum.label ", label
-            # print "datum.data ", data
-            # print type(data)
-            # print data.shape
-            # print data.dtype
+            print "datum.data ", data
+            print "datum.type(data) ", type(data)
+            print "datum.data.shape ", data.shape
+            print "datum.data ", data.dtype
 
             if visualize:
                 # CxHxW -> HxWxC

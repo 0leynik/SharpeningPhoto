@@ -12,7 +12,7 @@ import cv2
 # http://shengshuyang.github.io/hook-up-lmdb-with-caffe-in-python.html
 
 visualize = True
-lmdb_path = "/home/doleinik/l4/lmdb/train_blur_lmdb"
+lmdb_path = "train_blur_lmdb"
 
 env = lmdb.open(lmdb_path, readonly=True)
 with env.begin() as txn:
@@ -34,10 +34,10 @@ with env.begin() as txn:
             print "value type: ", type(value)
 
             print "datum.label ", label
-            print "datum.data ", data
-            print "datum.type(data) ", type(data)
-            print "datum.data.shape ", data.shape
+            # print "datum.data ", data
+            print "type(datum.data) ", type(data)
             print "datum.data ", data.dtype
+            print "datum.data.shape ", data.shape
 
             if visualize:
                 # CxHxW -> HxWxC

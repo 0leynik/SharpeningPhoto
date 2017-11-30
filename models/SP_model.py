@@ -197,7 +197,7 @@ def get_unet():
 
 if __name__ == '__main__':
 
-    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
+    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
     train_paths = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
     test_paths = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']

@@ -222,7 +222,7 @@ if __name__ == '__main__':
         for train_keylist in train_batch_keylists:
 
             train_batch_count += len(train_keylist)
-            print('Training {:8d}/{}'.format(train_batch_count, N_train))
+            # print('Training {:8d}/{}'.format(train_batch_count, N_train))
 
             # prepare train batch data
             # print('Load data...')
@@ -237,7 +237,7 @@ if __name__ == '__main__':
             # fit, fit_generator, train_on_batch
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
             # print result train on batch
-            train_s = ''
+            train_s = 'Training {:8d}/{}  '.format(train_batch_count, N_train)
             for i in range(len(model.metrics_names)):
                 train_s += model.metrics_names[i] + ':' + str(train_scores[i]) + '  '
             print(train_s)
@@ -248,7 +248,7 @@ if __name__ == '__main__':
         val_scores = []
         for val_keylist in val_batch_keylists:
             val_batch_count += len(val_keylist)
-            print('Validation {:8d}/{}'.format(val_batch_count, N_val))
+            # print('Validation {:8d}/{}'.format(val_batch_count, N_val))
 
             val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
 
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 
         val_scores = np.array(val_scores)
         val_scores = val_scores.mean(axis=0)
-        val_s = ''
+        val_s = 'Validation {:8d}/{}  '.format(val_batch_count, N_val)
         for i in range(len(model.metrics_names)):
             val_s += model.metrics_names[i] + ':' + str(val_scores[i]) + '  '
         print(val_s)

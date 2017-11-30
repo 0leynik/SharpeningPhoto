@@ -101,6 +101,10 @@ N_val = 5936 * 3
 
 
 # NET
+
+
+x = Dense()
+
 model = Sequential()
 model.add(Conv2D(32, (3, 3), padding='same', input_shape=(3,375,500)))
 model.add(Activation('relu'))

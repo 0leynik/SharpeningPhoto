@@ -238,7 +238,7 @@ if __name__ == '__main__':
             # print result train on batch
             train_s = ''
             for i in range(len(model.metrics)):
-                train_s += model.metrics[i] + ':' + str(train_scores[i]) + '  '
+                train_s += str(model.metrics[i]) + ':' + str(train_scores[i]) + '  '
             print(train_s)
 
             # score trained model on val data
@@ -263,7 +263,7 @@ if __name__ == '__main__':
             val_scores = val_scores.mean(axis=0)
             val_s = ''
             for i in range(len(model.metrics)):
-                val_s += model.metrics[i] + ':' + str(val_scores[i]) + '  '
+                val_s += str(model.metrics[i]) + ':' + str(val_scores[i]) + '  '
             print(val_s)
 
     #

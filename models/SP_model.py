@@ -203,7 +203,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 32
+    batch_size = 16
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
@@ -225,20 +225,21 @@ if __name__ == '__main__':
             print('Training {:8d}/{}'.format(train_batch_count, N_train))
 
             # prepare train batch data
-            print('Load data...')
+            # print('Load data...')
             train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
 
             train_blur_data = train_blur_data.astype('float32')
             train_blur_data /= 255
             train_sharp_data = train_sharp_data.astype('float32')
             train_sharp_data /= 255
-            print('Train...')
+
+            # print('Train...')
             # fit, fit_generator, train_on_batch
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
             # print result train on batch
             train_s = ''
-            for i in range(len(model.metrics)):
-                train_s += str(model.metrics[i]) + ':' + str(train_scores[i]) + '  '
+            for i in range(len(model.metrics_names)):
+                train_s += model.metrics_names[i] + ':' + str(train_scores[i]) + '  '
             print(train_s)
 
         # score trained model on val data
@@ -262,8 +263,8 @@ if __name__ == '__main__':
         val_scores = np.array(val_scores)
         val_scores = val_scores.mean(axis=0)
         val_s = ''
-        for i in range(len(model.metrics)):
-            val_s += str(model.metrics[i]) + ':' + str(val_scores[i]) + '  '
+        for i in range(len(model.metrics_names)):
+            val_s += model.metrics_names[i] + ':' + str(val_scores[i]) + '  '
         print(val_s)
 
     #

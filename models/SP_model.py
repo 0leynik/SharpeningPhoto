@@ -72,9 +72,9 @@ def get_data_from_keys(lmdb_paths, keylist):
             data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
             ret_data[i][j] = data
 
-            print(type(data))
-            print(data.dtype)
-            print(data.shape)
+            # print(type(data))
+            # print(data.dtype)
+            # print(data.shape)
             if visualize:
                 # CxHxW -> HxWxC
                 img = np.transpose(data, (1, 2, 0))

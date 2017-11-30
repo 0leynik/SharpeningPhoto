@@ -203,7 +203,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 1024
+    batch_size = 8
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
@@ -245,7 +245,7 @@ if __name__ == '__main__':
             val_batch_count = 0
             val_batch_keylists = gen_batch_keylists(N_val, batch_size)
             val_scores = []
-            for val_keylist in range(len(val_batch_keylists)):
+            for val_keylist in val_batch_keylists:
                 val_batch_count += len(val_keylist)
                 print('Validation {:8d}/{}'.format(val_batch_count, N_val))
 

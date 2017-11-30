@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import keras
-from keras.datasets import cifar10
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPooling2D
+
 import numpy as np
 import os
-
 import matplotlib.pyplot as plt
 import cv2
 import lmdb
 import caffe
+import keras
+
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate
+from keras.models import Model
+from keras.optimizers import Adam
+from keras import backend as K
 
 
 def gen_batch_keylists(N, batch_size):
@@ -88,119 +89,211 @@ def get_data_from_keys(lmdb_paths, keylist):
     return ret_data
 
 
-lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
-train_paths = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
-test_paths = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
-val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
+# https://www.kaggle.com/toregil/a-lung-u-net-in-keras/notebook
+# def dice_coef(y_true, y_pred):
+#     y_true_f = K.flatten(y_true)
+#     y_pred_f = K.flatten(y_pred)
+#     intersection = K.sum(y_true_f * y_pred_f)
+#     return (2. * intersection + K.epsilon()) / (K.sum(y_true_f) + K.sum(y_pred_f) + K.epsilon())
 
-epochs = 100
-batch_size = 1024
-N_train = 133527 * 3
-N_test = 11853 * 3
-N_val = 5936 * 3
-
-
-# NET
-
-
-x = Dense()
-
-model = Sequential()
-model.add(Conv2D(32, (3, 3), padding='same', input_shape=(3,375,500)))
-model.add(Activation('relu'))
-model.add(Conv2D(32, (3, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Conv2D(64, (3, 3), padding='same'))
-model.add(Activation('relu'))
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Flatten())
-model.add(Dense(512))
-model.add(Activation('relu'))
-model.add(Dropout(0.5))
-model.add(Dense(num_classes))
-model.add(Activation('softmax'))
+smooth = 1.
+def dice_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
 
-model.compile(keras.optimizers.SGD,
-              keras.losses.MSE,
-              ['accuracy'])
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
+
+def get_unet():
+
+    K.set_image_data_format('channels_first')
+
+    img_shape = (3, 375, 500)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+    print(inputs.shape)
+
+    conv1 = Conv2D(64, (3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv1)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+    print(pool1.shape)
+
+    conv2 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool1)
+    conv2 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv2)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    print(pool2.shape)
+
+    conv3 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool2)
+    conv3 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv3)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+    print(pool3.shape)
+
+    conv4 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool3)
+    conv4 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+    print(pool4.shape)
+
+    conv5 = Conv2D(1024, (3, 3), activation='relu', padding='same')(pool4)
+    conv5 = Conv2D(1024, (3, 3), activation='relu', padding='same')(conv5)
+    deconv = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding='same')
+    up5 = deconv(conv5)
+
+    print(deconv.output_shape, conv4.shape)
+    # crop4 = Cropping2D(cropping=((1,0),(1,0)))(conv4)
+    concat6 = concatenate([up5, conv4], axis=concat_axis)
+    conv6 = Conv2D(512, (3, 3), activation='relu', padding='same')(concat6)
+    conv6 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv6)
+    deconv = Conv2DTranspose(256, (3, 3), strides=(2, 2), padding='valid')
+    up6 = deconv(conv6)
+
+    print(deconv.output_shape, conv3.shape)
+    # crop3 = Cropping2D(cropping=((1,0),(1,0)))(conv3)
+    # concat7 = concatenate([up6, crop3], axis=concat_axis)
+    concat7 = concatenate([up6, conv3], axis=concat_axis)
+    conv7 = Conv2D(256, (3, 3), activation='relu', padding='same')(concat7)
+    conv7 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv7)
+    deconv = Conv2DTranspose(128, (3, 3), strides=(2, 2), padding='valid')
+    crop = Cropping2D(cropping=((0, 0), (1, 0)))
+    up7 = deconv(conv7)
+    crop_up7 = crop(up7)
+
+    print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
+    # crop2 = Cropping2D(cropping=((1, 0), (0, 0)))(conv2)
+    # concat8 = concatenate([up7, crop2], axis=concat_axis)
+    concat8 = concatenate([crop_up7, conv2], axis=concat_axis)
+    conv8 = Conv2D(128, (3, 3), activation='relu', padding='same')(concat8)
+    conv8 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv8)
+    deconv = Conv2DTranspose(64, (3, 3), strides=(2, 2), padding='valid')
+    crop = Cropping2D(cropping=((0, 0), (0, 1)))
+    up8 = deconv(conv8)
+    crop_up8 = crop(up8)
+
+    print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+    # crop1 = Cropping2D(cropping=((0, 0), (0, 0)))(conv1)
+    # concat9 = concatenate([up8, crop1], axis=concat_axis)
+    concat9 = concatenate([crop_up8, conv1], axis=concat_axis)
+    conv9 = Conv2D(64, (3, 3), activation='relu', padding='same')(concat9)
+    conv9 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv9)
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
+    print(outputs.shape)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+    return model
 
 
-for e in range(epochs):
-    print('Epoch {}/{}'.format(e,epochs))
+if __name__ == '__main__':
 
-    train_batch_count = 0
-    train_batch_keylists = gen_batch_keylists(N_train, batch_size)
+    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
+    train_paths = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
+    test_paths = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
+    val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
-    for train_keylist in train_batch_keylists:
+    epochs = 100
+    batch_size = 1024
+    N_train = 133527 * 3
+    N_test = 11853 * 3
+    N_val = 5936 * 3
 
-        train_batch_count += len(train_keylist)
-        print('Training {:8d}/{}'.format(train_batch_count, N_train))
+    print('Getting custom U-Net model...')
+    model = get_unet()
 
-        # prepare train batch data
-        train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
+    print('\nRun training...\n')
 
-        train_blur_data = train_blur_data.astype('float32')
-        train_blur_data /= 255
-        train_sharp_data = train_sharp_data.astype('float32')
-        train_sharp_data /= 255
+    for e in range(epochs):
+        print('Epoch {}/{}'.format(e,epochs))
 
-        # fit, fit_generator, train_on_batch
-        model.train_on_batch(train_blur_data, train_sharp_data)
+        train_batch_count = 0
+        train_batch_keylists = gen_batch_keylists(N_train, batch_size)
 
+        for train_keylist in train_batch_keylists:
 
-        # score trained model on val data
-        val_batch_count = 0
-        val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-        for val_keylist in range(len(val_batch_keylists)):
-            val_batch_count += len(val_keylist)
-            print('Validation {:8d}/{}'.format(val_batch_count, N_val))
+            train_batch_count += len(train_keylist)
+            print('Training {:8d}/{}'.format(train_batch_count, N_train))
 
-            val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
+            # prepare train batch data
+            print('Load data...')
+            train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
 
-            val_blur_data = val_blur_data.astype('float32')
-            val_blur_data /= 255
-            val_sharp_data = val_sharp_data.astype('float32')
-            val_sharp_data /= 255
+            train_blur_data = train_blur_data.astype('float32')
+            train_blur_data /= 255
+            train_sharp_data = train_sharp_data.astype('float32')
+            train_sharp_data /= 255
+            print('Train...')
+            # fit, fit_generator, train_on_batch
+            train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
+            # print result train on batch
+            train_s = ''
+            for i in range(len(model.metrics)):
+                train_s += model.metrics[i] + ':' + str(train_scores[i]) + '  '
+            print(train_s)
 
-            scores = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
-            print('Val loss:', scores[0])
-            print('Val accuracy:', scores[1])
+            # score trained model on val data
+            val_batch_count = 0
+            val_batch_keylists = gen_batch_keylists(N_val, batch_size)
+            val_scores = []
+            for val_keylist in range(len(val_batch_keylists)):
+                val_batch_count += len(val_keylist)
+                print('Validation {:8d}/{}'.format(val_batch_count, N_val))
 
+                val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
 
+                val_blur_data = val_blur_data.astype('float32')
+                val_blur_data /= 255
+                val_sharp_data = val_sharp_data.astype('float32')
+                val_sharp_data /= 255
 
+                val_score = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
+                val_scores.append(val_score)
 
-# Save model and weights
-save_dir = os.path.join(os.getcwd(), 'saved_models')
-if not os.path.isdir(save_dir):
-    os.makedirs(save_dir)
+            val_scores = np.array(val_scores)
+            val_scores = val_scores.mean(axis=0)
+            val_s = ''
+            for i in range(len(model.metrics)):
+                val_s += model.metrics[i] + ':' + str(val_scores[i]) + '  '
+            print(val_s)
 
-model_name = 'keras_SP_trained_model.h5'
-model_path = os.path.join(save_dir, model_name)
-model.save(model_path)
-print('Saved trained model at %s ' % model_path)
-
-# Score trained model
-count_batch = 0
-batch_keylists = gen_batch_keylists(N_test, batch_size)
-for keylist in batch_keylists:
-    count_batch += len(keylist)
-    print('{:8d}/{}'.format(count_batch, N_train))
-
-    test_blur_data, test_sharp_data = get_data_from_keys(train_paths, keylist)
-
-    test_blur_data = test_blur_data.astype('float32')
-    test_blur_data /= 255
-    test_sharp_data = test_sharp_data.astype('float32')
-    test_sharp_data /= 255
-
-    scores = model.evaluate(test_blur_data, test_sharp_data, verbose=1)
-    print('Test loss:', scores[0])
-    print('Test accuracy:', scores[1])
+    #
+    #
+    #
+    #
+    # # Save model and weights
+    # save_dir = os.path.join(os.getcwd(), 'saved_models')
+    # if not os.path.isdir(save_dir):
+    #     os.makedirs(save_dir)
+    #
+    # model_name = 'keras_SP_trained_model.h5'
+    # model_path = os.path.join(save_dir, model_name)
+    # model.save(model_path)
+    # print('Saved trained model at %s ' % model_path)
+    #
+    # # Score trained model
+    # count_batch = 0
+    # batch_keylists = gen_batch_keylists(N_test, batch_size)
+    # for keylist in batch_keylists:
+    #     count_batch += len(keylist)
+    #     print('{:8d}/{}'.format(count_batch, N_train))
+    #
+    #     test_blur_data, test_sharp_data = get_data_from_keys(train_paths, keylist)
+    #
+    #     test_blur_data = test_blur_data.astype('float32')
+    #     test_blur_data /= 255
+    #     test_sharp_data = test_sharp_data.astype('float32')
+    #     test_sharp_data /= 255
+    #
+    #     scores = model.evaluate(test_blur_data, test_sharp_data, verbose=1)
+    #     print('Test loss:', scores[0])
+    #     print('Test accuracy:', scores[1])

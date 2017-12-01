@@ -190,7 +190,7 @@ def get_unet():
 
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='sgd', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))

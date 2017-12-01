@@ -184,7 +184,7 @@ def get_unet():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy', dice_coef])
+    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
 

@@ -197,6 +197,18 @@ def get_unet():
     return model
 
 
+def save_model(model, epoch, batch_count, accuracy, loss):
+    # Save model and weights
+    save_dir = os.path.join(os.getcwd(), 'saved_models')
+    if not os.path.isdir(save_dir):
+        os.makedirs(save_dir)
+
+    model_name = 'SP_model_' + str(epoch) + '_' + str(batch_count) + '--' + str(loss) + '_' + str(accuracy) + '.h5'
+    model_path = os.path.join(save_dir, model_name)
+    model.save(model_path)
+    print('Saved trained model at {}'.format(model_path))
+
+
 if __name__ == '__main__':
 
     lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
@@ -216,7 +228,7 @@ if __name__ == '__main__':
     print('\nRun training...\n')
 
     for e in range(1, epochs+1):
-        print('Epoch {}/{}'.format(e,epochs))
+        print('Epoch {}/{}'.format(e, epochs))
 
         train_batch_count = 0
         train_batch_keylists = gen_batch_keylists(N_train, batch_size)
@@ -269,19 +281,6 @@ if __name__ == '__main__':
         #     val_s += model.metrics_names[i] + ':' + str(val_scores[i]) + '  '
         # print(val_s)
 
-    #
-    #
-    #
-    #
-    # # Save model and weights
-    # save_dir = os.path.join(os.getcwd(), 'saved_models')
-    # if not os.path.isdir(save_dir):
-    #     os.makedirs(save_dir)
-    #
-    # model_name = 'keras_SP_trained_model.h5'
-    # model_path = os.path.join(save_dir, model_name)
-    # model.save(model_path)
-    # print('Saved trained model at %s ' % model_path)
     #
     # # Score trained model
     # count_batch = 0

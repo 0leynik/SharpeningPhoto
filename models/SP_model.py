@@ -215,8 +215,8 @@ if __name__ == '__main__':
 
     print('\nRun training...\n')
 
-    for e in range(epochs):
-        print('Epoch {}/{}'.format(e+1,epochs))
+    for e in range(1, epochs+1):
+        print('Epoch {}/{}'.format(e,epochs))
 
         train_batch_count = 0
         train_batch_keylists = gen_batch_keylists(N_train, batch_size)

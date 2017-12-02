@@ -325,9 +325,9 @@ def get_simple_net():
     print(inputs.shape)
 
     conv = Conv2D(3, (1, 1), activation='sigmoid')
-    print(conv.output_shape)
-
     outputs = conv(inputs)
+
+    print(conv.output_shape)
     print(outputs.shape)
 
     # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)

@@ -217,8 +217,8 @@ def get_small_unet():
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     print(pool2.shape)
 
-    conv3 = Conv2D(27, (3, 3), activation='relu', padding='same')(pool2)
-    conv3 = Conv2D(27, (3, 3), activation='relu', padding='same')(conv3)
+    conv3 = Conv2D(18, (3, 3), activation='relu', padding='same')(pool2)
+    conv3 = Conv2D(18, (3, 3), activation='relu', padding='same')(conv3)
     deconv = Conv2DTranspose(9, (3, 3), strides=(2, 2), padding='valid')
     crop = Cropping2D(cropping=((0, 0), (1, 0)))
     up3 = deconv(conv3)

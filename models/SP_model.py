@@ -324,7 +324,7 @@ def get_simple_net():
     inputs = Input(shape=img_shape)
     print(inputs.shape)
 
-    conv = Conv2D(1, (1, 1), activation='sigmoid')
+    conv = Conv2D(3, (1, 1), activation='sigmoid')
     outputs = conv(inputs)
 
     print(conv.output_shape)
@@ -398,7 +398,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 1024
+    batch_size = 512
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

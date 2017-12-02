@@ -428,8 +428,8 @@ if __name__ == '__main__':
             train_sharp_data = train_sharp_data.astype('float32')
             train_sharp_data /= 255
 
-            print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2,20))) + ' MB')
-            print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2,20))) + ' MB')
+            print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
+            print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
 
             # print('Train...')
             # fit, fit_generator, train_on_batch

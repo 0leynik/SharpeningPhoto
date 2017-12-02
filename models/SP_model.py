@@ -393,7 +393,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 512
+    batch_size = 256
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

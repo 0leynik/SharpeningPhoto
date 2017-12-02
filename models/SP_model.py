@@ -322,13 +322,8 @@ def get_simple_net():
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
-    print(inputs.shape)
-
-    conv = Conv2D(3, (1, 1), activation='sigmoid')
-    outputs = conv(inputs)
-
-    print(conv.output_shape)
-    print(outputs.shape)
+    conv = Conv2D(3, (1, 1), activation='sigmoid')(inputs)
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv)
 
     # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
     # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)

@@ -311,7 +311,7 @@ if __name__ == '__main__':
             # fit, fit_generator, train_on_batch
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
             # print result train on batch
-            train_s = 'Training {:8d}/{}  '.format(train_batch_count, N_train)
+            train_s = '    Training {:8d}/{}  '.format(train_batch_count, N_train)
             for i in range(len(model.metrics_names)):
                 train_s += model.metrics_names[i] + ':' + str(train_scores[i]) + '  '
             print(str(datetime.now())+train_s)

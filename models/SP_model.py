@@ -398,13 +398,13 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 256
+    batch_size = 1024
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
 
     print('Getting custom U-Net model...')
-    model = get_super_small_unet()
+    model = get_simple_net()
 
     print('\nRun training...\n')
 

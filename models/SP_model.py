@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import cv2
 import lmdb
 import caffe
+from datetime import datetime
 import keras
 
 from keras.layers import Dense, Dropout, Activation, Flatten
@@ -276,7 +277,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 1024
+    batch_size = 176
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
@@ -313,7 +314,7 @@ if __name__ == '__main__':
             train_s = 'Training {:8d}/{}  '.format(train_batch_count, N_train)
             for i in range(len(model.metrics_names)):
                 train_s += model.metrics_names[i] + ':' + str(train_scores[i]) + '  '
-            print(train_s)
+            print(str(datetime.now())+train_s)
 
         # score trained model on val data
         # val_batch_count = 0

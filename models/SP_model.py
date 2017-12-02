@@ -324,7 +324,7 @@ def get_simple_net():
     inputs = Input(shape=img_shape)
     print(inputs.shape)
 
-    conv = Conv2D(3, (1, 1), activation='sigmoid')
+    conv = Conv2D(1, (1, 1), activation='sigmoid')
     outputs = conv(inputs)
 
     print(conv.output_shape)

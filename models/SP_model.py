@@ -418,6 +418,9 @@ if __name__ == '__main__':
             # print('Load data...')
             train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
 
+            print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
+            print('Sharp batch size in memory = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
+
             train_blur_data = train_blur_data.astype('float32')
             train_blur_data /= 255
             train_sharp_data = train_sharp_data.astype('float32')

@@ -199,7 +199,7 @@ def get_unet():
     return model
 
 def get_small_unet():
-
+    # batch 176
     K.set_image_data_format('channels_first')
 
     img_shape = (3, 375, 500)
@@ -256,6 +256,63 @@ def get_small_unet():
     print('Metrics: ' + str(model.metrics_names))
     return model
 
+def get_super_small_unet():
+    # batch 176
+    K.set_image_data_format('channels_first')
+
+    img_shape = (3, 375, 500)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+    print(inputs.shape)
+
+    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+    print(pool1.shape)
+
+    # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
+    # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
+    # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    # print(pool2.shape)
+
+    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
+    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv3)
+    deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+    crop = Cropping2D(cropping=((0, 0), (1, 0)))
+    up3 = deconv(conv3)
+    crop_up3 = crop(up3)
+
+    # print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
+    # concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
+    # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
+    # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
+    # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+    # crop = Cropping2D(cropping=((0, 0), (0, 1)))
+    # up4 = deconv(conv4)
+    # crop_up4 = crop(up4)
+
+    print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+    concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
+    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
+    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
+    print(outputs.shape)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+
+    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+    return model
 
 def save_model(model, epoch, batch_count, accuracy, loss):
     # Save model and weights
@@ -283,7 +340,7 @@ if __name__ == '__main__':
     N_val = 5936 * 3
 
     print('Getting custom U-Net model...')
-    model = get_small_unet()
+    model = get_super_small_unet()
 
     print('\nRun training...\n')
 

@@ -118,46 +118,46 @@ def get_unet():
     inputs = Input(shape=img_shape)
     print(inputs.shape)
 
-    conv1 = Conv2D(8, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv1)
+    conv1 = Conv2D(2, (3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv2D(2, (3, 3), activation='relu', padding='same')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
     print(pool1.shape)
 
-    conv2 = Conv2D(16, (3, 3), activation='relu', padding='same')(pool1)
-    conv2 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv2)
+    conv2 = Conv2D(4, (3, 3), activation='relu', padding='same')(pool1)
+    conv2 = Conv2D(4, (3, 3), activation='relu', padding='same')(conv2)
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     print(pool2.shape)
 
-    conv3 = Conv2D(32, (3, 3), activation='relu', padding='same')(pool2)
-    conv3 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv3)
+    conv3 = Conv2D(8, (3, 3), activation='relu', padding='same')(pool2)
+    conv3 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv3)
     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
     print(pool3.shape)
 
-    conv4 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool3)
-    conv4 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv4)
+    conv4 = Conv2D(16, (3, 3), activation='relu', padding='same')(pool3)
+    conv4 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv4)
     pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
     print(pool4.shape)
 
-    conv5 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool4)
-    conv5 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv5)
-    deconv = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')
+    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(pool4)
+    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv5)
+    deconv = Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same')
     up5 = deconv(conv5)
 
     print(deconv.output_shape, conv4.shape)
     # crop4 = Cropping2D(cropping=((1,0),(1,0)))(conv4)
     concat6 = concatenate([up5, conv4], axis=concat_axis)
-    conv6 = Conv2D(64, (3, 3), activation='relu', padding='same')(concat6)
-    conv6 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv6)
-    deconv = Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='valid')
+    conv6 = Conv2D(16, (3, 3), activation='relu', padding='same')(concat6)
+    conv6 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv6)
+    deconv = Conv2DTranspose(8, (3, 3), strides=(2, 2), padding='valid')
     up6 = deconv(conv6)
 
     print(deconv.output_shape, conv3.shape)
     # crop3 = Cropping2D(cropping=((1,0),(1,0)))(conv3)
     # concat7 = concatenate([up6, crop3], axis=concat_axis)
     concat7 = concatenate([up6, conv3], axis=concat_axis)
-    conv7 = Conv2D(32, (3, 3), activation='relu', padding='same')(concat7)
-    conv7 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv7)
-    deconv = Conv2DTranspose(16, (3, 3), strides=(2, 2), padding='valid')
+    conv7 = Conv2D(8, (3, 3), activation='relu', padding='same')(concat7)
+    conv7 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv7)
+    deconv = Conv2DTranspose(4, (3, 3), strides=(2, 2), padding='valid')
     crop = Cropping2D(cropping=((0, 0), (1, 0)))
     up7 = deconv(conv7)
     crop_up7 = crop(up7)
@@ -166,9 +166,9 @@ def get_unet():
     # crop2 = Cropping2D(cropping=((1, 0), (0, 0)))(conv2)
     # concat8 = concatenate([up7, crop2], axis=concat_axis)
     concat8 = concatenate([crop_up7, conv2], axis=concat_axis)
-    conv8 = Conv2D(16, (3, 3), activation='relu', padding='same')(concat8)
-    conv8 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv8)
-    deconv = Conv2DTranspose(8, (3, 3), strides=(2, 2), padding='valid')
+    conv8 = Conv2D(4, (3, 3), activation='relu', padding='same')(concat8)
+    conv8 = Conv2D(4, (3, 3), activation='relu', padding='same')(conv8)
+    deconv = Conv2DTranspose(2, (3, 3), strides=(2, 2), padding='valid')
     crop = Cropping2D(cropping=((0, 0), (0, 1)))
     up8 = deconv(conv8)
     crop_up8 = crop(up8)
@@ -177,20 +177,21 @@ def get_unet():
     # crop1 = Cropping2D(cropping=((0, 0), (0, 0)))(conv1)
     # concat9 = concatenate([up8, crop1], axis=concat_axis)
     concat9 = concatenate([crop_up8, conv1], axis=concat_axis)
-    conv9 = Conv2D(8, (3, 3), activation='relu', padding='same')(concat9)
-    conv9 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv9)
+    conv9 = Conv2D(2, (3, 3), activation='relu', padding='same')(concat9)
+    conv9 = Conv2D(2, (3, 3), activation='relu', padding='same')(conv9)
     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
     print(outputs.shape)
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
 
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))
@@ -217,7 +218,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 64
+    batch_size = 256
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

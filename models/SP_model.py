@@ -399,7 +399,7 @@ if __name__ == '__main__':
     N_val = 5936 * 3
 
     print('Getting custom U-Net model...')
-    model = get_simple_net()
+    model = get_super_small_unet()
 
     print('\nRun training...\n')
 

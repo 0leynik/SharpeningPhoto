@@ -19,6 +19,8 @@ from keras.losses import mean_squared_error
 from keras import backend as K
 
 
+IMG_H, IMG_W = (375/5, 500/5)
+
 def gen_batch_keylists(N, batch_size):
     '''
     формирование батчей в виде списков ключей в формате '{:08}'
@@ -51,8 +53,8 @@ def get_data_from_keys(lmdb_paths, keylist):
     visualize = False
     batch_size = len(keylist)
 
-    blur_data = np.empty((batch_size, 3, 375, 500), dtype=np.uint8)
-    sharp_data = np.empty((batch_size, 3, 375, 500), dtype=np.uint8)
+    blur_data = np.empty((batch_size, 3, IMG_H, IMG_W), dtype=np.uint8)
+    sharp_data = np.empty((batch_size, 3, IMG_H, IMG_W), dtype=np.uint8)
     ret_data = [blur_data, sharp_data]
 
 
@@ -72,7 +74,7 @@ def get_data_from_keys(lmdb_paths, keylist):
             value = txn.get(keylist[j])
             datum.ParseFromString(value)
             data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
-            ret_data[i][j] = data
+            ret_data[i][j] = data[:, :IMG_H, :IMG_W]
 
             # print(type(data))
             # print(data.dtype)
@@ -113,7 +115,7 @@ def get_unet():
     # batch 170
     K.set_image_data_format('channels_first')
 
-    img_shape = (3, 375, 500)
+    img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -202,7 +204,7 @@ def get_small_unet():
     # batch 176
     K.set_image_data_format('channels_first')
 
-    img_shape = (3, 375, 500)
+    img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -260,7 +262,7 @@ def get_super_small_unet():
     # batch
     K.set_image_data_format('channels_first')
 
-    img_shape = (3, 375, 500)
+    img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -318,7 +320,7 @@ def get_simple_net():
     # batch
     K.set_image_data_format('channels_first')
 
-    img_shape = (3, 375, 500)
+    img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -393,7 +395,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 512
+    batch_size = 1024 * 5
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

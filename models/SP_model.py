@@ -417,7 +417,7 @@ if __name__ == '__main__':
             # print('Training {:8d}/{}'.format(train_batch_count, N_train))
 
             # prepare train batch data
-            # print('Load data...')
+            print(str(datetime.now())+'    Load data...')
             train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
 
             # print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
@@ -431,7 +431,7 @@ if __name__ == '__main__':
             # print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
             # print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
 
-            # print('Train...')
+            print(str(datetime.now())+'    Train...')
             # fit, fit_generator, train_on_batch
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
             # print result train on batch

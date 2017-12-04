@@ -19,7 +19,7 @@ from keras.losses import mean_squared_error
 from keras import backend as K
 
 
-IMG_H, IMG_W = (375/5, 500/5)
+IMG_H, IMG_W = (375/(5*5), 500/(5*5))
 
 def gen_batch_keylists(N, batch_size):
     '''

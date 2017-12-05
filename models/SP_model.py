@@ -18,8 +18,15 @@ from keras.optimizers import Adam
 from keras.losses import mean_squared_error
 from keras import backend as K
 
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
 
-IMG_H, IMG_W = (375/(5*5), 500/(5*5))
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+set_session(tf.Session(config=config))
+
+IMG_H, IMG_W = (375/5, 500/5)
+K.set_image_data_format('channels_first')
 
 def gen_batch_keylists(N, batch_size):
     '''
@@ -113,7 +120,6 @@ def dice_coef_loss(y_true, y_pred):
 
 def get_unet():
     # batch 170
-    K.set_image_data_format('channels_first')
 
     img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
@@ -202,7 +208,6 @@ def get_unet():
 
 def get_small_unet():
     # batch 176
-    K.set_image_data_format('channels_first')
 
     img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
@@ -260,7 +265,6 @@ def get_small_unet():
 
 def get_super_small_unet():
     # batch
-    K.set_image_data_format('channels_first')
 
     img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
@@ -318,7 +322,6 @@ def get_super_small_unet():
 
 def get_simple_net():
     # batch
-    K.set_image_data_format('channels_first')
 
     img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
@@ -420,8 +423,8 @@ if __name__ == '__main__':
             print(str(datetime.now())+'    Load data...')
             train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
 
-            # print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
-            # print('Sharp batch size in memory = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
+            print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
+            print('Sharp batch size in memory = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
 
             train_blur_data = train_blur_data.astype('float32')
             train_blur_data /= 255

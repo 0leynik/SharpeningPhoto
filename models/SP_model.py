@@ -309,13 +309,14 @@ def get_super_small_unet():
     model = Model(inputs=[inputs], outputs=[outputs])
 
     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
 
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))
@@ -399,7 +400,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 16
+    batch_size = 20
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

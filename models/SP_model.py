@@ -310,11 +310,12 @@ def get_super_small_unet():
 
     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
-    model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
 
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 

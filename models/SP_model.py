@@ -21,11 +21,13 @@ from keras import backend as K
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 
-config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.3
-set_session(tf.Session(config=config))
+limit_mem = False
+if limit_mem:
+    config = tf.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = 0.3
+    set_session(tf.Session(config=config))
 
-IMG_H, IMG_W = (375/5, 500/5)
+IMG_H, IMG_W = (375, 500)
 K.set_image_data_format('channels_first')
 
 def gen_batch_keylists(N, batch_size):
@@ -272,8 +274,8 @@ def get_super_small_unet():
     inputs = Input(shape=img_shape)
     print(inputs.shape)
 
-    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
+    conv1 = Conv2D(64, (3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
     print(pool1.shape)
 
@@ -282,9 +284,9 @@ def get_super_small_unet():
     # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     # print(pool2.shape)
 
-    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
-    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv3)
-    deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool1)
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv3)
+    deconv = Conv2DTranspose(64, (3, 3), strides=(2, 2), padding='valid')
     crop = Cropping2D(cropping=((0, 0), (1, 0)))
     up3 = deconv(conv3)
     crop_up3 = crop(up3)
@@ -300,8 +302,8 @@ def get_super_small_unet():
 
     print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
     concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
-    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
-    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
+    conv5 = Conv2D(64, (3, 3), activation='relu', padding='same')(concat5)
+    conv5 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv5)
     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
     print(outputs.shape)
 
@@ -398,7 +400,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
 
     epochs = 100
-    batch_size = 1024 * 5
+    batch_size = 150
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

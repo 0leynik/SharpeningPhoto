@@ -116,7 +116,6 @@ def dice_coef(y_true, y_pred):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
@@ -422,11 +421,11 @@ if __name__ == '__main__':
             # print('Training {:8d}/{}'.format(train_batch_count, N_train))
 
             # prepare train batch data
-            print(str(datetime.now())+'    Load data...')
+            # print(str(datetime.now())+'    Load data...')
             train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
 
-            print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
-            print('Sharp batch size in memory = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
+            # print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
+            # print('Sharp batch size in memory = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
 
             train_blur_data = train_blur_data.astype('float32')
             train_blur_data /= 255
@@ -436,7 +435,7 @@ if __name__ == '__main__':
             # print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
             # print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
 
-            print(str(datetime.now())+'    Train...')
+            # print(str(datetime.now())+'    Train...')
             # fit, fit_generator, train_on_batch
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
             # print result train on batch

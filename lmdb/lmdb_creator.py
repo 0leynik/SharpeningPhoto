@@ -44,8 +44,10 @@ def gen_shuffle_names(N):
 СОЗДАНИЕ LMDB
 '''
 
-const_w = 500
-const_h = 375
+# const_w = 500
+const_w = 128
+# const_h = 375
+const_h = 128
 const_c = 3
 batch_size = 1024
 
@@ -64,7 +66,8 @@ def create_lmdb(db_name, img_folder, img_names, N):
     for i in range(N):
         img_count += 1
         print img_count
-        img = cv2.imread(img_folder + img_names[i])
+        # img = cv2.imread(img_folder + img_names[i])
+        img = cv2.imread(img_folder + img_names[i])[:128, :128]
         # height, width, channels = img.shape
 
         # HxWxC -> CxHxW
@@ -105,11 +108,11 @@ if __name__ == '__main__':
     names = gen_shuffle_names(N)
     img_folder = '/home/doleinik/SharpeningPhoto/quality_ImageNet/train_500/images/'
 
-    create_lmdb('train_blur_lmdb',
+    create_lmdb('train_blur_lmdb_128',
                 img_folder,
                 names[:, 0],
                 N * 3)  # (mb+fb+mfb)
-    create_lmdb('train_sharp_lmdb',
+    create_lmdb('train_sharp_lmdb_128',
                 img_folder,
                 names[:, 1],
                 N * 3)  # (mb+fb+mfb)
@@ -119,11 +122,11 @@ if __name__ == '__main__':
     names = gen_shuffle_names(N)
     img_folder = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/'
 
-    create_lmdb('test_blur_lmdb',
+    create_lmdb('test_blur_lmdb_128',
                 img_folder,
                 names[:, 0],
                 N * 3)  # (mb+fb+mfb)
-    create_lmdb('test_sharp_lmdb',
+    create_lmdb('test_sharp_lmdb_128',
                 img_folder,
                 names[:, 1],
                 N * 3)  # (mb+fb+mfb)
@@ -133,11 +136,11 @@ if __name__ == '__main__':
     names = gen_shuffle_names(N)
     img_folder = '/home/doleinik/SharpeningPhoto/quality_ImageNet/val_500/images/'
 
-    create_lmdb('val_blur_lmdb',
+    create_lmdb('val_blur_lmdb_128',
                 img_folder,
                 names[:, 0],
                 N * 3)  # (mb+fb+mfb)
-    create_lmdb('val_sharp_lmdb',
+    create_lmdb('val_sharp_lmdb_128',
                 img_folder,
                 names[:, 1],
                 N * 3)  # (mb+fb+mfb)

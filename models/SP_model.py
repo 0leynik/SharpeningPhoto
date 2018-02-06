@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+import keras
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -9,7 +10,6 @@ import cv2
 import lmdb
 import caffe
 from datetime import datetime
-import keras
 
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate
@@ -467,7 +467,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
 
     epochs = 100
-    batch_size = 20
+    batch_size = 1
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3

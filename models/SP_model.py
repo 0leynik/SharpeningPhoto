@@ -27,7 +27,8 @@ if limit_mem:
     config.gpu_options.per_process_gpu_memory_fraction = 0.3
     set_session(tf.Session(config=config))
 
-IMG_H, IMG_W = (375, 500)
+# IMG_H, IMG_W = (375, 500)
+IMG_H, IMG_W = (128, 128)
 K.set_image_data_format('channels_first')
 
 def gen_batch_keylists(N, batch_size):
@@ -381,13 +382,78 @@ def get_simple_net():
     print('Metrics: ' + str(model.metrics_names))
     return model
 
+def get_unet_128():
+
+    img_shape = (3, IMG_H, IMG_W)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv1)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv2)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv3)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+
+    conv4 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
+    conv4 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+
+    conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
+    conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv5)
+
+    deconv6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(conv5)
+    up6 = concatenate([deconv6, conv4], axis=concat_axis)
+    conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
+    conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv6)
+
+    deconv7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6)
+    up7 = concatenate([deconv7, conv3], axis=concat_axis)
+    conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
+    conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
+
+    deconv8 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv7)
+    up8 = concatenate([deconv8, conv2], axis=concat_axis)
+    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
+    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
+
+    deconv9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8)
+    up9 = concatenate([deconv9, conv1], axis=concat_axis)
+    conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
+    conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv9)
+
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+
+    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+
+    return model
+
+
 def save_model(model, epoch, batch_count, accuracy, loss):
     # Save model and weights
     save_dir = os.path.join(os.getcwd(), 'saved_models')
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
 
-    model_name = 'SP_model_' + str(epoch) + '_' + str(batch_count) + '--' + str(loss) + '_' + str(accuracy) + '.h5'
+    model_name = 'SP_model ep:' + str(epoch) + ' batch_count:' + str(batch_count) + ' loss:' + str(loss) + ' acc' + str(accuracy) + '.h5'
     model_path = os.path.join(save_dir, model_name)
     model.save(model_path)
     print('Saved trained model at {}'.format(model_path))
@@ -396,9 +462,9 @@ def save_model(model, epoch, batch_count, accuracy, loss):
 if __name__ == '__main__':
 
     lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-    train_paths = [lmdb_path+'train_blur_lmdb', lmdb_path+'train_sharp_lmdb']
-    test_paths = [lmdb_path+'test_blur_lmdb', lmdb_path+'test_sharp_lmdb']
-    val_paths = [lmdb_path+'val_blur_lmdb', lmdb_path+'val_sharp_lmdb']
+    train_paths = [lmdb_path+'train_blur_lmdb_128', lmdb_path+'train_sharp_lmdb_128']
+    test_paths = [lmdb_path+'test_blur_lmdb_128', lmdb_path+'test_sharp_lmdb_128']
+    val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
 
     epochs = 100
     batch_size = 20
@@ -407,7 +473,7 @@ if __name__ == '__main__':
     N_val = 5936 * 3
 
     print('Getting custom U-Net model...')
-    model = get_super_small_unet()
+    model = get_unet_128()
 
     print('\nRun training...\n')
 
@@ -445,6 +511,7 @@ if __name__ == '__main__':
             for i in range(len(model.metrics_names)):
                 train_s += model.metrics_names[i] + ':' + str(train_scores[i]) + '  '
             print(str(datetime.now())+train_s)
+            # написать сохранение в список а потом выгрузка в нампай
 
         # score trained model on val data
         # val_batch_count = 0

@@ -22,11 +22,10 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
 
-    metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
+    metrics = np.loadtxt(os.path.expanduser('~/m.csv'), delimiter=',')
 
     plt.figure('loss')
     plt.plot(metrics[:, 0])
-    plt.show()
     plt.figure('acc')
     plt.plot(metrics[:, 1])
     plt.show()

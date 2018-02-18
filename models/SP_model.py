@@ -470,12 +470,12 @@ if __name__ == '__main__':
     f_metrics = open('SP_metrics.csv', 'w')
 
     epochs = 1000
-    batch_size = 100
+    batch_size = 1000
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
     iter_num = 0
-    save_model_step = 100
+    save_model_step = 500
 
     print('Getting custom U-Net model...')
     model = get_unet_128()
@@ -505,8 +505,8 @@ if __name__ == '__main__':
             train_sharp_data = train_sharp_data.astype('float32')
             train_sharp_data /= 255
 
-            # print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
-            # print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
+            print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
+            print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
 
             # print(str(datetime.now())+'    Train...')
             # fit, fit_generator, train_on_batch

@@ -22,7 +22,7 @@ import SP_model
 
 if __name__ == '__main__':
 
-    metrics = np.loadtxt("~/SP_metrics.csv", delimiter=",")
+    metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
 
     plt.figure('loss')
     plt.plot(metrics[:, 0])

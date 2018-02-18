@@ -458,6 +458,8 @@ def save_model(model, iter_num, epoch, batch_count, loss, accuracy):
     model.save(model_path)
     print('Saved trained model at {}'.format(model_path))
 
+def get_loaded_model(filepath):
+    return keras.models.load_model(filepath)
 
 if __name__ == '__main__':
 
@@ -479,6 +481,8 @@ if __name__ == '__main__':
 
     print('Getting custom U-Net model...')
     model = get_unet_128()
+    # model = get_loaded_model(os.path.expanduser('~/SP_saved_models/SP_model iter_num:10500 ep:6 batch_count:348320 loss:0.00617563 acc0.176537.h5'))
+    # model = get_loaded_model(os.path.expanduser('~/SP_saved_models/SP_model\ iter_num\:10000\ ep\:6\ batch_count\:236320\ loss\:0.00708643\ acc0.181792.h5'))
 
     print('\nRun training...\n')
 

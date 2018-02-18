@@ -447,13 +447,13 @@ def get_unet_128():
     return model
 
 
-def save_model(model, epoch, batch_count, accuracy, loss):
+def save_model(model, iter_num, epoch, batch_count, loss, accuracy):
     # Save model and weights
-    save_dir = os.path.join(os.getcwd(), 'saved_models')
+    save_dir = os.path.join(os.getcwd(), 'SP_saved_models')
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
 
-    model_name = 'SP_model ep:' + str(epoch) + ' batch_count:' + str(batch_count) + ' loss:' + str(loss) + ' acc' + str(accuracy) + '.h5'
+    model_name = 'SP_model iter_num:' + str(iter_num) + ' ep:' + str(epoch) + ' batch_count:' + str(batch_count) + ' loss:' + str(loss) + ' acc' + str(accuracy) + '.h5'
     model_path = os.path.join(save_dir, model_name)
     model.save(model_path)
     print('Saved trained model at {}'.format(model_path))
@@ -466,11 +466,16 @@ if __name__ == '__main__':
     test_paths = [lmdb_path+'test_blur_lmdb_128', lmdb_path+'test_sharp_lmdb_128']
     val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
 
-    epochs = 100
-    batch_size = 1
+    # csv for ploting graph
+    f_metrics = open('SP_metrics.csv', 'w')
+
+    epochs = 1000
+    batch_size = 100
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
+    iter_num = 0
+    save_model_step = 100
 
     print('Getting custom U-Net model...')
     model = get_unet_128()
@@ -484,7 +489,7 @@ if __name__ == '__main__':
         train_batch_keylists = gen_batch_keylists(N_train, batch_size)
 
         for train_keylist in train_batch_keylists:
-
+            iter_num += 1
             train_batch_count += len(train_keylist)
             # print('Training {:8d}/{}'.format(train_batch_count, N_train))
 
@@ -506,53 +511,67 @@ if __name__ == '__main__':
             # print(str(datetime.now())+'    Train...')
             # fit, fit_generator, train_on_batch
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
+
             # print result train on batch
-            train_s = '    Training {:8d}/{}  '.format(train_batch_count, N_train)
-            for i in range(len(model.metrics_names)):
-                train_s += model.metrics_names[i] + ':' + str(train_scores[i]) + '  '
-            print(str(datetime.now())+train_s)
-            # написать сохранение в список а потом выгрузка в нампай
+            train_s = str(datetime.now()) + '    Training {:8d}/{}  '.format(train_batch_count, N_train)\
+                      + ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, train_scores))
+            print(train_s)
+
+            # write score to csv
+            metrics_s = ','.join([str(i) for i in train_scores]) + '\n'
+            f_metrics.write(metrics_s)
+
+            # save model
+            if((iter_num % save_model_step) == 0):
+                save_model(model, iter_num, e, train_batch_count, train_scores[0], train_scores[1])
+
 
         # score trained model on val data
-        # val_batch_count = 0
-        # val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-        # val_scores = []
-        # for val_keylist in val_batch_keylists:
-        #     val_batch_count += len(val_keylist)
-        #     # print('Validation {:8d}/{}'.format(val_batch_count, N_val))
-        #
-        #     val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
-        #
-        #     val_blur_data = val_blur_data.astype('float32')
-        #     val_blur_data /= 255
-        #     val_sharp_data = val_sharp_data.astype('float32')
-        #     val_sharp_data /= 255
-        #
-        #     val_score = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
-        #     val_scores.append(val_score)
-        #
-        # val_scores = np.array(val_scores)
-        # val_scores = val_scores.mean(axis=0)
-        # val_s = 'Validation {:8d}/{}  '.format(val_batch_count, N_val)
-        # for i in range(len(model.metrics_names)):
-        #     val_s += model.metrics_names[i] + ':' + str(val_scores[i]) + '  '
-        # print(val_s)
+        val_batch_count = 0
+        val_batch_keylists = gen_batch_keylists(N_val, batch_size)
+        val_scores = []
+        for val_keylist in val_batch_keylists:
+            val_batch_count += len(val_keylist)
+            # print('Validation {:8d}/{}'.format(val_batch_count, N_val))
 
-    #
-    # # Score trained model
-    # count_batch = 0
-    # batch_keylists = gen_batch_keylists(N_test, batch_size)
-    # for keylist in batch_keylists:
-    #     count_batch += len(keylist)
-    #     print('{:8d}/{}'.format(count_batch, N_train))
-    #
-    #     test_blur_data, test_sharp_data = get_data_from_keys(train_paths, keylist)
-    #
-    #     test_blur_data = test_blur_data.astype('float32')
-    #     test_blur_data /= 255
-    #     test_sharp_data = test_sharp_data.astype('float32')
-    #     test_sharp_data /= 255
-    #
-    #     scores = model.evaluate(test_blur_data, test_sharp_data, verbose=1)
-    #     print('Test loss:', scores[0])
-    #     print('Test accuracy:', scores[1])
+            val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
+
+            val_blur_data = val_blur_data.astype('float32')
+            val_blur_data /= 255
+            val_sharp_data = val_sharp_data.astype('float32')
+            val_sharp_data /= 255
+
+            val_score = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
+            val_scores.append(val_score)
+
+        val_scores = np.array(val_scores)
+        val_scores = val_scores.mean(axis=0)
+        val_s = str(datetime.now()) + '    Validation {:8d}/{}  '.format(val_batch_count, N_val)
+        for i in range(len(model.metrics_names)):
+            val_s += model.metrics_names[i] + ':' + str(val_scores[i]) + '  '
+        print(val_s)
+
+    # score trained model on test data
+    test_batch_count = 0
+    test_batch_keylists = gen_batch_keylists(N_test, batch_size)
+    test_scores = []
+    for test_keylist in test_batch_keylists:
+        test_batch_count += len(test_keylist)
+        # print('Test {:8d}/{}'.format(test_batch_count, N_test))
+
+        test_blur_data, test_sharp_data = get_data_from_keys(test_paths, test_keylist)
+
+        test_blur_data = test_blur_data.astype('float32')
+        test_blur_data /= 255
+        test_sharp_data = test_sharp_data.astype('float32')
+        test_sharp_data /= 255
+
+        test_score = model.evaluate(test_blur_data, test_sharp_data, verbose=1)
+        test_scores.append(test_score)
+
+    test_scores = np.array(test_scores)
+    test_scores = test_scores.mean(axis=0)
+    test_s = str(datetime.now()) + '    Test {:8d}/{}  '.format(test_batch_count, N_test)
+    for i in range(len(model.metrics_names)):
+        test_s += model.metrics_names[i] + ':' + str(test_scores[i]) + '  '
+    print(test_s)

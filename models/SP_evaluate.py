@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # from keras.losses import mean_squared_error
 # from keras import backend as K
 
-import SP_model
+# import SP_model
 
 if __name__ == '__main__':
 

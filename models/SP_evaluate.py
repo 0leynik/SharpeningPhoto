@@ -50,7 +50,9 @@ if __name__ == '__main__':
     # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
 
     lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-    train_paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+    # train_paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+    train_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
+
     train_blur_data, train_sharp_data = SP_model.get_data_from_keys(train_paths, ['{:08}'.format(0)])
 
     train_blur_data = train_blur_data.astype('float32')

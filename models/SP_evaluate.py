@@ -44,7 +44,7 @@ def plt_img(data):
 
 if __name__ == '__main__':
 
-    model_path = '~/SP_saved_models/SP_model\ iter_num\:39500\ ep\:23\ batch_count\:31808\ loss\:0.00609019\ acc0.207066.h5'
+    model_path = '~/SP_saved_models/evaluate_39500.h5'
     model = SP_model.get_loaded_model(os.path.expanduser(model_path))
 
     # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'

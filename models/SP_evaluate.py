@@ -60,7 +60,8 @@ if __name__ == '__main__':
     train_sharp_data = train_sharp_data.astype('float32')
     train_sharp_data /= 255
 
-    predict_data = model.predict(train_blur_data)
+    predict_data_1 = model.predict(train_blur_data)
+    predict_data_2 = model.predict(predict_data_1)
 
     plt.figure('blur')
     plt_img(train_blur_data[0])
@@ -68,7 +69,10 @@ if __name__ == '__main__':
     plt.figure('sharp')
     plt_img(train_sharp_data[0])
 
-    plt.figure('pred')
-    plt_img(predict_data[0])
+    plt.figure('pred 1')
+    plt_img(predict_data_1[0])
+
+    plt.figure('pred 2')
+    plt_img(predict_data_2[0])
 
     plt.show()

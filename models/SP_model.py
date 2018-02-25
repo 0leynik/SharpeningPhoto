@@ -60,6 +60,8 @@ def get_data_from_keys(lmdb_paths, keylist):
     :return: [np_blur_data, np_sharp_data]
     '''
 
+    # print(str(datetime.now())+'    Load data...')
+
     visualize = False
     batch_size = len(keylist)
 
@@ -99,6 +101,12 @@ def get_data_from_keys(lmdb_paths, keylist):
                 # HxWx3 – RGB (float or uint8 array)
                 plt.imshow(img)
                 plt.show()
+
+    # print('Batch size in memory = ' + str(1. * ret_data[0].nbytes / (pow(2, 30))) + ' GB')
+    for i in range(len(ret_data)):
+        ret_data[i] = ret_data[i].astype('float32')
+        ret_data[i] /= 255
+    # print('Batch size in memory = ' + str(1. * ret_data[0].nbytes / (pow(2, 30))) + ' GB')
 
     return ret_data
 
@@ -447,19 +455,23 @@ def get_unet_128():
     return model
 
 
-def save_model(model, iter_num, epoch, batch_count, loss, accuracy):
+def save_model(model, iter_num):
     # Save model and weights
-    save_dir = os.path.join(os.getcwd(), 'SP_saved_models')
+    save_dir = '/home/doleinik/SP_saved_models'
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
 
-    model_name = 'SP_model iter_num:' + str(iter_num) + ' ep:' + str(epoch) + ' batch_count:' + str(batch_count) + ' loss:' + str(loss) + ' acc' + str(accuracy) + '.h5'
+    model_name = 'SP_model_iter_' + str(iter_num) + '.h5'
     model_path = os.path.join(save_dir, model_name)
     model.save(model_path)
-    print('Saved trained model at {}'.format(model_path))
+    print(str(datetime.now())+' save model at:{}'.format(model_path))
 
-def get_loaded_model(filepath):
-    return keras.models.load_model(filepath)
+def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
+    res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{}'.format(process_name, iter, e, epochs, batch_count, N)
+    res_str += ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, scores))
+    print(res_str)
+
+
 
 if __name__ == '__main__':
 
@@ -468,92 +480,66 @@ if __name__ == '__main__':
     test_paths = [lmdb_path+'test_blur_lmdb_128', lmdb_path+'test_sharp_lmdb_128']
     val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
 
-    # csv for ploting graph
-    f_metrics = open('SP_metrics.csv', 'w')
-
     epochs = 1000
     batch_size = 224
+    save_model_step = 500
+
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
-    iter_num = 0
-    save_model_step = 500
 
-    print('Getting custom U-Net model...')
-    model = get_unet_128()
-    # model = get_loaded_model(os.path.expanduser('~/SP_saved_models/SP_model iter_num:10500 ep:6 batch_count:348320 loss:0.00617563 acc0.176537.h5'))
-    # model = get_loaded_model(os.path.expanduser('~/SP_saved_models/SP_model\ iter_num\:10000\ ep\:6\ batch_count\:236320\ loss\:0.00708643\ acc0.181792.h5'))
+    # resume training
+    if True:
+        iter_num = 39500
+        model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39500.h5'
+        print('Loading model:' + model_path + ' ...')
+        model = keras.models.load_model(model_path)
+        f_metrics = open('/home/doleinik/SP_metrics.csv', 'a') # csv for ploting graph
+    else:
+        iter_num = 0
+        print('Getting model...')
+        model = get_unet_128()
+        f_metrics = open('SP_metrics.csv', 'w') # csv for ploting graph
 
     print('\nRun training...\n')
 
-    for e in range(1, epochs+1):
-        print('Epoch {}/{}'.format(e, epochs))
+    # for e in range(1, epochs+1):
+    #     print('Epoch {}/{}'.format(e, epochs))
+    #
+    #     train_batch_count = 0
+    #     train_batch_keylists = gen_batch_keylists(N_train, batch_size)
+    #
+    #     for train_keylist in train_batch_keylists:
+    #         iter_num += 1
+    #         train_batch_count += len(train_keylist)
+    #
+    #         train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
+    #
+    #         # print(str(datetime.now())+'    Train...')
+    #         train_scores = model.train_on_batch(train_blur_data, train_sharp_data) # fit, fit_generator, train_on_batch
+    #
+    #         print_state('training', iter_num, e, epochs, train_batch_count, N_train, model, train_scores)
+    #
+    #         # write score to csv
+    #         f_metrics.write(','.join([str(i) for i in [iter_num]+train_scores]) + '\n')
+    #
+    #         # save model
+    #         if((iter_num % save_model_step) == 0):
+    #             save_model(model, iter_num)
+    #
 
-        train_batch_count = 0
-        train_batch_keylists = gen_batch_keylists(N_train, batch_size)
-
-        for train_keylist in train_batch_keylists:
-            iter_num += 1
-            train_batch_count += len(train_keylist)
-            # print('Training {:8d}/{}'.format(train_batch_count, N_train))
-
-            # prepare train batch data
-            # print(str(datetime.now())+'    Load data...')
-            train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
-
-            # print('Blur batch size in memory  = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
-            # print('Sharp batch size in memory = ' + str(1. * train_blur_data.nbytes / (pow(2, 30))) + ' GB')
-
-            train_blur_data = train_blur_data.astype('float32')
-            train_blur_data /= 255
-            train_sharp_data = train_sharp_data.astype('float32')
-            train_sharp_data /= 255
-
-            # print('Blur batch size in memory  = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
-            # print('Sharp batch size in memory = ' + str(1.*train_blur_data.nbytes/(pow(2, 30))) + ' GB')
-
-            # print(str(datetime.now())+'    Train...')
-            # fit, fit_generator, train_on_batch
-            train_scores = model.train_on_batch(train_blur_data, train_sharp_data)
-
-            # print result train on batch
-            train_s = str(datetime.now()) + '    Training {:8d}/{}  '.format(train_batch_count, N_train)\
-                      + ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, train_scores))
-            print(train_s)
-
-            # write score to csv
-            metrics_s = ','.join([str(i) for i in train_scores]) + '\n'
-            f_metrics.write(metrics_s)
-
-            # save model
-            if((iter_num % save_model_step) == 0):
-                save_model(model, iter_num, e, train_batch_count, train_scores[0], train_scores[1])
-
-
-        # score trained model on val data
-        val_batch_count = 0
-        val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-        val_scores = []
-        for val_keylist in val_batch_keylists:
-            val_batch_count += len(val_keylist)
-            # print('Validation {:8d}/{}'.format(val_batch_count, N_val))
-
-            val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
-
-            val_blur_data = val_blur_data.astype('float32')
-            val_blur_data /= 255
-            val_sharp_data = val_sharp_data.astype('float32')
-            val_sharp_data /= 255
-
-            val_score = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
-            val_scores.append(val_score)
-
-        val_scores = np.array(val_scores)
-        val_scores = val_scores.mean(axis=0)
-        val_s = str(datetime.now()) + '    Validation {:8d}/{}  '.format(val_batch_count, N_val)
-        for i in range(len(model.metrics_names)):
-            val_s += model.metrics_names[i] + ':' + str(val_scores[i]) + '  '
-        print(val_s)
+    # score trained model on val data
+    val_batch_count = 0
+    val_batch_keylists = gen_batch_keylists(N_val, batch_size)
+    val_scores = []
+    for val_keylist in val_batch_keylists:
+        val_batch_count += len(val_keylist)
+        val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
+        val_score = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
+        val_scores.append(val_score)
+    val_scores = np.array(val_scores)
+    val_scores = val_scores.mean(axis=0)
+    print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
 
     # score trained model on test data
     test_batch_count = 0
@@ -561,21 +547,9 @@ if __name__ == '__main__':
     test_scores = []
     for test_keylist in test_batch_keylists:
         test_batch_count += len(test_keylist)
-        # print('Test {:8d}/{}'.format(test_batch_count, N_test))
-
         test_blur_data, test_sharp_data = get_data_from_keys(test_paths, test_keylist)
-
-        test_blur_data = test_blur_data.astype('float32')
-        test_blur_data /= 255
-        test_sharp_data = test_sharp_data.astype('float32')
-        test_sharp_data /= 255
-
         test_score = model.evaluate(test_blur_data, test_sharp_data, verbose=1)
         test_scores.append(test_score)
-
     test_scores = np.array(test_scores)
     test_scores = test_scores.mean(axis=0)
-    test_s = str(datetime.now()) + '    Test {:8d}/{}  '.format(test_batch_count, N_test)
-    for i in range(len(model.metrics_names)):
-        test_s += model.metrics_names[i] + ':' + str(test_scores[i]) + '  '
-    print(test_s)
+    print_state('testing', iter_num, e, epochs, test_batch_count, N_test, model, test_scores)

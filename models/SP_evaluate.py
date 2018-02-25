@@ -22,11 +22,12 @@ import SP_model
 
 
 def graph_metrics():
-    metrics = np.loadtxt(os.path.expanduser('~/m.csv'), delimiter=',')
+    # metrics = np.loadtxt(os.path.expanduser('~/m.csv'), delimiter=',')
+    metrics = np.loadtxt('/home/doleinik/SP_metrics.csv', delimiter=',')
     plt.figure('loss')
-    plt.plot(metrics[:, 0])
-    plt.figure('acc')
     plt.plot(metrics[:, 1])
+    plt.figure('acc')
+    plt.plot(metrics[:, 2])
     plt.show()
 
 
@@ -41,24 +42,21 @@ def plt_img(data):
     # HxWx3 – RGB (float or uint8 array)
     plt.imshow(img)
 
+def evaluate():
 
-if __name__ == '__main__':
+    model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39500.h5'
+    model = keras.models.load_model(model_path)
 
-    model_path = '~/SP_saved_models/evaluate_39500.h5'
-    model = SP_model.get_loaded_model(os.path.expanduser(model_path))
+    # from img file
+    img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
 
-    # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
-
+    # from lmdb
     lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-    # train_paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-    train_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
+    # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+    paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
 
-    train_blur_data, train_sharp_data = SP_model.get_data_from_keys(train_paths, ['{:08}'.format(0)])
-
-    train_blur_data = train_blur_data.astype('float32')
-    train_blur_data /= 255
-    train_sharp_data = train_sharp_data.astype('float32')
-    train_sharp_data /= 255
+    id = '{:08}'.format(0)
+    train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
 
     predict_data_1 = model.predict(train_blur_data)
     predict_data_2 = model.predict(predict_data_1)
@@ -76,3 +74,9 @@ if __name__ == '__main__':
     plt_img(predict_data_2[0])
 
     plt.show()
+
+
+if __name__ == '__main__':
+
+    # graph_metrics()
+    evaluate()

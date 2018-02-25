@@ -8,18 +8,6 @@ import matplotlib.pyplot as plt
 import cv2
 from skimage.io import imread, imshow, imsave
 import skimage
-# import lmdb
-# import caffe
-# from datetime import datetime
-import keras
-
-# from keras.layers import Dense, Dropout, Activation, Flatten
-# from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate
-# from keras.models import Model
-# from keras.optimizers import Adam
-# from keras.losses import mean_squared_error
-# from keras import backend as K
-
 import SP_model
 
 

@@ -501,8 +501,8 @@ if __name__ == '__main__':
         model = get_unet_128()
         f_metrics = open('SP_metrics.csv', 'w') # csv for ploting graph
 
-    print('\nRun training...\n')
-
+    # print('\nRun training...\n')
+    #
     # for e in range(1, epochs+1):
     #     print('Epoch {}/{}'.format(e, epochs))
     #
@@ -539,7 +539,8 @@ if __name__ == '__main__':
         val_scores.append(val_score)
     val_scores = np.array(val_scores)
     val_scores = val_scores.mean(axis=0)
-    print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
+    # print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
+    print_state('validation', iter_num, '-', '-', val_batch_count, N_val, model, val_scores)
 
     # score trained model on test data
     test_batch_count = 0
@@ -552,4 +553,4 @@ if __name__ == '__main__':
         test_scores.append(test_score)
     test_scores = np.array(test_scores)
     test_scores = test_scores.mean(axis=0)
-    print_state('testing', iter_num, e, epochs, test_batch_count, N_test, model, test_scores)
+    print_state('testing', iter_num, '-', '-', test_batch_count, N_test, model, test_scores)

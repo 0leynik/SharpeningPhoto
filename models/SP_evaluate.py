@@ -53,7 +53,8 @@ def evaluate():
 
     # from img file
     if True:
-        img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
+        # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
+        img_path = '/home/doleinik/me.jpg'
 
         img = skimage.img_as_float(imread(img_path))[:128, :128]
         img = img[:, :, ::-1]  # RGB -> BGR
@@ -67,11 +68,11 @@ def evaluate():
         plt.figure('predict')
         plt_img(predict_img[0])
 
-        sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
-        sharp_img = sharp_img[..., ::-1]
-        sharp_img = np.transpose(sharp_img, (2, 0, 1))
-        plt.figure('sharp')
-        plt_img(sharp_img)
+        # sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
+        # sharp_img = sharp_img[..., ::-1]
+        # sharp_img = np.transpose(sharp_img, (2, 0, 1))
+        # plt.figure('sharp')
+        # plt_img(sharp_img)
 
         plt.show()
 

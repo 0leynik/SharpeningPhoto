@@ -501,46 +501,44 @@ if __name__ == '__main__':
         model = get_unet_128()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
-    # print('\nRun training...\n')
-    #
-    # for e in range(1, epochs+1):
-    #     print('Epoch {}/{}'.format(e, epochs))
-    #
-    #     train_batch_count = 0
-    #     train_batch_keylists = gen_batch_keylists(N_train, batch_size)
-    #
-    #     for train_keylist in train_batch_keylists:
-    #         iter_num += 1
-    #         train_batch_count += len(train_keylist)
-    #
-    #         train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
-    #
-    #         # print(str(datetime.now())+'    Train...')
-    #         train_scores = model.train_on_batch(train_blur_data, train_sharp_data) # fit, fit_generator, train_on_batch
-    #
-    #         print_state('training', iter_num, e, epochs, train_batch_count, N_train, model, train_scores)
-    #
-    #         # write score to csv
-    #         f_metrics.write(','.join([str(i) for i in [iter_num]+train_scores]) + '\n')
-    #
-    #         # save model
-    #         if((iter_num % save_model_step) == 0):
-    #             save_model(model, iter_num)
-    #
+    print('\nRun training...\n')
 
-    # score trained model on val data
-    val_batch_count = 0
-    val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-    val_scores = []
-    for val_keylist in val_batch_keylists:
-        val_batch_count += len(val_keylist)
-        val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
-        val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
-        val_scores.append(val_score)
-    val_scores = np.array(val_scores)
-    val_scores = val_scores.mean(axis=0)
-    # print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
-    print_state('validation', iter_num, '-', '-', val_batch_count, N_val, model, val_scores)
+    for e in range(1, epochs+1):
+        print('Epoch {}/{}'.format(e, epochs))
+
+        train_batch_count = 0
+        train_batch_keylists = gen_batch_keylists(N_train, batch_size)
+
+        for train_keylist in train_batch_keylists:
+            iter_num += 1
+            train_batch_count += len(train_keylist)
+
+            train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
+
+            # print(str(datetime.now())+'    Train...')
+            train_scores = model.train_on_batch(train_blur_data, train_sharp_data) # fit, fit_generator, train_on_batch
+
+            print_state('training', iter_num, e, epochs, train_batch_count, N_train, model, train_scores)
+
+            # write score to csv
+            f_metrics.write(','.join([str(i) for i in [iter_num]+train_scores]) + '\n')
+
+            # save model
+            if((iter_num % save_model_step) == 0):
+                save_model(model, iter_num)
+
+        # score trained model on val data
+        val_batch_count = 0
+        val_batch_keylists = gen_batch_keylists(N_val, batch_size)
+        val_scores = []
+        for val_keylist in val_batch_keylists:
+            val_batch_count += len(val_keylist)
+            val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
+            val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
+            val_scores.append(val_score)
+        val_scores = np.array(val_scores)
+        val_scores = val_scores.mean(axis=0)
+        print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
 
     # score trained model on test data
     test_batch_count = 0

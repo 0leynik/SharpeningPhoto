@@ -6,6 +6,8 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import cv2
+from skimage.io import imread, imshow, imsave
+import skimage
 # import lmdb
 # import caffe
 # from datetime import datetime
@@ -36,7 +38,8 @@ def plt_img(data):
     img = np.transpose(data, (1, 2, 0))
 
     # BGR -> RGB
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = img[:, :, ::-1]
 
     # matplotlib.pyplot.imshow()
     # HxWx3 – RGB (float or uint8 array)
@@ -48,32 +51,52 @@ def evaluate():
     model = keras.models.load_model(model_path)
 
     # from img file
-    img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
+    if True:
+        img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
 
-    # from lmdb
-    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-    # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-    paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
+        img = skimage.img_as_float(imread(img_path))[:128, :128]
+        img = img[:, :, ::-1]  # RGB -> BGR
+        img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
 
-    id = '{:08}'.format(0)
-    train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
 
-    predict_data_1 = model.predict(train_blur_data)
-    predict_data_2 = model.predict(predict_data_1)
+        predict_img = model.predict(img)
 
-    plt.figure('blur')
-    plt_img(train_blur_data[0])
+        plt.figure('blur')
+        plt_img(img)
+        plt.figure('predict')
+        plt_img(predict_img)
 
-    plt.figure('sharp')
-    plt_img(train_sharp_data[0])
+        sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128][:128]
+        sharp_img = sharp_img[..., ::-1]
+        sharp_img = np.transpose(sharp_img, (2, 0, 1))
+        plt.figure('sharp')
+        plt_img(sharp_img)
 
-    plt.figure('pred 1')
-    plt_img(predict_data_1[0])
+    else:
+        # from lmdb
+        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+        # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+        paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
 
-    plt.figure('pred 2')
-    plt_img(predict_data_2[0])
+        id = '{:08}'.format(0)
+        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
 
-    plt.show()
+        predict_data_1 = model.predict(train_blur_data)
+        predict_data_2 = model.predict(predict_data_1)
+
+        plt.figure('blur')
+        plt_img(train_blur_data[0])
+
+        plt.figure('sharp')
+        plt_img(train_sharp_data[0])
+
+        plt.figure('pred 1')
+        plt_img(predict_data_1[0])
+
+        plt.figure('pred 2')
+        plt_img(predict_data_2[0])
+
+        plt.show()
 
 
 if __name__ == '__main__':

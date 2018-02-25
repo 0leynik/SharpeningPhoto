@@ -490,6 +490,7 @@ if __name__ == '__main__':
 
     # resume training
     if True:
+        epoch_start = 23
         iter_num = 39500
         model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39500.h5'
         print('Loading model:' + model_path + ' ...')
@@ -498,6 +499,7 @@ if __name__ == '__main__':
         model.summary()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'a') # csv for ploting graph
     else:
+        epoch_start = 1
         iter_num = 0
         print('Getting model...')
         model = get_unet_128()
@@ -505,7 +507,7 @@ if __name__ == '__main__':
 
     print('\nRun training...\n')
 
-    for e in range(1, epochs+1):
+    for e in range(epoch_start, epochs+1):
         print('Epoch {}/{}'.format(e, epochs))
 
         train_batch_count = 0

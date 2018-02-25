@@ -59,12 +59,12 @@ def evaluate():
         img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
 
 
-        predict_img = model.predict(img)
+        predict_img = model.predict([img])
 
         plt.figure('blur')
         plt_img(img)
         plt.figure('predict')
-        plt_img(predict_img)
+        plt_img(predict_img[0])
 
         sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128][:128]
         sharp_img = sharp_img[..., ::-1]

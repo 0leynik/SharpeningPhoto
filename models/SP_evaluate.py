@@ -46,7 +46,8 @@ def plt_img(data):
     plt.imshow(img)
 
 def evaluate():
-
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+    os.environ["CUDA_VISIBLE_DEVICES"] = ""
     model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39500.h5'
     model = keras.models.load_model(model_path)
 

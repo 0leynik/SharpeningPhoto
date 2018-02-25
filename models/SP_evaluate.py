@@ -24,7 +24,7 @@ set_session(tf.Session(config=config))
 # from keras.losses import mean_squared_error
 # from keras import backend as K
 
-import SP_model
+# import SP_model
 
 
 def graph_metrics():
@@ -77,31 +77,31 @@ def evaluate():
         plt.figure('sharp')
         plt_img(sharp_img)
 
-    else:
-        # from lmdb
-        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-        # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-        paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
-
-        id = '{:08}'.format(0)
-        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
-
-        predict_data_1 = model.predict(train_blur_data)
-        predict_data_2 = model.predict(predict_data_1)
-
-        plt.figure('blur')
-        plt_img(train_blur_data[0])
-
-        plt.figure('sharp')
-        plt_img(train_sharp_data[0])
-
-        plt.figure('pred 1')
-        plt_img(predict_data_1[0])
-
-        plt.figure('pred 2')
-        plt_img(predict_data_2[0])
-
-        plt.show()
+    # else:
+    #     # from lmdb
+    #     lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+    #     # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+    #     paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
+    #
+    #     id = '{:08}'.format(0)
+    #     train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
+    #
+    #     predict_data_1 = model.predict(train_blur_data)
+    #     predict_data_2 = model.predict(predict_data_1)
+    #
+    #     plt.figure('blur')
+    #     plt_img(train_blur_data[0])
+    #
+    #     plt.figure('sharp')
+    #     plt_img(train_sharp_data[0])
+    #
+    #     plt.figure('pred 1')
+    #     plt_img(predict_data_1[0])
+    #
+    #     plt.figure('pred 2')
+    #     plt_img(predict_data_2[0])
+    #
+    #     plt.show()
 
 
 if __name__ == '__main__':

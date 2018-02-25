@@ -57,12 +57,12 @@ def evaluate():
         img = skimage.img_as_float(imread(img_path))[:128, :128]
         img = img[:, :, ::-1]  # RGB -> BGR
         img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
-
-
-        predict_img = model.predict([img])
+        np_img = np.empty((1, 3, 128, 128), dtype=np.float32)
+        np_img[0] = img
+        predict_img = model.predict(np_img)
 
         plt.figure('blur')
-        plt_img(img)
+        plt_img(np_img[0])
         plt.figure('predict')
         plt_img(predict_img[0])
 

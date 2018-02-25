@@ -499,7 +499,7 @@ if __name__ == '__main__':
         iter_num = 0
         print('Getting model...')
         model = get_unet_128()
-        f_metrics = open('SP_metrics.csv', 'w') # csv for ploting graph
+        f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
     # print('\nRun training...\n')
     #
@@ -535,7 +535,7 @@ if __name__ == '__main__':
     for val_keylist in val_batch_keylists:
         val_batch_count += len(val_keylist)
         val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
-        val_score = model.evaluate(val_blur_data, val_sharp_data, verbose=1)
+        val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
         val_scores.append(val_score)
     val_scores = np.array(val_scores)
     val_scores = val_scores.mean(axis=0)
@@ -549,7 +549,7 @@ if __name__ == '__main__':
     for test_keylist in test_batch_keylists:
         test_batch_count += len(test_keylist)
         test_blur_data, test_sharp_data = get_data_from_keys(test_paths, test_keylist)
-        test_score = model.evaluate(test_blur_data, test_sharp_data, verbose=1)
+        test_score = model.evaluate(test_blur_data, test_sharp_data, batch_size, 0)
         test_scores.append(test_score)
     test_scores = np.array(test_scores)
     test_scores = test_scores.mean(axis=0)

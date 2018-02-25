@@ -12,6 +12,10 @@ import skimage
 # import caffe
 # from datetime import datetime
 import keras
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+config = tf.ConfigProto(device_count = {'GPU': 0})
+set_session(config=config)
 
 # from keras.layers import Dense, Dropout, Activation, Flatten
 # from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate

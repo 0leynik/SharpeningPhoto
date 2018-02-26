@@ -93,5 +93,5 @@ def evaluate():
 
 if __name__ == '__main__':
 
-    # graph_metrics()
-    evaluate()
+    graph_metrics()
+    # evaluate()

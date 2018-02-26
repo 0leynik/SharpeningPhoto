@@ -492,7 +492,7 @@ if __name__ == '__main__':
     if True:
         epoch_start = 35
         iter_num = 62000
-        model_path = '/home/doleinik/SP_saved_models/SP_model_iter_62000.h5'
+        model_path = '/home/doleinik/SP_saved_models/SP_model_iter_' + str(iter_num) + '.h5'
         print('Loading model:' + model_path + ' ...')
         model = keras.models.load_model(model_path)
         model.compile(optimizer=Adam(2e-6), loss='mean_squared_error', metrics=['accuracy'])

@@ -467,7 +467,7 @@ def save_model(model, iter_num):
     print(str(datetime.now())+' save model at:{}'.format(model_path))
 
 def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
-    res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{}'.format(process_name, iter, e, epochs, batch_count, N)
+    res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{} '.format(process_name, iter, e, epochs, batch_count, N)
     res_str += ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, scores))
     print(res_str)
 

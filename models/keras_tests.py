@@ -3,14 +3,32 @@ import keras
 from keras.layers import Dense,Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate
 from keras.models import Model,Sequential
 from keras.optimizers import Adam
-from keras import backend as K
+import keras.backend as K
+import numpy as np
+
+K.set_image_data_format('channels_first')
+import cv2
+
 
 smooth = 1.
 def dice_coef(y_true, y_pred):
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    y_truee = K.eval(y_true)
+    y_predd = K.eval(y_pred)
+
+    # np.empty(len(y_true))
+    # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # median = cv2.medianBlur(gray, ksize_median)
+    # calc_laplacian = cv2.Laplacian(median, -1, ksize=ksize_laplacian)
+    # inverts = cv2.bitwise_not(calc_laplacian)
+    # std_blured_images.append(calc_laplacian.std())
+    # values.append(laplacian.mean())
+
+    # print(y_true_f.shape)
+
+    # intersection = K.sum(y_true_f * y_pred_f)
+    # kek = (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    # print(kek.shape)
+    return K.mean(y_true)
 
 
 def dice_coef_loss(y_true, y_pred):
@@ -190,12 +208,12 @@ def get_super_small_unet():
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
-    print(inputs.shape)
+    # print(inputs.shape)
 
     conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
     conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    print(pool1.shape)
+    # print(pool1.shape)
 
     # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
     # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
@@ -218,12 +236,12 @@ def get_super_small_unet():
     # up4 = deconv(conv4)
     # crop_up4 = crop(up4)
 
-    print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+    # print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
     concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
     conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
     conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
-    print(outputs.shape)
+    # print(outputs.shape)
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
@@ -234,10 +252,10 @@ def get_super_small_unet():
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', dice_coef])
 
     model.summary()
-    print('Metrics: ' + str(model.metrics_names))
+    # print('Metrics: ' + str(model.metrics_names))
     return model
 
 
@@ -245,4 +263,10 @@ if __name__ == '__main__':
     # get_unet()
     # binary()
     # get_small_unet()
-    get_super_small_unet()
+    model = get_super_small_unet()
+
+    arr = np.empty((10,3,375,500), dtype=np.float32)
+    scores = model.train_on_batch(arr, arr)
+
+    for m in zip(model.metrics_names,scores):
+        print(m)

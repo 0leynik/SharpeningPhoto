@@ -490,12 +490,12 @@ if __name__ == '__main__':
 
     # resume training
     if True:
-        epoch_start = 23
-        iter_num = 39500
-        model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39500.h5'
+        epoch_start = 35
+        iter_num = 62000
+        model_path = '/home/doleinik/SP_saved_models/SP_model_iter_62000.h5'
         print('Loading model:' + model_path + ' ...')
         model = keras.models.load_model(model_path)
-        model.compile(optimizer=Adam(1e-4), loss='mean_squared_error', metrics=['accuracy'])
+        model.compile(optimizer=Adam(1e-6), loss='mean_squared_error', metrics=['accuracy'])
         model.summary()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'a') # csv for ploting graph
     else:

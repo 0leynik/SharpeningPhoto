@@ -495,7 +495,7 @@ if __name__ == '__main__':
         model_path = '/home/doleinik/SP_saved_models/SP_model_iter_62000.h5'
         print('Loading model:' + model_path + ' ...')
         model = keras.models.load_model(model_path)
-        model.compile(optimizer=Adam(1e-6), loss='mean_squared_error', metrics=['accuracy'])
+        model.compile(optimizer=Adam(2e-6), loss='mean_squared_error', metrics=['accuracy'])
         model.summary()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'a') # csv for ploting graph
     else:

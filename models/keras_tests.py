@@ -6,16 +6,71 @@ from keras.optimizers import Adam
 import keras.backend as K
 import numpy as np
 
-K.set_image_data_format('channels_first')
+from skimage.io import imread, imshow, imsave
+import skimage
 import cv2
+import matplotlib.pyplot as plt
+
+K.set_image_data_format('channels_first')
 
 
-smooth = 1.
+BGR = [0.114, 0.587, 0.299]
+
+def test_metric():
+    img = skimage.img_as_float(imread('/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/filter_ImageNet_for_visio/4.JPEG'))[:150, :128] # RGB
+    h, w, c = img.shape
+    img = img[..., ::-1]  # BGR
+    img = np.transpose(img, (2, 0, 1))
+    # print(img.shape)
+
+
+    img_arr = np.empty((10, 3, h, w))
+    img_arr[0] = img
+
+    y_true = K.variable(img_arr)
+    y_pred = K.variable(img_arr)
+
+
+    y_true_gray = y_true[:, 0:1] * BGR[0] + y_true[:, 1:2] * BGR[1] + y_true[:, 2:3] * BGR[2] # to GRAY
+    y_pred_gray = y_pred[:, 0:1] * BGR[0] + y_pred[:, 1:2] * BGR[1] + y_pred[:, 2:3] * BGR[2]  # to GRAY
+    print(y_true_gray.shape)
+
+    kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]), dtype='float32')
+
+    y_true_conv = K.conv2d(y_true_gray, kernel, (1, 1), 'same', 'channels_first') # edge detection with Laplacian
+    y_true_conv = K.clip(y_true_conv, 0, 1)
+
+    y_pred_conv = K.conv2d(y_pred_gray, kernel, (1, 1), 'same', 'channels_first') # edge detection with Laplacian
+    y_pred_conv = K.clip(y_pred_conv, 0, 1)
+    print(y_pred_conv.shape)
+
+
+    abs = K.abs(y_pred_conv - y_true_conv)
+    print(abs.shape)
+
+    mean = K.mean(abs)
+    print('mean: ' + str(mean.shape))
+
+
+
+    img_lapl = K.eval(y_true_conv)[0][0]
+    # print(img_lapl.shape)
+    img_lapl = np.clip(img_lapl, 0, 1)
+    # plt.imshow(img_lapl, cmap='gray')
+    # plt.show()
+
+    cv2.imshow('image', img_lapl)
+    cv2.waitKey()
+
+
+def colour_metric():
+    pass
+
+
+
+
 def dice_coef(y_true, y_pred):
-    y_truee = K.eval(y_true)
-    y_predd = K.eval(y_pred)
 
-    # np.empty(len(y_true))
     # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # median = cv2.medianBlur(gray, ksize_median)
     # calc_laplacian = cv2.Laplacian(median, -1, ksize=ksize_laplacian)
@@ -23,16 +78,54 @@ def dice_coef(y_true, y_pred):
     # std_blured_images.append(calc_laplacian.std())
     # values.append(laplacian.mean())
 
-    # print(y_true_f.shape)
+    # print(np.mean(y_truee))
 
     # intersection = K.sum(y_true_f * y_pred_f)
     # kek = (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
     # print(kek.shape)
+    # return K.mean(y_true)
+    # y_pred = np.clip(y_pred, K.epsilon(), 1.0 - K.mapepsilon())
+    # out = -(y_true * np.log(y_pred) + (1.0 - y_true) * np.log(1.0 - y_pred))
+    # return np.mean(out, axis=-1)
+
+    gray_true = K.stack([y_true[:, 0] * BGR[0], y_true[:, 1] * BGR[1], y_true[:, 2] * BGR[2]], axis=1)
+    gray_true = K.stack([y_true[:, 0] * BGR[0], y_true[:, 1] * BGR[1], y_true[:, 2] * BGR[2]], axis=1)
+
+
+    kernel = K.variable(np.array([[[[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]]*3]*3), dtype='float32')
+    y_true = K.conv2d(gray_true, kernel, (1, 1), 'same', 'channels_first')
+    # print (y_true.shape)
+    # print (K.mean(y_true).shape)
     return K.mean(y_true)
 
 
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
+
+
+BGR = [0.114, 0.587, 0.299]
+def laplacian_loss(y_true, y_pred):
+    y_true_gray = y_true[:, 0:1] * BGR[0] + y_true[:, 1:2] * BGR[1] + y_true[:, 2:3] * BGR[2]  # to GRAY
+    y_pred_gray = y_pred[:, 0:1] * BGR[0] + y_pred[:, 1:2] * BGR[1] + y_pred[:, 2:3] * BGR[2]  # to GRAY
+    print(y_true_gray.shape)
+
+    kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]),
+                        dtype='float32')
+
+    y_true_conv = K.conv2d(y_true_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
+    y_true_conv = K.clip(y_true_conv, 0, 1)
+
+    y_pred_conv = K.conv2d(y_pred_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
+    y_pred_conv = K.clip(y_pred_conv, 0, 1)
+    print(y_pred_conv.shape)
+
+    abs = K.abs(y_pred_conv - y_true_conv)
+    print(abs.shape)
+
+    mean = K.mean(abs)
+    print(mean.shape)
+
+    return mean
 
 def get_unet():
 
@@ -252,7 +345,7 @@ def get_super_small_unet():
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', dice_coef])
+    model.compile(optimizer='adam', loss=laplacian_loss, metrics=['accuracy', dice_coef])
 
     model.summary()
     # print('Metrics: ' + str(model.metrics_names))
@@ -263,6 +356,9 @@ if __name__ == '__main__':
     # get_unet()
     # binary()
     # get_small_unet()
+
+    # test_metric()
+
     model = get_super_small_unet()
 
     arr = np.empty((10,3,375,500), dtype=np.float32)

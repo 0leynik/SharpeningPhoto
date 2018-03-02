@@ -128,267 +128,290 @@ def dice_coef(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
-def get_unet():
-    # batch 170
 
-    img_shape = (3, IMG_H, IMG_W)
-    concat_axis = 1
+BGR = [0.114, 0.587, 0.299]
+def laplacian_gray_loss(y_true, y_pred):
 
-    inputs = Input(shape=img_shape)
-    print(inputs.shape)
+    y_true_gray = y_true[:, 0:1] * BGR[0] + y_true[:, 1:2] * BGR[1] + y_true[:, 2:3] * BGR[2]  # to GRAY
+    y_pred_gray = y_pred[:, 0:1] * BGR[0] + y_pred[:, 1:2] * BGR[1] + y_pred[:, 2:3] * BGR[2]  # to GRAY
 
-    conv1 = Conv2D(2, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(2, (3, 3), activation='relu', padding='same')(conv1)
-    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    print(pool1.shape)
+    kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]),
+                        dtype='float32')
 
-    conv2 = Conv2D(4, (3, 3), activation='relu', padding='same')(pool1)
-    conv2 = Conv2D(4, (3, 3), activation='relu', padding='same')(conv2)
-    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    print(pool2.shape)
+    y_true_conv = K.conv2d(y_true_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
+    y_true_conv = K.clip(y_true_conv, 0, 1)
 
-    conv3 = Conv2D(8, (3, 3), activation='relu', padding='same')(pool2)
-    conv3 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv3)
-    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
-    print(pool3.shape)
+    y_pred_conv = K.conv2d(y_pred_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
+    y_pred_conv = K.clip(y_pred_conv, 0, 1)
 
-    conv4 = Conv2D(16, (3, 3), activation='relu', padding='same')(pool3)
-    conv4 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv4)
-    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
-    print(pool4.shape)
+    abs = K.abs(y_pred_conv - y_true_conv)
 
-    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(pool4)
-    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv5)
-    deconv = Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same')
-    up5 = deconv(conv5)
+    mean = K.mean(abs)
 
-    print(deconv.output_shape, conv4.shape)
-    # crop4 = Cropping2D(cropping=((1,0),(1,0)))(conv4)
-    concat6 = concatenate([up5, conv4], axis=concat_axis)
-    conv6 = Conv2D(16, (3, 3), activation='relu', padding='same')(concat6)
-    conv6 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv6)
-    deconv = Conv2DTranspose(8, (3, 3), strides=(2, 2), padding='valid')
-    up6 = deconv(conv6)
-
-    print(deconv.output_shape, conv3.shape)
-    # crop3 = Cropping2D(cropping=((1,0),(1,0)))(conv3)
-    # concat7 = concatenate([up6, crop3], axis=concat_axis)
-    concat7 = concatenate([up6, conv3], axis=concat_axis)
-    conv7 = Conv2D(8, (3, 3), activation='relu', padding='same')(concat7)
-    conv7 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv7)
-    deconv = Conv2DTranspose(4, (3, 3), strides=(2, 2), padding='valid')
-    crop = Cropping2D(cropping=((0, 0), (1, 0)))
-    up7 = deconv(conv7)
-    crop_up7 = crop(up7)
-
-    print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
-    # crop2 = Cropping2D(cropping=((1, 0), (0, 0)))(conv2)
-    # concat8 = concatenate([up7, crop2], axis=concat_axis)
-    concat8 = concatenate([crop_up7, conv2], axis=concat_axis)
-    conv8 = Conv2D(4, (3, 3), activation='relu', padding='same')(concat8)
-    conv8 = Conv2D(4, (3, 3), activation='relu', padding='same')(conv8)
-    deconv = Conv2DTranspose(2, (3, 3), strides=(2, 2), padding='valid')
-    crop = Cropping2D(cropping=((0, 0), (0, 1)))
-    up8 = deconv(conv8)
-    crop_up8 = crop(up8)
-
-    print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
-    # crop1 = Cropping2D(cropping=((0, 0), (0, 0)))(conv1)
-    # concat9 = concatenate([up8, crop1], axis=concat_axis)
-    concat9 = concatenate([crop_up8, conv1], axis=concat_axis)
-    conv9 = Conv2D(2, (3, 3), activation='relu', padding='same')(concat9)
-    conv9 = Conv2D(2, (3, 3), activation='relu', padding='same')(conv9)
-    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
-    print(outputs.shape)
-
-    model = Model(inputs=[inputs], outputs=[outputs])
-
-    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
-    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
-    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
-
-    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-    return model
-
-def get_small_unet():
-    # batch 176
-
-    img_shape = (3, IMG_H, IMG_W)
-    concat_axis = 1
-
-    inputs = Input(shape=img_shape)
-    print(inputs.shape)
-
-    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
-    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    print(pool1.shape)
-
-    conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
-    conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
-    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    print(pool2.shape)
-
-    conv3 = Conv2D(18, (3, 3), activation='relu', padding='same')(pool2)
-    conv3 = Conv2D(18, (3, 3), activation='relu', padding='same')(conv3)
-    deconv = Conv2DTranspose(9, (3, 3), strides=(2, 2), padding='valid')
-    crop = Cropping2D(cropping=((0, 0), (1, 0)))
-    up3 = deconv(conv3)
-    crop_up3 = crop(up3)
-
-    print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
-    concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
-    conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
-    conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
-    deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
-    crop = Cropping2D(cropping=((0, 0), (0, 1)))
-    up4 = deconv(conv4)
-    crop_up4 = crop(up4)
-
-    print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
-    concat5 = concatenate([crop_up4, conv1], axis=concat_axis)
-    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
-    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
-    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
-    print(outputs.shape)
-
-    model = Model(inputs=[inputs], outputs=[outputs])
-
-    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
-    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
-    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
-
-    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-    return model
-
-def get_super_small_unet():
-    # batch
-
-    img_shape = (3, IMG_H, IMG_W)
-    concat_axis = 1
-
-    inputs = Input(shape=img_shape)
-    print(inputs.shape)
-
-    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv1)
-    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    print(pool1.shape)
-
-    # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
-    # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
-    # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    # print(pool2.shape)
-
-    conv3 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
-    conv3 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv3)
-    deconv = Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='valid')
-    crop = Cropping2D(cropping=((0, 0), (1, 0)))
-    up3 = deconv(conv3)
-    crop_up3 = crop(up3)
-
-    # print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
-    # concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
-    # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
-    # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
-    # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
-    # crop = Cropping2D(cropping=((0, 0), (0, 1)))
-    # up4 = deconv(conv4)
-    # crop_up4 = crop(up4)
-
-    print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
-    concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
-    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(concat5)
-    conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv5)
-    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
-    print(outputs.shape)
-
-    model = Model(inputs=[inputs], outputs=[outputs])
-
-    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
-    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
-    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
-    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
-
-    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-    return model
-
-def get_simple_net():
-    # batch
-
-    img_shape = (3, IMG_H, IMG_W)
-    concat_axis = 1
-
-    inputs = Input(shape=img_shape)
-    conv = Conv2D(3, (1, 1), activation='relu')(inputs)
-    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv)
-
-    # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
-    # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
-    # pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    # print(pool1.shape)
-    #
-    # # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
-    # # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
-    # # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    # # print(pool2.shape)
-    #
-    # conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
-    # conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv3)
-    # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
-    # crop = Cropping2D(cropping=((0, 0), (1, 0)))
-    # up3 = deconv(conv3)
-    # crop_up3 = crop(up3)
-    #
-    # # print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
-    # # concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
-    # # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
-    # # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
-    # # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
-    # # crop = Cropping2D(cropping=((0, 0), (0, 1)))
-    # # up4 = deconv(conv4)
-    # # crop_up4 = crop(up4)
-    #
-    # print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
-    # concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
-    # conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
-    # conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
-    # outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
+    return mean
 
 
-    model = Model(inputs=[inputs], outputs=[outputs])
-
-    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
-    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
-    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
-
-    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-    return model
+# def get_unet():
+#     # batch 170
+#
+#     img_shape = (3, IMG_H, IMG_W)
+#     concat_axis = 1
+#
+#     inputs = Input(shape=img_shape)
+#     print(inputs.shape)
+#
+#     conv1 = Conv2D(2, (3, 3), activation='relu', padding='same')(inputs)
+#     conv1 = Conv2D(2, (3, 3), activation='relu', padding='same')(conv1)
+#     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+#     print(pool1.shape)
+#
+#     conv2 = Conv2D(4, (3, 3), activation='relu', padding='same')(pool1)
+#     conv2 = Conv2D(4, (3, 3), activation='relu', padding='same')(conv2)
+#     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+#     print(pool2.shape)
+#
+#     conv3 = Conv2D(8, (3, 3), activation='relu', padding='same')(pool2)
+#     conv3 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv3)
+#     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+#     print(pool3.shape)
+#
+#     conv4 = Conv2D(16, (3, 3), activation='relu', padding='same')(pool3)
+#     conv4 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv4)
+#     pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+#     print(pool4.shape)
+#
+#     conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(pool4)
+#     conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv5)
+#     deconv = Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same')
+#     up5 = deconv(conv5)
+#
+#     print(deconv.output_shape, conv4.shape)
+#     # crop4 = Cropping2D(cropping=((1,0),(1,0)))(conv4)
+#     concat6 = concatenate([up5, conv4], axis=concat_axis)
+#     conv6 = Conv2D(16, (3, 3), activation='relu', padding='same')(concat6)
+#     conv6 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv6)
+#     deconv = Conv2DTranspose(8, (3, 3), strides=(2, 2), padding='valid')
+#     up6 = deconv(conv6)
+#
+#     print(deconv.output_shape, conv3.shape)
+#     # crop3 = Cropping2D(cropping=((1,0),(1,0)))(conv3)
+#     # concat7 = concatenate([up6, crop3], axis=concat_axis)
+#     concat7 = concatenate([up6, conv3], axis=concat_axis)
+#     conv7 = Conv2D(8, (3, 3), activation='relu', padding='same')(concat7)
+#     conv7 = Conv2D(8, (3, 3), activation='relu', padding='same')(conv7)
+#     deconv = Conv2DTranspose(4, (3, 3), strides=(2, 2), padding='valid')
+#     crop = Cropping2D(cropping=((0, 0), (1, 0)))
+#     up7 = deconv(conv7)
+#     crop_up7 = crop(up7)
+#
+#     print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
+#     # crop2 = Cropping2D(cropping=((1, 0), (0, 0)))(conv2)
+#     # concat8 = concatenate([up7, crop2], axis=concat_axis)
+#     concat8 = concatenate([crop_up7, conv2], axis=concat_axis)
+#     conv8 = Conv2D(4, (3, 3), activation='relu', padding='same')(concat8)
+#     conv8 = Conv2D(4, (3, 3), activation='relu', padding='same')(conv8)
+#     deconv = Conv2DTranspose(2, (3, 3), strides=(2, 2), padding='valid')
+#     crop = Cropping2D(cropping=((0, 0), (0, 1)))
+#     up8 = deconv(conv8)
+#     crop_up8 = crop(up8)
+#
+#     print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+#     # crop1 = Cropping2D(cropping=((0, 0), (0, 0)))(conv1)
+#     # concat9 = concatenate([up8, crop1], axis=concat_axis)
+#     concat9 = concatenate([crop_up8, conv1], axis=concat_axis)
+#     conv9 = Conv2D(2, (3, 3), activation='relu', padding='same')(concat9)
+#     conv9 = Conv2D(2, (3, 3), activation='relu', padding='same')(conv9)
+#     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
+#     print(outputs.shape)
+#
+#     model = Model(inputs=[inputs], outputs=[outputs])
+#
+#     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+#     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+#     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+#
+#     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+#     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+#
+#     model.summary()
+#     print('Metrics: ' + str(model.metrics_names))
+#     return model
+#
+# def get_small_unet():
+#     # batch 176
+#
+#     img_shape = (3, IMG_H, IMG_W)
+#     concat_axis = 1
+#
+#     inputs = Input(shape=img_shape)
+#     print(inputs.shape)
+#
+#     conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
+#     conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
+#     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+#     print(pool1.shape)
+#
+#     conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
+#     conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
+#     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+#     print(pool2.shape)
+#
+#     conv3 = Conv2D(18, (3, 3), activation='relu', padding='same')(pool2)
+#     conv3 = Conv2D(18, (3, 3), activation='relu', padding='same')(conv3)
+#     deconv = Conv2DTranspose(9, (3, 3), strides=(2, 2), padding='valid')
+#     crop = Cropping2D(cropping=((0, 0), (1, 0)))
+#     up3 = deconv(conv3)
+#     crop_up3 = crop(up3)
+#
+#     print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
+#     concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
+#     conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
+#     conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
+#     deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+#     crop = Cropping2D(cropping=((0, 0), (0, 1)))
+#     up4 = deconv(conv4)
+#     crop_up4 = crop(up4)
+#
+#     print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+#     concat5 = concatenate([crop_up4, conv1], axis=concat_axis)
+#     conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
+#     conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
+#     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
+#     print(outputs.shape)
+#
+#     model = Model(inputs=[inputs], outputs=[outputs])
+#
+#     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+#     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+#     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+#
+#     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+#     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+#
+#     model.summary()
+#     print('Metrics: ' + str(model.metrics_names))
+#     return model
+#
+# def get_super_small_unet():
+#     # batch
+#
+#     img_shape = (3, IMG_H, IMG_W)
+#     concat_axis = 1
+#
+#     inputs = Input(shape=img_shape)
+#     print(inputs.shape)
+#
+#     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
+#     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv1)
+#     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+#     print(pool1.shape)
+#
+#     # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
+#     # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
+#     # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+#     # print(pool2.shape)
+#
+#     conv3 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
+#     conv3 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv3)
+#     deconv = Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='valid')
+#     crop = Cropping2D(cropping=((0, 0), (1, 0)))
+#     up3 = deconv(conv3)
+#     crop_up3 = crop(up3)
+#
+#     # print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
+#     # concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
+#     # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
+#     # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
+#     # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+#     # crop = Cropping2D(cropping=((0, 0), (0, 1)))
+#     # up4 = deconv(conv4)
+#     # crop_up4 = crop(up4)
+#
+#     print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+#     concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
+#     conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(concat5)
+#     conv5 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv5)
+#     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
+#     print(outputs.shape)
+#
+#     model = Model(inputs=[inputs], outputs=[outputs])
+#
+#     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+#     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+#     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+#     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+#
+#     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+#     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+#
+#     model.summary()
+#     print('Metrics: ' + str(model.metrics_names))
+#     return model
+#
+# def get_simple_net():
+#     # batch
+#
+#     img_shape = (3, IMG_H, IMG_W)
+#     concat_axis = 1
+#
+#     inputs = Input(shape=img_shape)
+#     conv = Conv2D(3, (1, 1), activation='relu')(inputs)
+#     outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv)
+#
+#     # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
+#     # conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
+#     # pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+#     # print(pool1.shape)
+#     #
+#     # # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
+#     # # conv2 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv2)
+#     # # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+#     # # print(pool2.shape)
+#     #
+#     # conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
+#     # conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv3)
+#     # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+#     # crop = Cropping2D(cropping=((0, 0), (1, 0)))
+#     # up3 = deconv(conv3)
+#     # crop_up3 = crop(up3)
+#     #
+#     # # print(deconv.output_shape, '->', crop.output_shape, conv2.shape)
+#     # # concat4 = concatenate([crop_up3, conv2], axis=concat_axis)
+#     # # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(concat4)
+#     # # conv4 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv4)
+#     # # deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+#     # # crop = Cropping2D(cropping=((0, 0), (0, 1)))
+#     # # up4 = deconv(conv4)
+#     # # crop_up4 = crop(up4)
+#     #
+#     # print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
+#     # concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
+#     # conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
+#     # conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
+#     # outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
+#
+#
+#     model = Model(inputs=[inputs], outputs=[outputs])
+#
+#     # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
+#     # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
+#     # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+#
+#     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
+#     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+#     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+#
+#     model.summary()
+#     print('Metrics: ' + str(model.metrics_names))
+#     return model
 
 def get_unet_128():
 
@@ -447,7 +470,7 @@ def get_unet_128():
     # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))
@@ -464,7 +487,7 @@ def save_model(model, iter_num):
     model_name = 'SP_model_iter_' + str(iter_num) + '.h5'
     model_path = os.path.join(save_dir, model_name)
     model.save(model_path)
-    print(str(datetime.now())+' save model at:{}'.format(model_path))
+    print(str(datetime.now())+' save model at: {}'.format(model_path))
 
 def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{} '.format(process_name, iter, e, epochs, batch_count, N)
@@ -483,13 +506,14 @@ if __name__ == '__main__':
     epochs = 1000
     batch_size = 224
     save_model_step = 500
+    resume_training = False
 
     N_train = 133527 * 3
     N_test = 11853 * 3
     N_val = 5936 * 3
 
     # resume training
-    if True:
+    if resume_training:
         epoch_start = 35
         iter_num = 62000
         model_path = '/home/doleinik/SP_saved_models/SP_model_iter_' + str(iter_num) + '.h5'

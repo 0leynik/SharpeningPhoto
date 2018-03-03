@@ -64,7 +64,7 @@ def evaluate():
     model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': laplacian_gray_loss})
 
     # from img file
-    if True:
+    if False:
         # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
         img_path = '/home/doleinik/me.jpg'
 

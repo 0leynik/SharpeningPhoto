@@ -9,8 +9,31 @@ import cv2
 from skimage.io import imread, imshow, imsave
 import skimage
 import keras
+import keras.backend as K
 import SP_model
+from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
+
+BGR = [0.114, 0.587, 0.299]
+def laplacian_gray_loss(y_true, y_pred):
+
+    y_true_gray = y_true[:, 0:1] * BGR[0] + y_true[:, 1:2] * BGR[1] + y_true[:, 2:3] * BGR[2]  # to GRAY
+    y_pred_gray = y_pred[:, 0:1] * BGR[0] + y_pred[:, 1:2] * BGR[1] + y_pred[:, 2:3] * BGR[2]  # to GRAY
+
+    kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]),
+                        dtype='float32')
+
+    y_true_conv = K.conv2d(y_true_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
+    y_true_conv = K.clip(y_true_conv, 0, 1)
+
+    y_pred_conv = K.conv2d(y_pred_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
+    y_pred_conv = K.clip(y_pred_conv, 0, 1)
+
+    abs = K.abs(y_pred_conv - y_true_conv)
+
+    mean = K.mean(abs)
+
+    return mean
 
 def graph_metrics():
     # metrics = np.loadtxt(os.path.expanduser('~/m.csv'), delimiter=',')
@@ -37,17 +60,22 @@ def plt_img(data):
 def evaluate():
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
-    model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39500.h5'
-    model = keras.models.load_model(model_path)
+    model_path = '/home/doleinik/SP_saved_models/SP_model_iter_37500.h5'
+    model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': laplacian_gray_loss})
 
     # from img file
     if True:
         # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
         img_path = '/home/doleinik/me.jpg'
 
-        img = skimage.img_as_float(imread(img_path))[:128, :128]
+
+        img = skimage.img_as_float(imread(img_path))
         img = img[:, :, ::-1]  # RGB -> BGR
         img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
+
+        # img_patches = extract_patches_2d(img, (128, 128))
+        # print('shape img_patches: ' + str(img_patches.shape))
+
         np_img = np.empty((1, 3, 128, 128), dtype=np.float32)
         np_img[0] = img
         predict_img = model.predict(np_img)
@@ -94,5 +122,5 @@ def evaluate():
 
 if __name__ == '__main__':
 
-    graph_metrics()
-    # evaluate()
+    # graph_metrics()
+    evaluate()

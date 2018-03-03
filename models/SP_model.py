@@ -111,29 +111,13 @@ def get_data_from_keys(lmdb_paths, keylist):
     return ret_data
 
 
-# https://www.kaggle.com/toregil/a-lung-u-net-in-keras/notebook
-# def dice_coef(y_true, y_pred):
-#     y_true_f = K.flatten(y_true)
-#     y_pred_f = K.flatten(y_pred)
-#     intersection = K.sum(y_true_f * y_pred_f)
-#     return (2. * intersection + K.epsilon()) / (K.sum(y_true_f) + K.sum(y_pred_f) + K.epsilon())
-
-smooth = 1.
-def dice_coef(y_true, y_pred):
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-def dice_coef_loss(y_true, y_pred):
-    return -dice_coef(y_true, y_pred)
-
-
 BGR = [0.114, 0.587, 0.299]
+
 def laplacian_gray_loss(y_true, y_pred):
 
     y_true_gray = y_true[:, 0:1] * BGR[0] + y_true[:, 1:2] * BGR[1] + y_true[:, 2:3] * BGR[2]  # to GRAY
     y_pred_gray = y_pred[:, 0:1] * BGR[0] + y_pred[:, 1:2] * BGR[1] + y_pred[:, 2:3] * BGR[2]  # to GRAY
+    print(y_true_gray.shape)
 
     kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]),
                         dtype='float32')
@@ -143,13 +127,35 @@ def laplacian_gray_loss(y_true, y_pred):
 
     y_pred_conv = K.conv2d(y_pred_gray, kernel, (1, 1), 'same', 'channels_first')  # edge detection with Laplacian
     y_pred_conv = K.clip(y_pred_conv, 0, 1)
+    print(y_pred_conv.shape)
 
     abs = K.abs(y_pred_conv - y_true_conv)
+    print(abs.shape)
 
     mean = K.mean(abs)
+    print(mean.shape)
 
     return mean
 
+
+def laplacian_color_loss(y_true, y_pred):
+    print(y_true.shape)
+
+    kernel = K.variable(np.array([[[[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]] * 3] * 3), dtype='float32')
+    print(kernel.shape)
+    y_true_conv = K.conv2d(y_true, kernel, (1, 1), 'same', 'channels_first')
+    y_true_conv = K.clip(y_true_conv, 0, 1)
+    y_pred_conv = K.conv2d(y_pred, kernel, (1, 1), 'same', 'channels_first')
+    y_pred_conv = K.clip(y_pred_conv, 0, 1)
+    print(y_pred_conv.shape)
+
+    abs = K.abs(y_pred_conv - y_true_conv)
+    print(abs.shape)
+
+    mean = K.mean(abs, axis=0)
+    print(mean.shape)
+
+    return mean
 
 # def get_unet():
 #     # batch 170
@@ -463,13 +469,10 @@ def get_unet_128():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=['accuracy'])
-    # model.compile(optimizer=Adam(2e-4), loss='binary_crossentropy', metrics=[dice_coef])
-    # model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+    # ~/train_Adam
+    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
-    # model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', 'mse', dice_coef])
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse', dice_coef])
+    # ~/laplacian_gray_loss
     model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
 
     model.summary()

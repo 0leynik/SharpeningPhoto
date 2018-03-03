@@ -69,7 +69,7 @@ def evaluate():
         img_path = '/home/doleinik/me.jpg'
 
 
-        img = skimage.img_as_float(imread(img_path))
+        img = skimage.img_as_float(imread(img_path))[:128, :128]
         img = img[:, :, ::-1]  # RGB -> BGR
         img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
 

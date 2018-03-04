@@ -12,6 +12,7 @@ from skimage.io import imread, imshow, imsave
 import skimage
 import cv2
 import matplotlib.pyplot as plt
+import matplotlib.colors
 
 import SP_model
 
@@ -23,12 +24,16 @@ def plt_img(data):
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = img[:, :, ::-1]
 
+
+    # img = cv2.cvtColor(np.uint8(img*255), cv2.COLOR_RGB2GRAY)
+    # plt.imshow(img, cmap='gray')
+
+    img = np.clip(img, 0, 1)
+
     # matplotlib.pyplot.imshow()
     # HxWx3 – RGB (float or uint8 array)
-
-    img = cv2.cvtColor(np.uint8(img*255), cv2.COLOR_RGB2GRAY)
-
-    plt.imshow(img, cmap='gray')
+    # plt.imshow(img[..., 0], cmap='Reds')
+    plt.imshow(img)
 
 
 BGR = [0.114, 0.587, 0.299]
@@ -52,6 +57,7 @@ def test_metric():
     # y_pred_gray = y_pred[:, 0:1] * BGR[0] + y_pred[:, 1:2] * BGR[1] + y_pred[:, 2:3] * BGR[2]  # to GRAY
     # print(y_true_gray.shape)
     #
+    # kernel = K.variable(np.array([[[[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]] * 3] * 3), dtype='float32')
     # kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]), dtype='float32')
     #
     # y_true_conv = K.conv2d(y_true_gray, kernel, (1, 1), 'same', 'channels_first') # edge detection with Laplacian
@@ -61,30 +67,40 @@ def test_metric():
     # y_pred_conv = K.clip(y_pred_conv, 0, 1)
     # print(y_pred_conv.shape)
 
-    kernel = K.variable(np.array([[[[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]] * 3] * 3), dtype='float32')
+
+    kernel = K.variable(np.array([[[[-1]], [[-1]], [[-1]]], [[[-1]], [[8]], [[-1]]], [[[-1]], [[-1]], [[-1]]]]), dtype='float32')
     print(kernel.shape)
-    y_true_conv = K.conv2d(y_true, kernel, (1, 1), 'same', 'channels_first')
+
+    b_true = K.conv2d(y_true[:, 0:1], kernel, (1, 1), 'same', 'channels_first')
+    g_true = K.conv2d(y_true[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
+    r_true = K.conv2d(y_true[:, 2:3], kernel, (1, 1), 'same', 'channels_first')
+    y_true_conv = K.concatenate([b_true,g_true,r_true], axis=1)
     y_true_conv = K.clip(y_true_conv, 0, 1)
-    y_pred_conv = K.conv2d(y_pred, kernel, (1, 1), 'same', 'channels_first')
+
+    b_pred = K.conv2d(y_pred[:, 0:1], kernel, (1, 1), 'same', 'channels_first')
+    g_pred = K.conv2d(y_pred[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
+    r_pred = K.conv2d(y_pred[:, 2:3], kernel, (1, 1), 'same', 'channels_first')
+    y_pred_conv = K.concatenate([b_pred,g_pred,r_pred], axis=1)
     y_pred_conv = K.clip(y_pred_conv, 0, 1)
     print(y_pred_conv.shape)
+
 
     abs = K.abs(y_pred_conv - y_true_conv)
     print(abs.shape)
 
-    mean = K.mean(abs)
-    print(mean.shape)
+    # mean = K.mean(abs, axis=1)
+    # print(mean.shape)
 
     plt.figure('true')
-    plt_img(img)
+    plt_img(K.eval(y_pred)[0])
 
     plt.figure('pred')
-    plt_img(K.eval(y_pred_conv[0]))
+    plt_img(K.eval(y_pred_conv)[0])
 
     plt.show()
 
-    return mean
-
+    # return mean
+    return 1
 
 def get_super_small_unet():
     # batch 176
@@ -131,7 +147,7 @@ def get_super_small_unet():
 
     model = Model(inputs=[inputs], outputs=[outputs])
     # model.compile(optimizer='adam', loss=SP_model.laplacian_gray_loss, metrics=['accuracy'])
-    # model.compile(optimizer='adam', loss=SP_model.laplacian_color_loss, metrics=['accuracy'])
+    model.compile(optimizer='adam', loss=SP_model.abs_laplacian_color_loss, metrics=['accuracy'])
 
     # model.summary()
     # print('Metrics: ' + str(model.metrics_names))

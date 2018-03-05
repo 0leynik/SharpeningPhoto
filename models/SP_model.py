@@ -156,6 +156,27 @@ def abs_laplacian_color_loss(y_true, y_pred):
 
     return abs
 
+def clip_laplacian_color_loss(y_true, y_pred):
+
+    b_true = K.conv2d(y_true[:, 0:1], kernel, (1, 1), 'same', 'channels_first')
+    g_true = K.conv2d(y_true[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
+    r_true = K.conv2d(y_true[:, 2:3], kernel, (1, 1), 'same', 'channels_first')
+    y_true_conv = K.concatenate([b_true, g_true, r_true], axis=1)
+    y_true_conv = K.clip(y_true_conv, 0, 1)
+
+    b_pred = K.conv2d(y_pred[:, 0:1], kernel, (1, 1), 'same', 'channels_first')
+    g_pred = K.conv2d(y_pred[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
+    r_pred = K.conv2d(y_pred[:, 2:3], kernel, (1, 1), 'same', 'channels_first')
+    y_pred_conv = K.concatenate([b_pred, g_pred, r_pred], axis=1)
+    y_pred_conv = K.clip(y_pred_conv, 0, 1)
+    # print(y_pred_conv.shape)
+
+    clip = K.clip((y_true_conv - y_pred_conv), 0, 1)
+    # print(abs.shape)
+
+    return clip
+
+
 # def get_unet():
 #     # batch 170
 #
@@ -471,11 +492,14 @@ def get_unet_128():
     # ~/train_Adam
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
-    # ~/laplacian_gray_loss
+    # ~/laplacian_gray_loss (делает красным)
     # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
 
-    # ~/abs_laplacian_color_loss
-    model.compile(optimizer='adam', loss=abs_laplacian_color_loss, metrics=['accuracy'])
+    # ~/abs_laplacian_color_loss (затемняет, добавляет артефакты, работает плохо)
+    # model.compile(optimizer='adam', loss=abs_laplacian_color_loss, metrics=['accuracy'])
+
+    # ~/clip_laplacian_color_loss
+    model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))

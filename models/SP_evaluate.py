@@ -39,8 +39,9 @@ def plt_img(data):
 def evaluate():
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
-    model_path = '/home/doleinik/SP_saved_models/SP_model_iter_37500.h5'
-    model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': SP_model.laplacian_gray_loss})
+    model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39000.h5'
+    # model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': SP_model.laplacian_gray_loss})
+    model = keras.models.load_model(model_path, custom_objects={'clip_laplacian_color_loss': SP_model.clip_laplacian_color_loss})
 
     # from img file
     if True:

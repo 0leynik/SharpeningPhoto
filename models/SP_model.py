@@ -489,7 +489,7 @@ def get_unet_128():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # ~/train_Adam
+    # ~/mean_squared_error
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     # ~/laplacian_gray_loss (делает красным)

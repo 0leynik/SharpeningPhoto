@@ -36,34 +36,99 @@ def plt_img(data):
     # HxWx3 – RGB (float or uint8 array)
     plt.imshow(img)
 
+h_step, w_step = (128, 128)
+h_count = 0
+w_count = 0
+
+def get_patches_from_img(img):
+    global h_count, w_count
+    h, w, c = img.shape
+
+    h_count = h / h_step
+    if (h % h_step) != 0:
+        h_count = h / h_step + 1
+    h_new = h_count * h_step
+
+    w_count = w / w_step
+    if (w % w_step) != 0:
+        w_count = w / w_step + 1
+    w_new = w_count * w_step
+
+    img_new = np.zeros((h_new, w_new, c), dtype=np.float32)
+    img_new[:h, :w] = img
+
+    i = 0
+    patches = np.zeros((h_count * w_count, h_step, w_step, c), dtype=np.float32)
+
+    for height in np.split(img_new, h_count, axis=0):
+        print(height.shape)
+        for width in np.split(height, w_count, axis=1):
+            print(width.shape)
+            patches[i] = width
+            i += 1
+
+    return patches
+
+def get_img_from_patches(patches, img):
+    h, w, c = img.shape
+    b_count = patches.shape[0]
+    print(patches.shape)
+    extended_img = np.zeros((h_count * h_step, w_count * w_step, c), dtype=np.float32)
+    k = 0
+    for i in range(h_count):
+        for j in range(w_count):
+            extended_img[i*h_step:(i+1)*h_step, j*w_step:(j+1)*w_step] = patches[k]
+            k += 1
+
+    return extended_img[:h, :w]
+
+
+
+
+
 def evaluate():
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-    os.environ["CUDA_VISIBLE_DEVICES"] = ""
+    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+    # os.environ["CUDA_VISIBLE_DEVICES"] = ""
     model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39000.h5'
+    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500.h5'
+    # model = keras.models.load_model(model_path)
     # model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': SP_model.laplacian_gray_loss})
     model = keras.models.load_model(model_path, custom_objects={'clip_laplacian_color_loss': SP_model.clip_laplacian_color_loss})
 
     # from img file
     if True:
-        # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
-        img_path = '/home/doleinik/me.jpg'
+        img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
+        # img_path = '/home/doleinik/me.jpg'
+        # img_path = '2_2.JPG'
 
+        original_img = skimage.img_as_float(imread(img_path))
+        # original_img = skimage.img_as_float(imread(img_path))[:128,:128]
+        print(original_img.shape)
+        img = original_img[:, :, ::-1]  # RGB -> BGR
+        img_patches = get_patches_from_img(img)
+        img_patches = np.array(map(lambda i: np.transpose(i, (2, 0, 1)), img_patches), np.float32)  # HxWxC -> CxHxW
+        print('shape img_patches: ' + str(img_patches.shape))
 
-        img = skimage.img_as_float(imread(img_path))[:128, :128]
-        img = img[:, :, ::-1]  # RGB -> BGR
-        img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
+        # np_img = np.empty((1, 3, 128, 128), dtype=np.float32)
+        # np_img[0] = np.transpose(img, (2, 0, 1))
+        print('Predicting...')
+        # predict_img = model.predict(np_img)
+        predict_img_patches = model.predict(img_patches)
 
-        # img_patches = extract_patches_2d(img, (128, 128))
-        # print('shape img_patches: ' + str(img_patches.shape))
+        predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches), np.float32)  # HxWxC -> CxHxW
+        predict_img = get_img_from_patches(predict_img_patches, original_img)
+        predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
 
-        np_img = np.empty((1, 3, 128, 128), dtype=np.float32)
-        np_img[0] = img
-        predict_img = model.predict(np_img)
+        print('Plotting...')
 
         plt.figure('blur')
-        plt_img(np_img[0])
+        # imsave('blur.JPG', original_img)
+        plt.imshow(original_img)
+
         plt.figure('predict')
-        plt_img(predict_img[0])
+        # imsave('predict.JPG', predict_img)
+        plt.imshow(predict_img)
+        # plt.imshow(predict_img_patches[0][..., ::-1])
 
         # sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
         # sharp_img = sharp_img[..., ::-1]
@@ -74,30 +139,31 @@ def evaluate():
         plt.show()
 
     else:
-        # from lmdb
-        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-        # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-        paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
-
-        id = '{:08}'.format(0)
-        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
-
-        predict_data_1 = model.predict(train_blur_data)
-        predict_data_2 = model.predict(predict_data_1)
-
-        plt.figure('blur')
-        plt_img(train_blur_data[0])
-
-        plt.figure('sharp')
-        plt_img(train_sharp_data[0])
-
-        plt.figure('pred 1')
-        plt_img(predict_data_1[0])
-
-        plt.figure('pred 2')
-        plt_img(predict_data_2[0])
-
-        plt.show()
+        pass
+        # # from lmdb
+        # lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+        # # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+        # paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
+        #
+        # id = '{:08}'.format(0)
+        # train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
+        #
+        # predict_data_1 = model.predict(train_blur_data)
+        # predict_data_2 = model.predict(predict_data_1)
+        #
+        # plt.figure('blur')
+        # plt_img(train_blur_data[0])
+        #
+        # plt.figure('sharp')
+        # plt_img(train_sharp_data[0])
+        #
+        # plt.figure('pred 1')
+        # plt_img(predict_data_1[0])
+        #
+        # plt.figure('pred 2')
+        # plt_img(predict_data_2[0])
+        #
+        # plt.show()
 
 
 if __name__ == '__main__':

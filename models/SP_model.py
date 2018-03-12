@@ -8,17 +8,6 @@ import os
 import matplotlib.pyplot as plt
 import cv2
 import lmdb
-
-os.environ["LD_LIBRARY_PATH"] = "/usr/local/cuda-9.0/lib64"
-os.environ["PATH"] = "/usr/local/cuda-9.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/caffe/build/tools:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin"
-os.environ["CAFFE_HOME"] = "/home/doleinik/caffe"
-os.environ["PYTHONPATH"] = "/home/doleinik/caffe/python"
-
-print(os.getenv("PYTHONPATH"))
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
 import caffe
 from datetime import datetime
 

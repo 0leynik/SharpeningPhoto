@@ -87,6 +87,8 @@ def get_img_from_patches(patches, img):
 
 
 def evaluate():
+    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
     model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39000.h5'
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500.h5'

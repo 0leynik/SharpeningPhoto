@@ -87,11 +87,7 @@ def get_img_from_patches(patches, img):
 
 
 def evaluate():
-    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-    # os.environ["CUDA_VISIBLE_DEVICES"] = ""
-    os.environ["PATH"] = "/usr/local/cuda-8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/caffe/build/tools:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin"
-    os.environ["CAFFE_HOME"] = "/home/doleinik/caffe"
-    os.environ["PYTHONPATH"] = "/home/doleinik/caffe/python"
+
     model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39000.h5'
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500.h5'
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39000.h5'

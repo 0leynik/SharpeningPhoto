@@ -89,8 +89,12 @@ def get_img_from_patches(patches, img):
 def evaluate():
     # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
     # os.environ["CUDA_VISIBLE_DEVICES"] = ""
+    os.environ["PATH"] = "/usr/local/cuda-8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/caffe/build/tools:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin"
+    os.environ["CAFFE_HOME"] = "/home/doleinik/caffe"
+    os.environ["PYTHONPATH"] = "/home/doleinik/caffe/python"
     model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39000.h5'
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500.h5'
+    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39000.h5'
     # model = keras.models.load_model(model_path)
     # model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': SP_model.laplacian_gray_loss})
     model = keras.models.load_model(model_path, custom_objects={'clip_laplacian_color_loss': SP_model.clip_laplacian_color_loss})
@@ -99,7 +103,7 @@ def evaluate():
     if True:
         img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
         # img_path = '/home/doleinik/me.jpg'
-        # img_path = '2_2.JPG'
+        # img_path = '3_2.JPG'
 
         original_img = skimage.img_as_float(imread(img_path))
         # original_img = skimage.img_as_float(imread(img_path))[:128,:128]

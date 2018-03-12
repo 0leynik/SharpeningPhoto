@@ -14,8 +14,8 @@ os.environ["PATH"] = "/usr/local/cuda-9.0/bin:/usr/local/sbin:/usr/local/bin:/us
 os.environ["CAFFE_HOME"] = "/home/doleinik/caffe"
 os.environ["PYTHONPATH"] = "/home/doleinik/caffe/python"
 
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import caffe
 from datetime import datetime

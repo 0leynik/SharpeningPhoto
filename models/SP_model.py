@@ -14,6 +14,8 @@ os.environ["PATH"] = "/usr/local/cuda-9.0/bin:/usr/local/sbin:/usr/local/bin:/us
 os.environ["CAFFE_HOME"] = "/home/doleinik/caffe"
 os.environ["PYTHONPATH"] = "/home/doleinik/caffe/python"
 
+print(os.getenv("PYTHONPATH"))
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 

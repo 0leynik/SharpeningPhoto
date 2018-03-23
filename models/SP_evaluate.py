@@ -24,8 +24,8 @@ train_name = 'mean_squared_error_lr_0.001'
 def graph_metrics():
     model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_metrics.csv'
 
-    metrics = np.loadtxt(model_path, delimiter=',')
-    # metrics = np.loadtxt(os.path.expanduser('~/m.csv'), delimiter=',')
+    # metrics = np.loadtxt(model_path, delimiter=',')
+    metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
 
     plt.figure('loss')
     plt.plot(metrics[:, 1])

@@ -2,8 +2,12 @@
 
 from __future__ import print_function
 
-import numpy as np
 import os
+if __name__ == '__main__':
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from skimage.io import imread, imshow, imsave
@@ -87,21 +91,26 @@ def get_img_from_patches(patches, img):
 
 
 def evaluate():
-    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    # os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-    model_path = '/home/doleinik/SP_saved_models/SP_model_iter_39000.h5'
-    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500.h5'
-    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39000.h5'
-    # model = keras.models.load_model(model_path)
-    # model = keras.models.load_model(model_path, custom_objects={'laplacian_gray_loss': SP_model.laplacian_gray_loss})
-    model = keras.models.load_model(model_path, custom_objects={'clip_laplacian_color_loss': SP_model.clip_laplacian_color_loss})
+    # cluster run
+    iter_num = str(39000);
+    train_name = 'mean_squared_error_lr_0.001'
+    model_path = '/home/doleinik/trained_models_SharpeningPhoto/'+train_name+'/SP_saved_models/SP_model_iter_'+iter_num+'.h5'
 
-    # from img file
+    # loacal
+    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_mse.h5'
+    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_sub_loss.h5'
+
+    # load model
+    custom_objects = {'laplacian_gray_loss': SP_model.laplacian_gray_loss}
+    model = keras.models.load_model(model_path, custom_objects=custom_objects)
+
+
+    # execute for single image file
     if True:
-        img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
+        # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
         # img_path = '/home/doleinik/me.jpg'
-        # img_path = '3_2.JPG'
+        img_path = '9.JPG'
 
         original_img = skimage.img_as_float(imread(img_path))
         # original_img = skimage.img_as_float(imread(img_path))[:128,:128]
@@ -124,12 +133,12 @@ def evaluate():
         print('Plotting...')
 
         plt.figure('blur')
-        # imsave('blur.JPG', original_img)
-        plt.imshow(original_img)
+        imsave('blur.JPG', original_img)
+        # plt.imshow(original_img)
 
         plt.figure('predict')
-        # imsave('predict.JPG', predict_img)
-        plt.imshow(predict_img)
+        imsave('predict.JPG', predict_img)
+        # plt.imshow(predict_img)
         # plt.imshow(predict_img_patches[0][..., ::-1])
 
         # sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
@@ -138,34 +147,33 @@ def evaluate():
         # plt.figure('sharp')
         # plt_img(sharp_img)
 
-        plt.show()
+        # plt.show()
 
     else:
-        pass
-        # # from lmdb
-        # lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-        # # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-        # paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
-        #
-        # id = '{:08}'.format(0)
-        # train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
-        #
-        # predict_data_1 = model.predict(train_blur_data)
-        # predict_data_2 = model.predict(predict_data_1)
-        #
-        # plt.figure('blur')
-        # plt_img(train_blur_data[0])
-        #
-        # plt.figure('sharp')
-        # plt_img(train_sharp_data[0])
-        #
-        # plt.figure('pred 1')
-        # plt_img(predict_data_1[0])
-        #
-        # plt.figure('pred 2')
-        # plt_img(predict_data_2[0])
-        #
-        # plt.show()
+        # from lmdb
+        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+        # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+        paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
+
+        id = '{:08}'.format(0)
+        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
+
+        predict_data_1 = model.predict(train_blur_data)
+        predict_data_2 = model.predict(predict_data_1)
+
+        plt.figure('blur')
+        plt_img(train_blur_data[0])
+
+        plt.figure('sharp')
+        plt_img(train_sharp_data[0])
+
+        plt.figure('pred 1')
+        plt_img(predict_data_1[0])
+
+        plt.figure('pred 2')
+        plt_img(predict_data_2[0])
+
+        plt.show()
 
 
 if __name__ == '__main__':

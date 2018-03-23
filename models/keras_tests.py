@@ -14,7 +14,7 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.colors
 
-import SP_model
+# import SP_model
 
 def plt_img(data):
     # CxHxW -> HxWxC
@@ -28,11 +28,15 @@ def plt_img(data):
     # img = cv2.cvtColor(np.uint8(img*255), cv2.COLOR_RGB2GRAY)
     # plt.imshow(img, cmap='gray')
 
+    print(np.min(img),np.max(img))
+
     img = np.clip(img, 0, 1)
 
     # matplotlib.pyplot.imshow()
     # HxWx3 – RGB (float or uint8 array)
     # plt.imshow(img[..., 0], cmap='Reds')
+
+    # plt.imshow(img[...,2], cmap='gray')
     plt.imshow(img)
 
 
@@ -50,7 +54,14 @@ def test_metric():
     img_arr[0] = img
 
     y_true = K.variable(img_arr)
-    y_pred = K.variable(img_arr)
+
+    y_pred = K.variable(img_arr) # предсказано размытое фото
+    gaus_kernel = K.variable(np.array([[[[1]], [[2]], [[1]]], [[[2]], [[4]], [[2]]], [[[1]], [[2]], [[1]]]]), dtype='float32') / 16
+    b_pred = K.conv2d(y_pred[:, 0:1], gaus_kernel, (1, 1), 'same', 'channels_first')
+    g_pred = K.conv2d(y_pred[:, 1:2], gaus_kernel, (1, 1), 'same', 'channels_first')
+    r_pred = K.conv2d(y_pred[:, 2:3], gaus_kernel, (1, 1), 'same', 'channels_first')
+    y_pred = K.concatenate([b_pred, g_pred, r_pred], axis=1)
+    y_pred = K.clip(y_pred, 0, 1)
 
 
     # y_true_gray = y_true[:, 0:1] * BGR[0] + y_true[:, 1:2] * BGR[1] + y_true[:, 2:3] * BGR[2] # to GRAY
@@ -75,32 +86,57 @@ def test_metric():
     g_true = K.conv2d(y_true[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
     r_true = K.conv2d(y_true[:, 2:3], kernel, (1, 1), 'same', 'channels_first')
     y_true_conv = K.concatenate([b_true,g_true,r_true], axis=1)
-    y_true_conv = K.clip(y_true_conv, 0, 1)
+    # y_true_conv = K.clip(y_true_conv, 0, 1)
 
     b_pred = K.conv2d(y_pred[:, 0:1], kernel, (1, 1), 'same', 'channels_first')
     g_pred = K.conv2d(y_pred[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
     r_pred = K.conv2d(y_pred[:, 2:3], kernel, (1, 1), 'same', 'channels_first')
     y_pred_conv = K.concatenate([b_pred,g_pred,r_pred], axis=1)
-    y_pred_conv = K.clip(y_pred_conv, 0, 1)
+    # y_pred_conv = K.clip(y_pred_conv, 0, 1)
     print(y_pred_conv.shape)
 
+    clip = K.clip((y_true_conv - y_pred_conv), 0, 1)
+    diff = y_true_conv - y_pred_conv
 
-    abs = K.abs(y_pred_conv - y_true_conv)
-    print(abs.shape)
+    # plt.figure('true')
+    # plt_img(K.eval(y_true)[0])
+    #
+    # plt.figure('true conv')
+    # plt_img(K.eval(y_true_conv)[0])
+    #
+    # plt.figure('pred')
+    # plt_img(K.eval(y_pred)[0])
+    #
+    # plt.figure('pred conv')
+    # plt_img(K.eval(y_pred_conv)[0])
 
-    # mean = K.mean(abs, axis=1)
-    # print(mean.shape)
+    plt.figure('clip')
+    # plt_img(K.eval(clip)[0])
+    plt_img(K.eval(clip)[0])
 
-    plt.figure('true')
-    plt_img(K.eval(y_pred)[0])
-
-    plt.figure('pred')
-    plt_img(K.eval(y_pred_conv)[0])
+    plt.figure('diff')
+    plt_img(K.eval(clip)[0])
+    # x = K.eval(diff)[0]
+    # plt_img((x-np.min(x))/(np.max(x)-np.min(x)))
 
     plt.show()
 
     # return mean
     return 1
+
+
+def mean_squared_error(y_true, y_pred):
+    print(y_pred.shape)
+    print(y_true.shape)
+
+    mean_1 = K.mean(K.square(y_pred - y_true), axis=-2)
+    return mean_1
+
+    mean = K.mean(mean_1)
+
+    return mean
+
+
 
 def get_super_small_unet():
     # batch 176
@@ -112,8 +148,8 @@ def get_super_small_unet():
     inputs = Input(shape=img_shape)
     # print(inputs.shape)
 
-    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv1)
+    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same',kernel_initializer=keras.initializers.glorot_uniform(100))(inputs)
+    conv1 = Conv2D(3, (3, 3), activation='relu', padding='same',kernel_initializer=keras.initializers.glorot_uniform(100))(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
     # print(pool1.shape)
 
@@ -122,9 +158,9 @@ def get_super_small_unet():
     # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     # print(pool2.shape)
 
-    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(pool1)
-    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same')(conv3)
-    deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid')
+    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same',kernel_initializer=keras.initializers.glorot_uniform(100))(pool1)
+    conv3 = Conv2D(9, (3, 3), activation='relu', padding='same',kernel_initializer=keras.initializers.glorot_uniform(100))(conv3)
+    deconv = Conv2DTranspose(3, (3, 3), strides=(2, 2), padding='valid',kernel_initializer=keras.initializers.glorot_uniform(100))
     crop = Cropping2D(cropping=((0, 0), (1, 0)))
     up3 = deconv(conv3)
     crop_up3 = crop(up3)
@@ -140,14 +176,17 @@ def get_super_small_unet():
 
     # print(deconv.output_shape, '->', crop.output_shape, conv1.shape)
     concat5 = concatenate([crop_up3, conv1], axis=concat_axis)
-    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(concat5)
-    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same')(conv5)
-    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv5)
+    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same',kernel_initializer=keras.initializers.glorot_uniform(100))(concat5)
+    conv5 = Conv2D(3, (3, 3), activation='relu', padding='same',kernel_initializer=keras.initializers.glorot_uniform(100))(conv5)
+    outputs = Conv2D(3, (1, 1), activation='sigmoid',kernel_initializer=keras.initializers.glorot_uniform(1000))(conv5)
     # print(outputs.shape)
 
     model = Model(inputs=[inputs], outputs=[outputs])
     # model.compile(optimizer='adam', loss=SP_model.laplacian_gray_loss, metrics=['accuracy'])
-    model.compile(optimizer='adam', loss=SP_model.abs_laplacian_color_loss, metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss=SP_model.abs_laplacian_color_loss, metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss=keras.losses.mean_squared_error, metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='sgd', loss=mean_squared_error, metrics=['accuracy'])
 
     # model.summary()
     # print('Metrics: ' + str(model.metrics_names))
@@ -158,11 +197,27 @@ if __name__ == '__main__':
 
     test_metric()
 
-    # arr = np.empty((10,3,375,500), dtype=np.float32)
+
+    #
+    # rs = np.random.RandomState(1234)
+    # training = rs.rand(10,3,375,500)
+    #
+    # rs = np.random.RandomState(4321)
+    # target = rs.rand(10,3,375,500)
+    #
+    # print(training.dtype)
+    # print(training[1,1,1,1])
+    # print(target.dtype)
+    # print(target[1,1,1,1])
+    #
+    # print(K.eval(K.mean(K.variable(training))))
+    #
+    # # arr = np.empty((10,3,375,500), dtype=np.float32)
+    # # arr = np.zeros((10,3,375,500), dtype=np.float32)
     #
     # model = get_super_small_unet()
-
-    # scores = model.train_on_batch(arr, arr)
+    # #
+    # scores = model.train_on_batch(training, target)
     #
     # for m in zip(model.metrics_names,scores):
     #     print(m)

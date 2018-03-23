@@ -137,7 +137,7 @@ def laplacian_gray_loss(y_true, y_pred):
 
     return mean
 
-def diff_laplacian_color_loss(y_true, y_pred):
+def clip_laplacian_color_loss(y_true, y_pred):
 
     b_true = K.conv2d(y_true[:, 0:1], kernel, (1, 1), 'same', 'channels_first')
     g_true = K.conv2d(y_true[:, 1:2], kernel, (1, 1), 'same', 'channels_first')
@@ -152,10 +152,10 @@ def diff_laplacian_color_loss(y_true, y_pred):
     # y_pred_conv = K.clip(y_pred_conv, 0, 1) # убрано чтобы учитывать разницу лучше, clip может обрезать данные
     # print(y_pred_conv.shape)
 
-    # clip = K.clip((y_true_conv - y_pred_conv), 0, 1)
-    # return clip
-    diff = y_true_conv - y_pred_conv
-    return diff
+    clip = K.clip((y_true_conv - y_pred_conv), 0, 1)
+    return clip
+    # diff = y_true_conv - y_pred_conv
+    # return diff
 
 def sub_loss(y_true, y_pred):
     return K.square(y_true - y_pred)
@@ -484,7 +484,7 @@ def get_unet_128():
 
 
     # ~/diff_laplacian_color_loss
-    model.compile(optimizer='adam', loss=diff_laplacian_color_loss, metrics=['accuracy'])
+    model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
 
 
     # для запуска

@@ -18,9 +18,15 @@ import SP_model
 from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
 
+iter_num = str(39000);
+train_name = 'mean_squared_error_lr_0.001'
+
 def graph_metrics():
+    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_metrics.csv'
+
+    metrics = np.loadtxt(model_path, delimiter=',')
     # metrics = np.loadtxt(os.path.expanduser('~/m.csv'), delimiter=',')
-    metrics = np.loadtxt('/home/doleinik/SP_metrics.csv', delimiter=',')
+
     plt.figure('loss')
     plt.plot(metrics[:, 1])
     plt.figure('acc')
@@ -87,14 +93,9 @@ def get_img_from_patches(patches, img):
     return extended_img[:h, :w]
 
 
-
-
-
 def evaluate():
 
     # cluster run
-    iter_num = str(39000);
-    train_name = 'mean_squared_error_lr_0.001'
     model_path = '/home/doleinik/trained_models_SharpeningPhoto/'+train_name+'/SP_saved_models/SP_model_iter_'+iter_num+'.h5'
 
     # loacal

@@ -18,7 +18,7 @@ import SP_model
 from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
 
-iter_num = str(39000);
+iter_num = str(39500);
 train_name = 'mean_squared_error_lr_0.001'
 
 def graph_metrics():

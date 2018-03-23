@@ -108,7 +108,7 @@ def evaluate():
 
 
     # execute for single image file
-    if True:
+    if False:
         # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
         # img_path = '/home/doleinik/me.jpg'
         img_path = '9.JPG'
@@ -156,23 +156,25 @@ def evaluate():
         # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
         paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
 
-        id = '{:08}'.format(0)
-        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, [id])
+        list_ids = [567, 345, 2344]
+        ids = ['{:08}'.format(i) for i in list_ids]
+        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, ids)
 
         predict_data_1 = model.predict(train_blur_data)
-        predict_data_2 = model.predict(predict_data_1)
+        # predict_data_2 = model.predict(predict_data_1)
 
-        plt.figure('blur')
-        plt_img(train_blur_data[0])
+        for i in range(len(ids)):
+            plt.figure('blur: ' + ids[i])
+            plt_img(train_blur_data[i])
 
-        plt.figure('sharp')
-        plt_img(train_sharp_data[0])
+            plt.figure('sharp: ' + ids[i])
+            plt_img(train_sharp_data[i])
 
-        plt.figure('pred 1')
-        plt_img(predict_data_1[0])
+            plt.figure('pred 1: ' + ids[i])
+            plt_img(predict_data_1[i])
 
-        plt.figure('pred 2')
-        plt_img(predict_data_2[0])
+            # plt.figure('pred 2')
+            # plt_img(predict_data_2[0])
 
         plt.show()
 

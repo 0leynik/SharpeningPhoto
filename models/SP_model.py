@@ -8,8 +8,7 @@ import os
 import matplotlib.pyplot as plt
 import cv2
 import lmdb
-if __name__ == '__main__':
-    import caffe
+import caffe
 from datetime import datetime
 
 from keras.layers import Dense, Dropout, Activation, Flatten
@@ -70,38 +69,37 @@ def get_data_from_keys(lmdb_paths, keylist):
     sharp_data = np.empty((batch_size, 3, IMG_H, IMG_W), dtype=np.uint8)
     ret_data = [blur_data, sharp_data]
 
-    if __name__ == '__main__':
-        datum = caffe.proto.caffe_pb2.Datum()
-        for i in range(2):
+    datum = caffe.proto.caffe_pb2.Datum()
+    for i in range(2):
 
-            env = lmdb.open(lmdb_paths[i], readonly=True)
-            txn = env.begin() # можно делать get() из txn
-            # curs = txn.cursor() # можно делать get() из txn.cursor
-            # value = curs.get(key)
+        env = lmdb.open(lmdb_paths[i], readonly=True)
+        txn = env.begin() # можно делать get() из txn
+        # curs = txn.cursor() # можно делать get() из txn.cursor
+        # value = curs.get(key)
 
-            # Conv2D
-            # data_format: channels_first
-            # shape(batch, channels, height, width)
+        # Conv2D
+        # data_format: channels_first
+        # shape(batch, channels, height, width)
 
-            for j in range(batch_size):
-                value = txn.get(keylist[j])
-                datum.ParseFromString(value)
-                data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
-                ret_data[i][j] = data[:, :IMG_H, :IMG_W]
+        for j in range(batch_size):
+            value = txn.get(keylist[j])
+            datum.ParseFromString(value)
+            data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
+            ret_data[i][j] = data[:, :IMG_H, :IMG_W]
 
-                # print(type(data))
-                # print(data.dtype)
-                # print(data.shape)
-                if visualize:
-                    # CxHxW -> HxWxC
-                    img = np.transpose(data, (1, 2, 0))
-                    # BGR -> RGB
-                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # print(type(data))
+            # print(data.dtype)
+            # print(data.shape)
+            if visualize:
+                # CxHxW -> HxWxC
+                img = np.transpose(data, (1, 2, 0))
+                # BGR -> RGB
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-                    # matplotlib.pyplot.imshow()
-                    # HxWx3 – RGB (float or uint8 array)
-                    plt.imshow(img)
-                    plt.show()
+                # matplotlib.pyplot.imshow()
+                # HxWx3 – RGB (float or uint8 array)
+                plt.imshow(img)
+                plt.show()
 
     # print('Batch size in memory = ' + str(1. * ret_data[0].nbytes / (pow(2, 30))) + ' GB')
     for i in range(len(ret_data)):

@@ -482,14 +482,14 @@ def get_unet_128():
 
 
     # ~/diff_laplacian_color_loss
-    model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
 
 
     # для запуска
     # # ~/mean_squared_error_lr_0.2
     # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
-    # # ~/mean_squared_error_lr_0.00002
-    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
+    # ~/mean_squared_error_lr_0.00002
+    model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))

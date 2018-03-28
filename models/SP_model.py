@@ -508,7 +508,10 @@ def get_unet_128_w_BN():
 
     inputs = Input(shape=img_shape)
 
-    conv1 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(inputs)))
+    conv1 = Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(inputs)
+    conv1 = BatchNormalization()(conv1)
+    conv1 = Activation('relu')(conv1)
+
     conv1 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv1)))
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 

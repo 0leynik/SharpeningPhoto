@@ -556,7 +556,7 @@ def get_unet_128_w_BN():
     conv9 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer='glorot_normal')(up9)))
     conv9 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer='glorot_normal')(conv9)))
 
-    outputs = Activation('relu')(BatchNormalization()(Conv2D(3, (1, 1), activation='sigmoid')(conv9)))
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
 
     model = Model(inputs=[inputs], outputs=[outputs])
 

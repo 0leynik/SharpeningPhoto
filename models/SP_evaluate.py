@@ -3,9 +3,8 @@
 from __future__ import print_function
 
 import os
-if __name__ == '__main__':
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,10 +18,19 @@ from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_fro
 
 
 iter_num = str(39500);
-train_name = 'mean_squared_error_lr_0.001'
+train_name_id = 0
+train_names = [
+    'mean_squared_error_lr_0.001',
+    'mean_squared_error_lr_0.2',
+    'mean_squared_error_lr_0.00002',
+    'laplacian_gray_loss',
+    'sub_loss',
+    'clip_laplacian_color_loss'
+    ]
+
 
 def graph_metrics():
-    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_metrics.csv'
+    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_names[train_name_id] + '/SP_metrics.csv'
 
     # metrics = np.loadtxt(model_path, delimiter=',')
     metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
@@ -96,14 +104,18 @@ def get_img_from_patches(patches, img):
 def evaluate():
 
     # cluster run
-    model_path = '/home/doleinik/trained_models_SharpeningPhoto/'+train_name+'/SP_saved_models/SP_model_iter_'+iter_num+'.h5'
+    model_path = '/home/doleinik/trained_models_SharpeningPhoto/'+train_names[train_name_id]+'/SP_saved_models/SP_model_iter_'+iter_num+'.h5'
 
     # loacal
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_mse.h5'
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_sub_loss.h5'
 
     # load model
-    custom_objects = {'laplacian_gray_loss': SP_model.laplacian_gray_loss}
+    custom_objects = {
+        'laplacian_gray_loss': SP_model.laplacian_gray_loss,
+        'sub_loss' : SP_model.sub_loss,
+        'clip_laplacian_color_loss' : SP_model.clip_laplacian_color_loss
+    }
     model = keras.models.load_model(model_path, custom_objects=custom_objects)
 
 
@@ -111,7 +123,7 @@ def evaluate():
     if False:
         # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
         # img_path = '/home/doleinik/me.jpg'
-        img_path = '9.JPG'
+        img_path = '9_1.JPG'
 
         original_img = skimage.img_as_float(imread(img_path))
         # original_img = skimage.img_as_float(imread(img_path))[:128,:128]
@@ -134,11 +146,11 @@ def evaluate():
         print('Plotting...')
 
         plt.figure('blur')
-        imsave('blur.JPG', original_img)
+        imsave('_blur.JPG', original_img)
         # plt.imshow(original_img)
 
         plt.figure('predict')
-        imsave('predict.JPG', predict_img)
+        imsave('_predict.JPG', predict_img)
         # plt.imshow(predict_img)
         # plt.imshow(predict_img_patches[0][..., ::-1])
 
@@ -182,4 +194,4 @@ def evaluate():
 if __name__ == '__main__':
 
     graph_metrics()
-    # evaluate()
+    evaluate()

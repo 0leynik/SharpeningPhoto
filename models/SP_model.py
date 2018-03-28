@@ -8,14 +8,21 @@ import os
 import matplotlib.pyplot as plt
 import cv2
 import lmdb
-import caffe
+
+import pkgutil
+found_caffe = pkgutil.find_loader('caffe') is not None
+if found_caffe:
+    import caffe
+print('Caffe found = '+str(found_caffe))
+
 from datetime import datetime
 
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate
+from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
+from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D, Concatenate, concatenate
 from keras.models import Model
 from keras.optimizers import Adam
 from keras.losses import mean_squared_error
+from keras.initializers import glorot_normal
 from keras import backend as K
 
 import tensorflow as tf
@@ -69,37 +76,38 @@ def get_data_from_keys(lmdb_paths, keylist):
     sharp_data = np.empty((batch_size, 3, IMG_H, IMG_W), dtype=np.uint8)
     ret_data = [blur_data, sharp_data]
 
-    datum = caffe.proto.caffe_pb2.Datum()
-    for i in range(2):
+    if found_caffe:
+        datum = caffe.proto.caffe_pb2.Datum()
+        for i in range(2):
 
-        env = lmdb.open(lmdb_paths[i], readonly=True)
-        txn = env.begin() # можно делать get() из txn
-        # curs = txn.cursor() # можно делать get() из txn.cursor
-        # value = curs.get(key)
+            env = lmdb.open(lmdb_paths[i], readonly=True)
+            txn = env.begin() # можно делать get() из txn
+            # curs = txn.cursor() # можно делать get() из txn.cursor
+            # value = curs.get(key)
 
-        # Conv2D
-        # data_format: channels_first
-        # shape(batch, channels, height, width)
+            # Conv2D
+            # data_format: channels_first
+            # shape(batch, channels, height, width)
 
-        for j in range(batch_size):
-            value = txn.get(keylist[j])
-            datum.ParseFromString(value)
-            data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
-            ret_data[i][j] = data[:, :IMG_H, :IMG_W]
+            for j in range(batch_size):
+                value = txn.get(keylist[j])
+                datum.ParseFromString(value)
+                data = caffe.io.datum_to_array(datum) # (datum.channels, datum.height, datum.width)
+                ret_data[i][j] = data[:, :IMG_H, :IMG_W]
 
-            # print(type(data))
-            # print(data.dtype)
-            # print(data.shape)
-            if visualize:
-                # CxHxW -> HxWxC
-                img = np.transpose(data, (1, 2, 0))
-                # BGR -> RGB
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                # print(type(data))
+                # print(data.dtype)
+                # print(data.shape)
+                if visualize:
+                    # CxHxW -> HxWxC
+                    img = np.transpose(data, (1, 2, 0))
+                    # BGR -> RGB
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-                # matplotlib.pyplot.imshow()
-                # HxWx3 – RGB (float or uint8 array)
-                plt.imshow(img)
-                plt.show()
+                    # matplotlib.pyplot.imshow()
+                    # HxWx3 – RGB (float or uint8 array)
+                    plt.imshow(img)
+                    plt.show()
 
     # print('Batch size in memory = ' + str(1. * ret_data[0].nbytes / (pow(2, 30))) + ' GB')
     for i in range(len(ret_data)):
@@ -473,6 +481,10 @@ def get_unet_128():
 
     # ~/mean_squared_error_lr_0.001
     # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    # # ~/mean_squared_error_lr_0.2
+    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
+    # ~/mean_squared_error_lr_0.00002
+    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
 
     # ~/laplacian_gray_loss (делает красным)
     # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
@@ -480,22 +492,91 @@ def get_unet_128():
     # ~/sub_loss ( + - аналогично mse)
     # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
 
-
-    # ~/diff_laplacian_color_loss
+    # ~/clip_laplacian_color_loss
     # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
-
-
-    # для запуска
-    # # ~/mean_squared_error_lr_0.2
-    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
-    # ~/mean_squared_error_lr_0.00002
-    model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))
 
     return model
 
+
+def get_unet_128_w_BN():
+
+    img_shape = (3, IMG_H, IMG_W)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    conv1 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(inputs)))
+    conv1 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv1)))
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+    conv2 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same', kernel_initializer=glorot_normal)(pool1)))
+    conv2 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv2)))
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+    conv3 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same', kernel_initializer=glorot_normal)(pool2)))
+    conv3 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv3)))
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+
+    conv4 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same', kernel_initializer=glorot_normal)(pool3)))
+    conv4 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv4)))
+    dropout4 = Dropout(0.5)(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(dropout4)
+
+    conv5 = Activation('relu')(BatchNormalization()(Conv2D(512, (3, 3), padding='same', kernel_initializer=glorot_normal)(pool4)))
+    conv5 = Activation('relu')(BatchNormalization()(Conv2D(512, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv5)))
+    dropout5 = Dropout(0.5)(conv5)
+
+    deconv6 = Activation('relu')(BatchNormalization()(Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same', kernel_initializer=glorot_normal)(dropout5)))
+    # up6 = concatenate([deconv6, conv4], axis=concat_axis)
+    up6 = Concatenate(axis=concat_axis)([deconv6, conv4])
+    conv6 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same', kernel_initializer=glorot_normal)(up6)))
+    conv6 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv6)))
+
+    deconv7 = Activation('relu')(BatchNormalization()(Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same', kernel_initializer=glorot_normal)(conv6)))
+    # up7 = concatenate([deconv7, conv3], axis=concat_axis)
+    up7 = Concatenate(axis=concat_axis)([deconv7, conv3])
+    conv7 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same', kernel_initializer=glorot_normal)(up7)))
+    conv7 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv7)))
+
+    deconv8 = Activation('relu')(BatchNormalization()(Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same', kernel_initializer=glorot_normal)(conv7)))
+    # up8 = concatenate([deconv8, conv2], axis=concat_axis)
+    up8 = Concatenate(axis=concat_axis)([deconv8, conv2])
+    conv8 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same', kernel_initializer=glorot_normal)(up8)))
+    conv8 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv8)))
+
+    deconv9 = Activation('relu')(BatchNormalization()(Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same', kernel_initializer=glorot_normal)(conv8)))
+    # up9 = concatenate([deconv9, conv1], axis=concat_axis)
+    up9 = Concatenate(axis=concat_axis)([deconv9, conv1])
+    conv9 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(up9)))
+    conv9 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same', kernel_initializer=glorot_normal)(conv9)))
+
+    outputs = Activation('relu')(BatchNormalization()(Conv2D(3, (1, 1), activation='sigmoid')(conv9)))
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    # ~/mean_squared_error_lr_0.001
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    # # ~/mean_squared_error_lr_0.2
+    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
+    # ~/mean_squared_error_lr_0.00002
+    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
+
+    # ~/laplacian_gray_loss (делает красным)
+    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
+
+    # ~/sub_loss ( + - аналогично mse)
+    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
+
+    # ~/clip_laplacian_color_loss
+    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+
+    return model
 
 def save_model(model, iter_num):
     # Save model and weights
@@ -545,7 +626,8 @@ if __name__ == '__main__':
         epoch_start = 1
         iter_num = 0
         print('Getting model...')
-        model = get_unet_128()
+        # model = get_unet_128()
+        model = get_unet_128_w_BN()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
     print('\nRun training...\n')

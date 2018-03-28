@@ -480,7 +480,7 @@ def get_unet_128():
     model = Model(inputs=[inputs], outputs=[outputs])
 
     # ~/mean_squared_error_lr_0.001
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     # # ~/mean_squared_error_lr_0.2
     # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
     # ~/mean_squared_error_lr_0.00002
@@ -629,8 +629,8 @@ if __name__ == '__main__':
         epoch_start = 1
         iter_num = 0
         print('Getting model...')
-        # model = get_unet_128()
-        model = get_unet_128_w_BN()
+        model = get_unet_128()
+        # model = get_unet_128_w_BN()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
     print('\nRun training...\n')

@@ -629,8 +629,8 @@ if __name__ == '__main__':
         epoch_start = 1
         iter_num = 0
         print('Getting model...')
-        model = get_unet_128()
-        # model = get_unet_128_w_BN()
+        # model = get_unet_128()
+        model = get_unet_128_w_BN()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
     print('\nRun training...\n')

@@ -38,6 +38,7 @@ def graph_metrics(train_name):
     plt.title(acc_name)
     plt.plot(metrics[:, 2])
     plt.savefig(save_dir_graphs + acc_name + '.png')
+
     # plt.show()
 
 

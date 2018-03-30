@@ -32,12 +32,14 @@ def graph_metrics(train_name):
     plt.title(loss_name)
     plt.plot(metrics[:, 1])
     plt.savefig(save_dir_graphs + loss_name + '.png')
+    plt.close()
 
     acc_name = 'acc_' + train_name
     plt.figure(acc_name)
     plt.title(acc_name)
     plt.plot(metrics[:, 2])
     plt.savefig(save_dir_graphs + acc_name + '.png')
+    plt.close()
 
     # plt.show()
 
@@ -186,24 +188,28 @@ def evaluate(train_name, iter_num):
             plt.title(name)
             img = plt_img(blur_data[i])
             imsave(save_dir_imgs + name + '.png', img)
+            plt.close()
 
             name = 'sharp_' + ids[i] + '_' + train_name
             plt.figure(name)
             plt.title(name)
             img = plt_img(sharp_data[i])
             imsave(save_dir_imgs + name + '.png', img)
+            plt.close()
 
             name = 'pred_' + ids[i] + '_' + train_name
             plt.figure(name)
             plt.title(name)
             img = plt_img(predict_data_1[i])
             imsave(save_dir_imgs + name + '.png', img)
+            plt.close()
 
             # name = 'pred_pred_' + ids[i] + '_' + train_name
             # plt.figure(name)
             # plt.title(name)
             # img = plt_img(predict_data_2[i])
             # imsave(save_dir_imgs + name + '.png', img)
+            # plt.close()
 
         # plt.show()
 

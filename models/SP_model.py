@@ -481,7 +481,7 @@ def get_unet_128():
 
     # ~/mean_squared_error_lr_0.001
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-    # # ~/mean_squared_error_lr_0.2
+    # # ~/mean_squared_error_lr_0.2 (loss = nan)
     # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
     # ~/mean_squared_error_lr_0.00002
     # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])

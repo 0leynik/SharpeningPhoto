@@ -211,7 +211,6 @@ if __name__ == '__main__':
 
     train_names = [
         ['mean_squared_error_lr_0.001',39500],
-        ['mean_squared_error_lr_0.2',1500],
         ['mean_squared_error_lr_0.00002',500],
         ['laplacian_gray_loss',37500],
         ['sub_loss',39500],

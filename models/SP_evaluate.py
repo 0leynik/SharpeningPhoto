@@ -17,29 +17,28 @@ import SP_model
 from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
 
-iter_num = str(39500);
-train_name_id = 0
-train_names = [
-    'mean_squared_error_lr_0.001',
-    'mean_squared_error_lr_0.2',
-    'mean_squared_error_lr_0.00002',
-    'laplacian_gray_loss',
-    'sub_loss',
-    'clip_laplacian_color_loss'
-    ]
+def graph_metrics(train_name):
+    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_metrics.csv'
 
+    # metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
+    metrics = np.loadtxt(model_path, delimiter=',')
 
-def graph_metrics():
-    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_names[train_name_id] + '/SP_metrics.csv'
+    save_dir_graphs = '/home/doleinik/trained_models_SharpeningPhoto/graphs/'
+    if not os.path.isdir(save_dir_graphs):
+        os.makedirs(save_dir_graphs)
 
-    # metrics = np.loadtxt(model_path, delimiter=',')
-    metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
-
-    plt.figure('loss')
+    loss_name = 'loss_' + train_names
+    plt.figure(loss_name)
+    plt.title(loss_name)
     plt.plot(metrics[:, 1])
-    plt.figure('acc')
+    plt.savefig(save_dir_graphs + loss_name + '.png')
+
+    acc_name = 'acc_' + train_name
+    plt.figure(acc_name)
+    plt.title(acc_name)
     plt.plot(metrics[:, 2])
-    plt.show()
+    plt.savefig(save_dir_graphs + acc_name + '.png')
+    # plt.show()
 
 
 def plt_img(data):
@@ -53,6 +52,8 @@ def plt_img(data):
     # matplotlib.pyplot.imshow()
     # HxWx3 – RGB (float or uint8 array)
     plt.imshow(img)
+    return img
+
 
 h_step, w_step = (128, 128)
 h_count = 0
@@ -101,10 +102,10 @@ def get_img_from_patches(patches, img):
     return extended_img[:h, :w]
 
 
-def evaluate():
+def evaluate(train_name, iter_num):
 
     # cluster run
-    model_path = '/home/doleinik/trained_models_SharpeningPhoto/'+train_names[train_name_id]+'/SP_saved_models/SP_model_iter_'+iter_num+'.h5'
+    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_saved_models/SP_model_iter_' + str(iter_num) + '.h5'
 
     # loacal
     # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_mse.h5'
@@ -161,7 +162,6 @@ def evaluate():
         # plt_img(sharp_img)
 
         # plt.show()
-
     else:
         # from lmdb
         lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
@@ -170,28 +170,56 @@ def evaluate():
 
         list_ids = [567, 345, 2344]
         ids = ['{:08}'.format(i) for i in list_ids]
-        train_blur_data, train_sharp_data = SP_model.get_data_from_keys(paths, ids)
+        blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
 
-        predict_data_1 = model.predict(train_blur_data)
+        predict_data_1 = model.predict(blur_data)
         # predict_data_2 = model.predict(predict_data_1)
 
+        save_dir_imgs = '/home/doleinik/trained_models_SharpeningPhoto/imgs/'
+        if not os.path.isdir(save_dir_imgs):
+            os.makedirs(save_dir_imgs)
+
         for i in range(len(ids)):
-            plt.figure('blur: ' + ids[i])
-            plt_img(train_blur_data[i])
+            name = 'blur_' + ids[i] + '_' + train_name
+            plt.figure(name)
+            plt.title(name)
+            img = plt_img(blur_data[i])
+            imsave(save_dir_imgs + name + '.png', img)
 
-            plt.figure('sharp: ' + ids[i])
-            plt_img(train_sharp_data[i])
+            name = 'sharp_' + ids[i] + '_' + train_name
+            plt.figure(name)
+            plt.title(name)
+            img = plt_img(sharp_data[i])
+            imsave(save_dir_imgs + name + '.png', img)
 
-            plt.figure('pred 1: ' + ids[i])
-            plt_img(predict_data_1[i])
+            name = 'pred_' + ids[i] + '_' + train_name
+            plt.figure(name)
+            plt.title(name)
+            img = plt_img(predict_data_1[i])
+            imsave(save_dir_imgs + name + '.png', img)
 
-            # plt.figure('pred 2')
-            # plt_img(predict_data_2[0])
+            # name = 'pred_pred_' + ids[i] + '_' + train_name
+            # plt.figure(name)
+            # plt.title(name)
+            # img = plt_img(predict_data_2[i])
+            # imsave(save_dir_imgs + name + '.png', img)
 
-        plt.show()
+        # plt.show()
 
 
 if __name__ == '__main__':
 
-    graph_metrics()
-    evaluate()
+    iter_nums = str(39500);
+    train_name_id = 0
+    train_names = [
+        ['mean_squared_error_lr_0.001',39500]
+        ['mean_squared_error_lr_0.2',1500]
+        ['mean_squared_error_lr_0.00002',500]
+        ['laplacian_gray_loss',37500]
+        ['sub_loss',39500]
+        ['clip_laplacian_color_loss',500]
+        ['mean_squared_error_lr_0.001_w_BN',4500]
+    ]
+    for tr in train_names:
+        graph_metrics(tr[0])
+        evaluate(tr[0], tr[1])

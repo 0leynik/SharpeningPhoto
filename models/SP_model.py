@@ -560,7 +560,7 @@ def get_unet_128_w_BN():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # ~/mean_squared_error_lr_0.001
+    # ~/mean_squared_error_lr_0.001_w_BN
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     # # ~/mean_squared_error_lr_0.2
     # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])

@@ -195,6 +195,11 @@ def get_super_small_unet():
 
 if __name__ == '__main__':
 
+    # plt.hist(np.random.randn(120, 120, 3).flatten())
+    # plt.show()
+    # plt.imshow(np.clip(np.random.randn(120, 120, 3),0,1))
+    # plt.show()
+
     test_metric()
 
 

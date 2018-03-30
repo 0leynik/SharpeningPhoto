@@ -212,12 +212,12 @@ if __name__ == '__main__':
     iter_nums = str(39500);
     train_name_id = 0
     train_names = [
-        ['mean_squared_error_lr_0.001',39500]
-        ['mean_squared_error_lr_0.2',1500]
-        ['mean_squared_error_lr_0.00002',500]
-        ['laplacian_gray_loss',37500]
-        ['sub_loss',39500]
-        ['clip_laplacian_color_loss',500]
+        ['mean_squared_error_lr_0.001',39500],
+        ['mean_squared_error_lr_0.2',1500],
+        ['mean_squared_error_lr_0.00002',500],
+        ['laplacian_gray_loss',37500],
+        ['sub_loss',39500],
+        ['clip_laplacian_color_loss',500],
         ['mean_squared_error_lr_0.001_w_BN',4500]
     ]
     for tr in train_names:

@@ -27,7 +27,7 @@ def graph_metrics(train_name):
     if not os.path.isdir(save_dir_graphs):
         os.makedirs(save_dir_graphs)
 
-    loss_name = 'loss_' + train_names
+    loss_name = 'loss_' + train_name
     plt.figure(loss_name)
     plt.title(loss_name)
     plt.plot(metrics[:, 1])
@@ -209,8 +209,6 @@ def evaluate(train_name, iter_num):
 
 if __name__ == '__main__':
 
-    iter_nums = str(39500);
-    train_name_id = 0
     train_names = [
         ['mean_squared_error_lr_0.001',39500],
         ['mean_squared_error_lr_0.2',1500],

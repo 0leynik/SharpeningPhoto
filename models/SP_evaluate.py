@@ -31,6 +31,11 @@ def graph_metrics(train_name):
     plt.figure(loss_name)
     plt.title(loss_name)
     plt.plot(metrics[:, 1])
+    plt.ylabel('loss')
+    plt.xlabel('iter')
+    plt.grid(True, linestyle='--')
+    # plt.yticks(np.linspace(0., 0.2, 10))
+    plt.ylim(0., 0.25)
     plt.savefig(save_dir_graphs + loss_name + '.png')
     plt.close()
 
@@ -38,6 +43,11 @@ def graph_metrics(train_name):
     plt.figure(acc_name)
     plt.title(acc_name)
     plt.plot(metrics[:, 2])
+    plt.ylabel('acc')
+    plt.xlabel('iter')
+    plt.grid(True, linestyle='--')
+    # plt.yticks(np.linspace(0., 0.2, 10))
+    plt.ylim(0., 0.2)
     plt.savefig(save_dir_graphs + acc_name + '.png')
     plt.close()
 
@@ -225,5 +235,7 @@ if __name__ == '__main__':
         ['mean_squared_error_lr_0.001_w_BN',4500]
     ]
     for tr in train_names:
+        print('--> step ' + tr[0])
         graph_metrics(tr[0])
         evaluate(tr[0], tr[1])
+    print('>------end------<')

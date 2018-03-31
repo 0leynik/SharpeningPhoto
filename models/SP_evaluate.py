@@ -193,28 +193,28 @@ def evaluate(train_name, iter_num):
             os.makedirs(save_dir_imgs)
 
         for i in range(len(ids)):
-            name = 'blur_' + ids[i] + '_' + train_name
+            name = ids[i] + '_' + train_name + '_blur'
             plt.figure(name)
             plt.title(name)
             img = plt_img(blur_data[i])
             imsave(save_dir_imgs + name + '.png', img)
             plt.close()
 
-            name = 'sharp_' + ids[i] + '_' + train_name
+            name = ids[i] + '_' + train_name + '_sharp'
             plt.figure(name)
             plt.title(name)
             img = plt_img(sharp_data[i])
             imsave(save_dir_imgs + name + '.png', img)
             plt.close()
 
-            name = 'pred_' + ids[i] + '_' + train_name
+            name = ids[i] + '_' + train_name + '_pred'
             plt.figure(name)
             plt.title(name)
             img = plt_img(predict_data_1[i])
             imsave(save_dir_imgs + name + '.png', img)
             plt.close()
 
-            # name = 'pred_pred_' + ids[i] + '_' + train_name
+            # name = ids[i] + '_' + train_name + '_pred_pred'
             # plt.figure(name)
             # plt.title(name)
             # img = plt_img(predict_data_2[i])

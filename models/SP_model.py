@@ -501,7 +501,7 @@ def get_unet_128():
     return model
 
 
-def get_unet_128_w_BN():
+def get_unet_128_w_BN_kernel_init():
 
     img_shape = (3, IMG_H, IMG_W)
     concat_axis = 1
@@ -560,7 +560,7 @@ def get_unet_128_w_BN():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # ~/mean_squared_error_lr_0.001_w_BN
+    # ~/mean_squared_error_lr_0.001_w_BN_kernel_init
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     # # ~/mean_squared_error_lr_0.2
     # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
@@ -580,6 +580,76 @@ def get_unet_128_w_BN():
     print('Metrics: ' + str(model.metrics_names))
 
     return model
+
+
+def get_SPN():
+
+    img_shape = (3, IMG_H, IMG_W)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    # 1-line
+    conv1_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
+    conv1_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv1_1)
+    deconv1_1 = Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='same')(conv1_1)
+
+    conv2_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(deconv1_1)
+    conv2_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv2_1)
+    pool2_1 = MaxPooling2D(pool_size=(2, 2))(conv2_1)
+
+    concat3_1 = Concatenate(axis=concat_axis)([conv1_1, pool2_1])
+    conv3_1 = Conv2D(64, (3, 3), activation='relu', padding='same')(concat3_1)
+    conv3_1 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv3_1)
+
+    # 2-line
+    conv1_2 = Conv2D(32, (5, 5), activation='relu', padding='same')(inputs)
+    conv1_2 = Conv2D(32, (5, 5), activation='relu', padding='same')(conv1_2)
+    deconv1_2 = Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same')(conv1_2)
+
+    conv2_2 = Conv2D(32, (5, 5), activation='relu', padding='same')(deconv1_2)
+    conv2_2 = Conv2D(32, (5, 5), activation='relu', padding='same')(conv2_2)
+    pool2_2 = MaxPooling2D(pool_size=(2, 2))(conv2_2)
+
+    concat3_2 = Concatenate(axis=concat_axis)([conv1_2, pool2_2])
+    conv3_2 = Conv2D(64, (5, 5), activation='relu', padding='same')(concat3_2)
+    conv3_2 = Conv2D(64, (5, 5), activation='relu', padding='same')(conv3_2)
+
+    # 3-line
+    conv1_3 = Conv2D(64, (1, 1), activation='relu', padding='same')(inputs)
+    conv1_3 = Conv2D(64, (1, 1), activation='relu', padding='same')(conv1_3)
+
+    # concat 1,2,3-line in one
+    concat_all = Concatenate(axis=concat_axis)([conv3_1, conv3_2, conv1_3])
+    conv_all = Conv2D(32, (5, 5), activation='relu', padding='same')(concat_all)
+    conv_all = Conv2D(32, (3, 3), activation='relu', padding='same')(conv_all)
+    conv_all = Conv2D(32, (1, 1), activation='relu', padding='same')(conv_all)
+
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv_all)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    # ~/spn_mean_squared_error_lr_0.001
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    # # ~/mean_squared_error_lr_0.2 (loss = nan)
+    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
+    # ~/mean_squared_error_lr_0.00002
+    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
+
+    # ~/laplacian_gray_loss (делает красным)
+    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
+
+    # ~/sub_loss ( + - аналогично mse)
+    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
+
+    # ~/clip_laplacian_color_loss
+    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+
+    return model
+
 
 def save_model(model, iter_num):
     # Save model and weights
@@ -630,7 +700,8 @@ if __name__ == '__main__':
         iter_num = 0
         print('Getting model...')
         # model = get_unet_128()
-        model = get_unet_128_w_BN()
+        # model = get_unet_128_w_BN_kernel_init()
+        model = get_SPN()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
     print('\nRun training...\n')

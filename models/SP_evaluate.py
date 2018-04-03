@@ -232,7 +232,7 @@ if __name__ == '__main__':
         ['laplacian_gray_loss',37500],
         ['sub_loss',39500],
         ['clip_laplacian_color_loss',500],
-        ['mean_squared_error_lr_0.001_w_BN',4500]
+        ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500]
     ]
     for tr in train_names:
         print('--> step ' + tr[0])

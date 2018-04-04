@@ -17,7 +17,7 @@ import SP_model
 from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
 
-def graph_metrics(train_name):
+def graph_metrics(train_name, savefig=False, show=False):
     model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_metrics.csv'
 
     # metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
@@ -36,7 +36,8 @@ def graph_metrics(train_name):
     plt.grid(True, linestyle='--')
     # plt.yticks(np.linspace(0., 0.2, 10))
     plt.ylim(0., 0.25)
-    plt.savefig(save_dir_graphs + loss_name + '.png')
+    if savefig:
+        plt.savefig(save_dir_graphs + loss_name + '.png')
     plt.close()
 
     acc_name = 'acc_' + train_name
@@ -48,10 +49,12 @@ def graph_metrics(train_name):
     plt.grid(True, linestyle='--')
     # plt.yticks(np.linspace(0., 0.2, 10))
     plt.ylim(0., 0.2)
-    plt.savefig(save_dir_graphs + acc_name + '.png')
+    if savefig:
+        plt.savefig(save_dir_graphs + acc_name + '.png')
     plt.close()
 
-    # plt.show()
+    if show:
+        plt.show()
 
 
 def plt_img(data):
@@ -227,15 +230,16 @@ def evaluate(train_name, iter_num):
 if __name__ == '__main__':
 
     train_names = [
-        ['mean_squared_error_lr_0.001',39500],
-        ['mean_squared_error_lr_0.00002',500],
-        ['laplacian_gray_loss',37500],
-        ['sub_loss',39500],
-        ['clip_laplacian_color_loss',500],
-        ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500]
+        # ['mean_squared_error_lr_0.001',39500],
+        # ['mean_squared_error_lr_0.00002',500],
+        # ['laplacian_gray_loss',37500],
+        # ['sub_loss',39500],
+        # ['clip_laplacian_color_loss',500],
+        # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
+        ['spn_mean_squared_error_lr_0.001',13000]
     ]
     for tr in train_names:
         print('--> step ' + tr[0])
-        graph_metrics(tr[0])
+        graph_metrics(tr[0], True, True)
         evaluate(tr[0], tr[1])
     print('>------end------<')

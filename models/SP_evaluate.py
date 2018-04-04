@@ -38,7 +38,7 @@ def graph_metrics(train_name, savefig=False, show=False):
     plt.ylim(0., 0.25)
     if savefig:
         plt.savefig(save_dir_graphs + loss_name + '.png')
-    plt.close()
+    # plt.close()
 
     acc_name = 'acc_' + train_name
     plt.figure(acc_name)
@@ -51,7 +51,7 @@ def graph_metrics(train_name, savefig=False, show=False):
     plt.ylim(0., 0.2)
     if savefig:
         plt.savefig(save_dir_graphs + acc_name + '.png')
-    plt.close()
+    # plt.close()
 
     if show:
         plt.show()

@@ -13,6 +13,8 @@ import skimage
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.colors
+import matplotlib as mpl
+
 
 # import SP_model
 
@@ -193,17 +195,31 @@ def get_super_small_unet():
     return model
 
 
+def conv2d_upsampling():
+    # img = skimage.img_as_float(imread('/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/filter_ImageNet_for_visio/4_3.JPEG')) # RGB
+    img = skimage.img_as_float(imread('4_3.JPG')) # RGB
+    h, w, c = img.shape
+    # img = img[..., ::-1]  # BGR
+    # img = np.transpose(img, (2, 0, 1))
+    # print(img.shape)
+    # plt.figure('img', (16,9))
+
+    print(mpl.rcParams['figure.figsize'])
+    print(mpl.rcParams['figure.dpi'])
+
+
+    plt.figure('img')
+    plt.plot(np.random.rand(1000))
+    plt.savefig('kek.png')
+    plt.show()
+
+
 if __name__ == '__main__':
 
-    # plt.hist(np.random.randn(120, 120, 3).flatten())
-    # plt.show()
-    # plt.imshow(np.clip(np.random.randn(120, 120, 3),0,1))
-    # plt.show()
+    conv2d_upsampling()
 
-    test_metric()
+    # test_metric()
 
-
-    #
     # rs = np.random.RandomState(1234)
     # training = rs.rand(10,3,375,500)
     #

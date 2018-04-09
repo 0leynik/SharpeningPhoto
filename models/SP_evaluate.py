@@ -67,7 +67,7 @@ def plt_img(data):
 
     # matplotlib.pyplot.imshow()
     # HxWx3 – RGB (float or uint8 array)
-    plt.imshow(img)
+    # plt.imshow(img)
     return img
 
 
@@ -118,14 +118,10 @@ def get_img_from_patches(patches, img):
     return extended_img[:h, :w]
 
 
-def evaluate(train_name, iter_num):
+def evaluate_from_db(train_name, iter_num):
 
     # cluster run
     model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_saved_models/SP_model_iter_' + str(iter_num) + '.h5'
-
-    # loacal
-    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_mse.h5'
-    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_sub_loss.h5'
 
     # load model
     custom_objects = {
@@ -136,98 +132,114 @@ def evaluate(train_name, iter_num):
     model = keras.models.load_model(model_path, custom_objects=custom_objects)
 
 
-    # execute for single image file
-    if False:
-        # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
-        # img_path = '/home/doleinik/me.jpg'
-        img_path = '9_1.JPG'
+    # from lmdb
+    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+    # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
+    paths = [lmdb_path + 'test_blur_lmdb_128', lmdb_path + 'test_sharp_lmdb_128']
 
-        original_img = skimage.img_as_float(imread(img_path))
-        # original_img = skimage.img_as_float(imread(img_path))[:128,:128]
-        print(original_img.shape)
-        img = original_img[:, :, ::-1]  # RGB -> BGR
-        img_patches = get_patches_from_img(img)
-        img_patches = np.array(map(lambda i: np.transpose(i, (2, 0, 1)), img_patches), np.float32)  # HxWxC -> CxHxW
-        print('shape img_patches: ' + str(img_patches.shape))
+    # list_ids = [567, 345, 2344]
+    list_ids = range(1000)
+    ids = ['{:08}'.format(i) for i in list_ids]
+    blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
 
-        # np_img = np.empty((1, 3, 128, 128), dtype=np.float32)
-        # np_img[0] = np.transpose(img, (2, 0, 1))
-        print('Predicting...')
-        # predict_img = model.predict(np_img)
-        predict_img_patches = model.predict(img_patches)
+    # predict_data_1 = model.predict(blur_data)
+    # predict_data_2 = model.predict(predict_data_1)
 
-        predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches), np.float32)  # HxWxC -> CxHxW
-        predict_img = get_img_from_patches(predict_img_patches, original_img)
-        predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
+    save_dir_imgs = '/home/doleinik/trained_models_SharpeningPhoto/imgs/'
+    if not os.path.isdir(save_dir_imgs):
+        os.makedirs(save_dir_imgs)
 
-        print('Plotting...')
+    for i in range(len(ids)):
+        # name = ids[i] + '_' + train_name + '_blur'
+        # plt.figure(name)
+        # plt.title(name)
+        # img = plt_img(blur_data[i])
+        # imsave(save_dir_imgs + name + '.png', img)
+        # plt.close()
 
-        plt.figure('blur')
-        imsave('_blur.JPG', original_img)
-        # plt.imshow(original_img)
+        name = ids[i] + '_' + train_name + '_sharp'
+        plt.figure(name)
+        plt.title(name)
+        img = plt_img(sharp_data[i])
+        imsave(save_dir_imgs + name + '.png', img)
+        plt.close()
 
-        plt.figure('predict')
-        imsave('_predict.JPG', predict_img)
-        # plt.imshow(predict_img)
-        # plt.imshow(predict_img_patches[0][..., ::-1])
+        # name = ids[i] + '_' + train_name + '_pred'
+        # plt.figure(name)
+        # plt.title(name)
+        # img = plt_img(predict_data_1[i])
+        # imsave(save_dir_imgs + name + '.png', img)
+        # plt.close()
 
-        # sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
-        # sharp_img = sharp_img[..., ::-1]
-        # sharp_img = np.transpose(sharp_img, (2, 0, 1))
-        # plt.figure('sharp')
-        # plt_img(sharp_img)
+        # name = ids[i] + '_' + train_name + '_pred_pred'
+        # plt.figure(name)
+        # plt.title(name)
+        # img = plt_img(predict_data_2[i])
+        # imsave(save_dir_imgs + name + '.png', img)
+        # plt.close()
 
-        # plt.show()
-    else:
-        # from lmdb
-        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-        # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-        paths = [lmdb_path + 'val_blur_lmdb_128', lmdb_path + 'val_sharp_lmdb_128']
+    # plt.show()
 
-        list_ids = [567, 345, 2344]
-        ids = ['{:08}'.format(i) for i in list_ids]
-        blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
+def evaluate_from_img():
 
-        predict_data_1 = model.predict(blur_data)
-        # predict_data_2 = model.predict(predict_data_1)
+    # local
+    model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_mse.h5'
+    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_sub_loss.h5'
 
-        save_dir_imgs = '/home/doleinik/trained_models_SharpeningPhoto/imgs/'
-        if not os.path.isdir(save_dir_imgs):
-            os.makedirs(save_dir_imgs)
+    # load model
+    custom_objects = {
+        'laplacian_gray_loss': SP_model.laplacian_gray_loss,
+        'sub_loss': SP_model.sub_loss,
+        'clip_laplacian_color_loss': SP_model.clip_laplacian_color_loss
+    }
+    model = keras.models.load_model(model_path, custom_objects=custom_objects)
 
-        for i in range(len(ids)):
-            name = ids[i] + '_' + train_name + '_blur'
-            plt.figure(name)
-            plt.title(name)
-            img = plt_img(blur_data[i])
-            imsave(save_dir_imgs + name + '.png', img)
-            plt.close()
 
-            name = ids[i] + '_' + train_name + '_sharp'
-            plt.figure(name)
-            plt.title(name)
-            img = plt_img(sharp_data[i])
-            imsave(save_dir_imgs + name + '.png', img)
-            plt.close()
+    # img_path = '/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_fb.JPEG'
+    # img_path = '/home/doleinik/me.jpg'
+    img_path = '9_1.JPG'
 
-            name = ids[i] + '_' + train_name + '_pred'
-            plt.figure(name)
-            plt.title(name)
-            img = plt_img(predict_data_1[i])
-            imsave(save_dir_imgs + name + '.png', img)
-            plt.close()
+    original_img = skimage.img_as_float(imread(img_path))
+    # original_img = skimage.img_as_float(imread(img_path))[:128,:128]
+    print(original_img.shape)
+    img = original_img[:, :, ::-1]  # RGB -> BGR
+    img_patches = get_patches_from_img(img)
+    img_patches = np.array(map(lambda i: np.transpose(i, (2, 0, 1)), img_patches), np.float32)  # HxWxC -> CxHxW
+    print('shape img_patches: ' + str(img_patches.shape))
 
-            # name = ids[i] + '_' + train_name + '_pred_pred'
-            # plt.figure(name)
-            # plt.title(name)
-            # img = plt_img(predict_data_2[i])
-            # imsave(save_dir_imgs + name + '.png', img)
-            # plt.close()
+    # np_img = np.empty((1, 3, 128, 128), dtype=np.float32)
+    # np_img[0] = np.transpose(img, (2, 0, 1))
+    print('Predicting...')
+    # predict_img = model.predict(np_img)
+    predict_img_patches = model.predict(img_patches)
 
-        # plt.show()
+    predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches),
+                                   np.float32)  # HxWxC -> CxHxW
+    predict_img = get_img_from_patches(predict_img_patches, original_img)
+    predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
 
+    print('Plotting...')
+
+    plt.figure('blur')
+    imsave('_blur.JPG', original_img)
+    # plt.imshow(original_img)
+
+    plt.figure('predict')
+    imsave('_predict.JPG', predict_img)
+    # plt.imshow(predict_img)
+    # plt.imshow(predict_img_patches[0][..., ::-1])
+
+    # sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
+    # sharp_img = sharp_img[..., ::-1]
+    # sharp_img = np.transpose(sharp_img, (2, 0, 1))
+    # plt.figure('sharp')
+    # plt_img(sharp_img)
+
+    # plt.show()
 
 if __name__ == '__main__':
+
+    # evaluate_from_img()
 
     train_names = [
         # ['mean_squared_error_lr_0.001',39500],
@@ -236,10 +248,11 @@ if __name__ == '__main__':
         # ['sub_loss',39500],
         # ['clip_laplacian_color_loss',500],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
-        ['spn_mean_squared_error_lr_0.001',13000]
+        # ['spn_mean_squared_error_lr_0.001', 13000]
+        ['spn_cosine_proximity', 29000]
     ]
     for tr in train_names:
         print('--> step ' + tr[0])
         graph_metrics(tr[0], True, True)
-        evaluate(tr[0], tr[1])
+        evaluate_from_db(tr[0], tr[1])
     print('>------end------<')

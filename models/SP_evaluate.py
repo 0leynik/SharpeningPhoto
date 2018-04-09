@@ -158,11 +158,11 @@ def evaluate_from_db(train_name, iter_num):
         # plt.close()
 
         name = ids[i] + '_' + train_name + '_sharp'
-        plt.figure(name)
-        plt.title(name)
+        # plt.figure(name)
+        # plt.title(name)
         img = plt_img(sharp_data[i])
         imsave(save_dir_imgs + name + '.png', img)
-        plt.close()
+        # plt.close()
 
         # name = ids[i] + '_' + train_name + '_pred'
         # plt.figure(name)

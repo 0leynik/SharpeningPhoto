@@ -8,6 +8,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import cv2
 from skimage.io import imread, imshow, imsave
 import skimage
@@ -265,9 +266,12 @@ def evaluate_from_img():
 
 if __name__ == '__main__':
 
-    evaluate_from_img()
+    # evaluate_from_img()
 
-    if False:
+    if True:
+        # mpl.rcParams['figure.figsize'] = [6.4, 4.8]
+        mpl.rcParams['figure.dpi'] = 500
+
         train_names = [
             # ['mean_squared_error_lr_0.001',39500],
             # ['mean_squared_error_lr_0.00002',500],

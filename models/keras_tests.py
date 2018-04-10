@@ -229,18 +229,18 @@ def conv2d_upsampling():
     # pool2_2 = MaxPooling2D(pool_size=(2, 2))(conv2_2)
 
 
-    if False:
+    if True:
         # img = skimage.img_as_float(imread('/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/filter_ImageNet_for_visio/4_3.JPEG')) # RGB
-        img = skimage.img_as_float(imread('4_3.JPG')) # RGB
-        h, w, c = img.shape
+        # img = skimage.img_as_float(imread('4_3.JPG')) # RGB
+        # h, w, c = img.shape
         # img = img[..., ::-1]  # BGR
         # img = np.transpose(img, (2, 0, 1))
         # print(img.shape)
         # plt.figure('img', (16,9))
 
+        mpl.rcParams['figure.dpi'] = 200
         print(mpl.rcParams['figure.figsize'])
         print(mpl.rcParams['figure.dpi'])
-
 
         plt.figure('img')
         plt.plot(np.random.rand(1000))

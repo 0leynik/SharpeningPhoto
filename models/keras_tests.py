@@ -2,7 +2,7 @@
 
 import keras
 
-from keras.layers import Dense,Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate
+from keras.layers import Dense,Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D,concatenate,Concatenate
 from keras.models import Model,Sequential
 from keras.optimizers import Adam
 import keras.backend as K
@@ -196,22 +196,56 @@ def get_super_small_unet():
 
 
 def conv2d_upsampling():
-    # img = skimage.img_as_float(imread('/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/filter_ImageNet_for_visio/4_3.JPEG')) # RGB
-    img = skimage.img_as_float(imread('4_3.JPG')) # RGB
-    h, w, c = img.shape
-    # img = img[..., ::-1]  # BGR
-    # img = np.transpose(img, (2, 0, 1))
-    # print(img.shape)
-    # plt.figure('img', (16,9))
 
-    print(mpl.rcParams['figure.figsize'])
-    print(mpl.rcParams['figure.dpi'])
+    K.set_image_data_format('channels_first')
+    img_shape = (3, 128, 128)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    # 1-line
+    conv1_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(inputs)
+    conv1_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv1_1)
+    print(conv1_1.shape)
+    deconv = Conv2DTranspose(32, (5, 5))
+    deconv1_1 = deconv(conv1_1)
+    print(deconv.output_shape)
+
+    conv2_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(deconv1_1)
+    conv2_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv2_1)
+    pool2_1 = MaxPooling2D(pool_size=(2, 2))(conv2_1)
+
+    # concat3_1 = Concatenate(axis=concat_axis)([conv1_1, pool2_1])
+    # conv3_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(concat3_1)
+    # conv3_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv3_1)
+    #
+    # # 2-line
+    # conv1_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(inputs)
+    # conv1_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(conv1_2)
+    # deconv1_2 = Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same')(conv1_2)
+    #
+    # conv2_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(deconv1_2)
+    # conv2_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(conv2_2)
+    # pool2_2 = MaxPooling2D(pool_size=(2, 2))(conv2_2)
 
 
-    plt.figure('img')
-    plt.plot(np.random.rand(1000))
-    plt.savefig('kek.png')
-    plt.show()
+    if False:
+        # img = skimage.img_as_float(imread('/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/filter_ImageNet_for_visio/4_3.JPEG')) # RGB
+        img = skimage.img_as_float(imread('4_3.JPG')) # RGB
+        h, w, c = img.shape
+        # img = img[..., ::-1]  # BGR
+        # img = np.transpose(img, (2, 0, 1))
+        # print(img.shape)
+        # plt.figure('img', (16,9))
+
+        print(mpl.rcParams['figure.figsize'])
+        print(mpl.rcParams['figure.dpi'])
+
+
+        plt.figure('img')
+        plt.plot(np.random.rand(1000))
+        plt.savefig('kek.png')
+        plt.show()
 
 
 if __name__ == '__main__':

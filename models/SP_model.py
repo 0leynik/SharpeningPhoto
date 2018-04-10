@@ -630,7 +630,8 @@ def get_SPN():
     model = Model(inputs=[inputs], outputs=[outputs])
 
     # ~/spn_mean_squared_error_lr_0.001
-    # model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error')
+
     # # ~/mean_squared_error_lr_0.2 (loss = nan)
     # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
     # ~/mean_squared_error_lr_0.00002
@@ -646,7 +647,7 @@ def get_SPN():
     # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
 
     # ~/spn_cosine_proximity
-    model.compile(optimizer='adam', loss='cosine_proximity', metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss='cosine_proximity', metrics=['accuracy'])
 
     model.summary()
     print('Metrics: ' + str(model.metrics_names))
@@ -726,25 +727,26 @@ if __name__ == '__main__':
 
             print_state('training', iter_num, e, epochs, train_batch_count, N_train, model, train_scores)
 
-            # write score to csv
-            f_metrics.write(','.join([str(i) for i in [iter_num]+train_scores]) + '\n')
 
             # save model
             if((iter_num % save_model_step) == 0):
                 save_model(model, iter_num)
 
-        # score trained model on val data
-        val_batch_count = 0
-        val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-        val_scores = []
-        for val_keylist in val_batch_keylists:
-            val_batch_count += len(val_keylist)
-            val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
-            val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
-            val_scores.append(val_score)
-        val_scores = np.array(val_scores)
-        val_scores = val_scores.mean(axis=0)
-        print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
+            # score trained model on val data
+            val_batch_count = 0
+            val_batch_keylists = gen_batch_keylists(N_val, batch_size)
+            val_scores = []
+            for val_keylist in val_batch_keylists:
+                val_batch_count += len(val_keylist)
+                val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
+                val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
+                val_scores.append(val_score)
+            val_scores = np.array(val_scores)
+            val_scores = val_scores.mean(axis=0)
+            print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
+
+            # write score to csv
+            f_metrics.write(','.join([str(i) for i in [iter_num] + train_scores + val_scores]) + '\n')
 
     # score trained model on test data
     test_batch_count = 0

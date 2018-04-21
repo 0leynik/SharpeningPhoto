@@ -238,7 +238,7 @@ def conv2d_upsampling():
         # print(img.shape)
         # plt.figure('img', (16,9))
 
-        mpl.rcParams['figure.dpi'] = 200
+        mpl.rcParams['figure.dpi'] = 500
         print(mpl.rcParams['figure.figsize'])
         print(mpl.rcParams['figure.dpi'])
 

@@ -668,6 +668,8 @@ def save_model(model, iter_num):
 
 def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{} '.format(process_name, iter, e, epochs, batch_count, N)
+    if isinstance(scores, (list, tuple)):
+        scores = [scores]
     res_str += ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, scores))
     print(res_str)
 
@@ -682,7 +684,7 @@ if __name__ == '__main__':
 
     epochs = 1000
     batch_size = 100
-    save_model_step = 1000
+    save_model_step = 250
     resume_training = False
 
     N_train = 133527 * 3

@@ -668,7 +668,7 @@ def save_model(model, iter_num):
 
 def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{} '.format(process_name, iter, e, epochs, batch_count, N)
-    if isinstance(scores, (list, tuple)):
+    if not isinstance(scores, (list, tuple)):
         scores = [scores]
     res_str += ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, scores))
     print(res_str)

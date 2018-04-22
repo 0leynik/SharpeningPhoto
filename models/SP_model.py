@@ -668,8 +668,6 @@ def save_model(model, iter_num):
 
 def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{} '.format(process_name, iter, e, epochs, batch_count, N)
-    if not isinstance(scores, (list, tuple)):
-        scores = [scores]
     res_str += ' '.join(map(lambda m, t: m + ':' + str(t), model.metrics_names, scores))
     print(res_str)
 
@@ -726,7 +724,8 @@ if __name__ == '__main__':
 
             # print(str(datetime.now())+'    Train...')
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data) # fit, fit_generator, train_on_batch
-
+            if not isinstance(train_scores, (list, tuple)):
+                train_scores = [train_scores]
             print_state('training', iter_num, e, epochs, train_batch_count, N_train, model, train_scores)
 
 
@@ -745,6 +744,8 @@ if __name__ == '__main__':
                 val_scores.append(val_score)
             val_scores = np.array(val_scores)
             val_scores = val_scores.mean(axis=0)
+            if not isinstance(val_scores, (list, tuple)):
+                val_scores = [val_scores]
             print_state('validation', iter_num, e, epochs, val_batch_count, N_val, model, val_scores)
 
             # write score to csv

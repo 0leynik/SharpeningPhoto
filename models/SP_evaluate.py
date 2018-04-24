@@ -162,7 +162,7 @@ def evaluate_from_db(train_name, iter_num):
     ids = ['{:08}'.format(i) for i in list_ids]
     blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
 
-    # predict_data_1 = model.predict(blur_data)
+    predict_data_1 = model.predict(blur_data)
     # predict_data_2 = model.predict(predict_data_1)
 
     save_dir_imgs = '/home/doleinik/trained_models_SharpeningPhoto/imgs/'
@@ -170,11 +170,11 @@ def evaluate_from_db(train_name, iter_num):
         os.makedirs(save_dir_imgs)
 
     for i in range(len(ids)):
-        # name = ids[i] + '_' + train_name + '_blur'
+        name = ids[i] + '_' + train_name + '_blur'
         # plt.figure(name)
         # plt.title(name)
-        # img = plt_img(blur_data[i])
-        # imsave(save_dir_imgs + name + '.png', img)
+        img = plt_img(blur_data[i])
+        imsave(save_dir_imgs + name + '.png', img)
         # plt.close()
 
         print(ids[i])
@@ -185,11 +185,11 @@ def evaluate_from_db(train_name, iter_num):
         imsave(save_dir_imgs + name + '.png', img)
         # plt.close()
 
-        # name = ids[i] + '_' + train_name + '_pred'
+        name = ids[i] + '_' + train_name + '_pred'
         # plt.figure(name)
         # plt.title(name)
-        # img = plt_img(predict_data_1[i])
-        # imsave(save_dir_imgs + name + '.png', img)
+        img = plt_img(predict_data_1[i])
+        imsave(save_dir_imgs + name + '.png', img)
         # plt.close()
 
         # name = ids[i] + '_' + train_name + '_pred_pred'
@@ -286,6 +286,6 @@ if __name__ == '__main__':
         for tr in train_names:
             print('--> step ' + tr[0])
             # graph_metrics(tr[0], True, True)
-            graph_metrics(tr[0], True, False)
-            # evaluate_from_db(tr[0], tr[1])
+            # graph_metrics(tr[0], True, False)
+            evaluate_from_db(tr[0], tr[1])
         print('>------end------<')

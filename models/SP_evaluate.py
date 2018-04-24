@@ -36,7 +36,7 @@ def graph_metrics(train_name, savefig=False, show=False):
     plt.xlabel('iter')
     plt.grid(True, linestyle='--')
     # plt.yticks(np.linspace(0., 0.2, 10))
-    plt.ylim(0., 0.25)
+    # plt.ylim(0., 0.25)
     if savefig:
         plt.savefig(save_dir_graphs + loss_name + '.png')
     # plt.close()
@@ -49,7 +49,7 @@ def graph_metrics(train_name, savefig=False, show=False):
     plt.xlabel('iter')
     plt.grid(True, linestyle='--')
     # plt.yticks(np.linspace(0., 0.2, 10))
-    plt.ylim(0., 0.2)
+    # plt.ylim(0., 0.2)
     if savefig:
         plt.savefig(save_dir_graphs + acc_name + '.png')
     # plt.close()
@@ -273,14 +273,15 @@ if __name__ == '__main__':
         mpl.rcParams['figure.dpi'] = 500
 
         train_names = [
-            # ['mean_squared_error_lr_0.001',39500],
-            # ['mean_squared_error_lr_0.00002',500],
-            # ['laplacian_gray_loss',37500],
-            # ['sub_loss',39500],
-            # ['clip_laplacian_color_loss',500],
-            # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
-            # ['spn_mean_squared_error_lr_0.001', 13000]
-            ['spn_cosine_proximity', 29000]
+            ['mean_squared_error_lr_0.001',39500],
+            ['mean_squared_error_lr_0.00002',500],
+            ['laplacian_gray_loss',37500],
+            ['sub_loss',39500],
+            ['clip_laplacian_color_loss',500],
+            ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
+            ['spn_mean_squared_error_lr_0.001', 13000]
+            ['spn_cosine_proximity', 29000],
+            ['spn_mean_squared_error_lr_0.001_', 250]
         ]
         for tr in train_names:
             print('--> step ' + tr[0])

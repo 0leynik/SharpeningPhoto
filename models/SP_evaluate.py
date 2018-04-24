@@ -279,7 +279,7 @@ if __name__ == '__main__':
             ['sub_loss',39500],
             ['clip_laplacian_color_loss',500],
             ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
-            ['spn_mean_squared_error_lr_0.001', 13000]
+            ['spn_mean_squared_error_lr_0.001', 13000],
             ['spn_cosine_proximity', 29000],
             ['spn_mean_squared_error_lr_0.001_', 250]
         ]

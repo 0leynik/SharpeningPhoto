@@ -286,5 +286,6 @@ if __name__ == '__main__':
         for tr in train_names:
             print('--> step ' + tr[0])
             # graph_metrics(tr[0], True, True)
-            evaluate_from_db(tr[0], tr[1])
+            graph_metrics(tr[0], True, False)
+            # evaluate_from_db(tr[0], tr[1])
         print('>------end------<')

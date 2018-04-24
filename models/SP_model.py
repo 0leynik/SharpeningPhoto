@@ -654,6 +654,57 @@ def get_SPN():
 
     return model
 
+def get_L15():
+
+    img_shape = (3, IMG_H, IMG_W)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    # 1-line
+    conv1 = Conv2D(128, (19, 19), activation='relu', padding='same')(inputs)
+    conv2 = Conv2D(320, (1, 1), activation='relu', padding='same')(conv1)
+    conv3 = Conv2D(320, (1, 1), activation='relu', padding='same')(conv2)
+    conv4 = Conv2D(320, (1, 1), activation='relu', padding='same')(conv3)
+    conv5 = Conv2D(128, (1, 1), activation='relu', padding='same')(conv4)
+    conv6 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv5)
+    conv7 = Conv2D(512, (1, 1), activation='relu', padding='same')(conv6)
+    conv8 = Conv2D(128, (5, 5), activation='relu', padding='same')(conv7)
+    conv9 = Conv2D(128, (5, 5), activation='relu', padding='same')(conv8)
+    conv10 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv9)
+    conv11 = Conv2D(128, (5, 5), activation='relu', padding='same')(conv10)
+    conv12 = Conv2D(128, (5, 5), activation='relu', padding='same')(conv11)
+    conv13 = Conv2D(256, (1, 1), activation='relu', padding='same')(conv12)
+    conv14 = Conv2D(64, (7, 7), activation='relu', padding='same')(conv13)
+    conv15 = Conv2D(3, (7, 7), activation='sigmoid', padding='same')(conv14)
+
+    model = Model(inputs=[inputs], outputs=[conv15])
+
+    # ~/l15_mean_squared_error_lr_0.001
+    model.compile(optimizer='adam', loss='mean_squared_error')
+
+    # # ~/mean_squared_error_lr_0.2 (loss = nan)
+    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
+    # ~/mean_squared_error_lr_0.00002
+    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
+
+    # ~/laplacian_gray_loss (делает красным)
+    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
+
+    # ~/sub_loss ( + - аналогично mse)
+    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
+
+    # ~/clip_laplacian_color_loss
+    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
+
+    # ~/spn_cosine_proximity
+    # model.compile(optimizer='adam', loss='cosine_proximity', metrics=['accuracy'])
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+
+    return model
+
 
 def save_model(model, iter_num):
     # Save model and weights
@@ -705,7 +756,8 @@ if __name__ == '__main__':
         print('Getting model...')
         # model = get_unet_128()
         # model = get_unet_128_w_BN_kernel_init()
-        model = get_SPN()
+        # model = get_SPN()
+        model = get_L15()
         f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
 
     print('\nRun training...\n')

@@ -732,7 +732,7 @@ if __name__ == '__main__':
     val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
 
     epochs = 1000
-    batch_size = 100
+    batch_size = 20
     save_model_step = 250
     resume_training = False
 

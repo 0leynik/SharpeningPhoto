@@ -218,7 +218,9 @@ def evaluate_from_img():
     # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/ForDmitriy/'
     img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/'
 
-    img_names = ['image57.jpeg']
+    # img_names = ['image57.jpeg']
+    img_names = ['blurredCNN1.jpg']
+    # img_names = ['Istanbul_blur1.png']
     # img_names = [
     #             '45x2.png',
     #             '99x2.png',
@@ -266,9 +268,9 @@ def evaluate_from_img():
 
 if __name__ == '__main__':
 
-    # evaluate_from_img()
+    evaluate_from_img()
 
-    if True:
+    if False:
         # mpl.rcParams['figure.figsize'] = [6.4, 4.8]
         mpl.rcParams['figure.dpi'] = 500
 

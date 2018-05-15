@@ -34,7 +34,7 @@ def graph_metrics(train_name, savefig=True, show=False):
 
     metrics = np.loadtxt(model_path, delimiter=',')
 
-    loss_name = 'loss ' + train_name
+    loss_name = train_name + ' loss'
     plt.figure(loss_name)
     plt.title(loss_name)
     plt.plot(metrics[:, 1])
@@ -251,4 +251,4 @@ if __name__ == '__main__':
         elif len(tr) == 2:
             evaluate(True, tr[0], tr[1])
 
-    print('--> end')
+    print('\n--> end')

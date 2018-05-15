@@ -3,9 +3,10 @@
 from __future__ import print_function
 
 import os
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
+import glob
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -18,57 +19,57 @@ import SP_model
 from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
 
-def graph_metrics(train_name, savefig=False, show=False):
-    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_metrics.csv'
+def get_models_paths(train_dir):
+    return glob.glob(train_dir+'/saved_models/iter_*.h5')
 
-    # metrics = np.loadtxt(os.path.expanduser('~/SP_metrics.csv'), delimiter=',')
+def graph_metrics(train_name, savefig=True, show=False):
+    print('\n--> metrics \"' + train_name + '\"')
+
+    model_path = work_dir + '/' + train_name + '/metrics.csv'
+
+    graphs_savedir = work_dir + '/graphs'
+    if not os.path.isdir(graphs_savedir):
+        os.makedirs(graphs_savedir)
+
     metrics = np.loadtxt(model_path, delimiter=',')
 
-    save_dir_graphs = '/home/doleinik/trained_models_SharpeningPhoto/graphs/'
-    if not os.path.isdir(save_dir_graphs):
-        os.makedirs(save_dir_graphs)
-
-    loss_name = 'loss_' + train_name
+    loss_name = 'loss ' + train_name
     plt.figure(loss_name)
     plt.title(loss_name)
     plt.plot(metrics[:, 1])
+    if metrics.shape[1]==3:
+        plt.plot(metrics[:, 2])
+        plt.legend(['train', 'val'], loc='upper left')
     plt.ylabel('loss')
     plt.xlabel('iter')
     plt.grid(True, linestyle='--')
     # plt.yticks(np.linspace(0., 0.2, 10))
     # plt.ylim(0., 0.25)
     if savefig:
-        plt.savefig(save_dir_graphs + loss_name + '.png')
-    # plt.close()
+        plt.savefig(graphs_savedir + '/' + loss_name + '.png')
+    plt.close()
 
-    acc_name = 'acc_' + train_name
-    plt.figure(acc_name)
-    plt.title(acc_name)
-    plt.plot(metrics[:, 2])
-    plt.ylabel('acc')
-    plt.xlabel('iter')
-    plt.grid(True, linestyle='--')
-    # plt.yticks(np.linspace(0., 0.2, 10))
-    # plt.ylim(0., 0.2)
-    if savefig:
-        plt.savefig(save_dir_graphs + acc_name + '.png')
-    # plt.close()
+    # acc_name = 'acc ' + train_name
+    # plt.figure(acc_name)
+    # plt.title(acc_name)
+    # plt.plot(metrics[:, 2])
+    # plt.ylabel('acc')
+    # plt.xlabel('iter')
+    # plt.grid(True, linestyle='--')
+    # # plt.yticks(np.linspace(0., 0.2, 10))
+    # # plt.ylim(0., 0.2)
+    # if savefig:
+    #     plt.savefig(save_dir_graphs + acc_name + '.png')
+    # # plt.close()
 
-    if show:
-        plt.show()
+    # if show:
+    #     plt.show()
 
 
 def plt_img(data):
-    # CxHxW -> HxWxC
-    img = np.transpose(data, (1, 2, 0))
-
-    # BGR -> RGB
+    img = np.transpose(data, (1, 2, 0)) # CxHxW -> HxWxC
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = img[:, :, ::-1]
-
-    # matplotlib.pyplot.imshow()
-    # HxWx3 – RGB (float or uint8 array)
-    # plt.imshow(img)
+    img = img[:, :, ::-1] # BGR -> RGB
     return img
 
 
@@ -118,121 +119,51 @@ def get_img_from_patches(patches, img):
 
     return extended_img[:h, :w]
 
-
-def evaluate_from_db(train_name, iter_num):
-
-    # cluster run
-    model_path = '/home/doleinik/trained_models_SharpeningPhoto/' + train_name + '/SP_saved_models/SP_model_iter_' + str(iter_num) + '.h5'
-
-    # load model
-    custom_objects = {
-        'laplacian_gray_loss': SP_model.laplacian_gray_loss,
-        'sub_loss' : SP_model.sub_loss,
-        'clip_laplacian_color_loss' : SP_model.clip_laplacian_color_loss
-    }
-    model = keras.models.load_model(model_path, custom_objects=custom_objects)
-
-
-    # from lmdb
-    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-    # paths = [lmdb_path + 'train_blur_lmdb_128', lmdb_path + 'train_sharp_lmdb_128']
-    paths = [lmdb_path + 'test_blur_lmdb_128', lmdb_path + 'test_sharp_lmdb_128']
-
-    # list_ids = [567, 345, 2344]
-    list_ids = [27,
-                42,
-                68,
-                84,
-                138,
-                176,
-                179,
-                201,
-                212,
-                284,
-                561,
-                620,
-                650,
-                791,
-                841,
-                922,
-                934,
-                937,
-                956,
-                959]
-    ids = ['{:08}'.format(i) for i in list_ids]
-    blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
-
-    predict_data_1 = model.predict(blur_data)
-    # predict_data_2 = model.predict(predict_data_1)
-
-    save_dir_imgs = '/home/doleinik/trained_models_SharpeningPhoto/imgs/'
-    if not os.path.isdir(save_dir_imgs):
-        os.makedirs(save_dir_imgs)
-
-    for i in range(len(ids)):
-        name = ids[i] + '_' + train_name + '_blur'
-        # plt.figure(name)
-        # plt.title(name)
-        img = plt_img(blur_data[i])
-        imsave(save_dir_imgs + name + '.png', img)
-        # plt.close()
-
-        print(ids[i])
-        name = ids[i] + '_' + train_name + '_sharp'
-        # plt.figure(name)
-        # plt.title(name)
-        img = plt_img(sharp_data[i])
-        imsave(save_dir_imgs + name + '.png', img)
-        # plt.close()
-
-        name = ids[i] + '_' + train_name + '_pred'
-        # plt.figure(name)
-        # plt.title(name)
-        img = plt_img(predict_data_1[i])
-        imsave(save_dir_imgs + name + '.png', img)
-        # plt.close()
-
-        # name = ids[i] + '_' + train_name + '_pred_pred'
-        # plt.figure(name)
-        # plt.title(name)
-        # img = plt_img(predict_data_2[i])
-        # imsave(save_dir_imgs + name + '.png', img)
-        # plt.close()
-
-    # plt.show()
-
-def evaluate_from_img():
-
-    # local
-    model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_mse.h5'
-    # model_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/SP_model_iter_39500_sub_loss.h5'
-
-    # load model
+def evaluate(load_imgs_from_db, train_name, iter_num=None):
+    print('\n--> evaluate \"' + train_name + '\"')
     custom_objects = {
         'laplacian_gray_loss': SP_model.laplacian_gray_loss,
         'sub_loss': SP_model.sub_loss,
         'clip_laplacian_color_loss': SP_model.clip_laplacian_color_loss
     }
-    model = keras.models.load_model(model_path, custom_objects=custom_objects)
 
-    # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/ForDmitriy/'
-    img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/'
 
-    # img_names = ['image57.jpeg']
-    img_names = ['blurredCNN1.jpg']
-    # img_names = ['Istanbul_blur1.png']
-    # img_names = [
-    #             '45x2.png',
-    #             '99x2.png',
-    #             '171x2.png',
-    #             '200x2.png',
-    #             '336x2.png',
-    #             '2622x2.png']
+    imgs_savedir = work_dir + '/imgs'
+    if not os.path.isdir(imgs_savedir):
+        os.makedirs(imgs_savedir)
 
-    for img_name in img_names:
-        img_path = img_dir + img_name
-        original_img = skimage.img_as_float(imread(img_path)[...,:3])
-        # original_img = skimage.img_as_float(imread(img_path))[:128,:128]
+    if load_imgs_from_db:
+        # load db images
+        list_ids = [27,
+                        42,
+                        68,
+                        84,
+                        138,
+                        176,
+                        179,
+                        201,
+                        212,
+                        284,
+                        561,
+                        620,
+                        650,
+                        791,
+                        841,
+                        922,
+                        934,
+                        937,
+                        956,
+                        959]
+        ids = ['{:08}'.format(i) for i in list_ids]
+        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
+        paths = [lmdb_path + '/test_blur_lmdb_128', lmdb_path + '/test_sharp_lmdb_128']
+        blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
+    else:
+        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
+        img_name = 'image58.jpeg'
+        img_path = img_dir + '/' + img_name
+
+        original_img = skimage.img_as_float(imread(img_path)[..., :3])
         print('shape original: ' + str(original_img.shape))
 
         img = original_img[:, :, ::-1]  # RGB -> BGR
@@ -240,54 +171,81 @@ def evaluate_from_img():
         img_patches = np.array(map(lambda i: np.transpose(i, (2, 0, 1)), img_patches), np.float32)  # HxWxC -> CxHxW
         print('shape patches: ' + str(img_patches.shape))
 
-        print('Predicting...')
-        predict_img_patches = model.predict(img_patches)
 
-        predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches), np.float32)  # HxWxC -> CxHxW
-        predict_img = get_img_from_patches(predict_img_patches, original_img)
-        predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
+    if iter_num is None:
+        models_paths = get_models_paths(work_dir+'/'+train_name)
+    else:
+        models_paths = [work_dir + '/' + train_name + '/models/iter_' + str(iter_num) + '.h5']
 
-        print('Plotting...')
+    for model_path in models_paths:
 
-        plt.figure('blur')
-        # imsave('_blur.png', original_img)
-        # plt.imshow(original_img)
+        iter_name = os.path.splitext(os.path.basename(model_path))[0]
 
-        plt.figure('predict')
-        imsave(img_path[:-4] + '_predict.png', predict_img)
-        # plt.imshow(predict_img)
-        # plt.imshow(predict_img_patches[0][..., ::-1])
+        if load_imgs_from_db:
+            model = keras.models.load_model(model_path, custom_objects=custom_objects)
+            predict_data = model.predict(blur_data)
 
-        # sharp_img = skimage.img_as_float(imread('/home/doleinik/SharpeningPhoto/quality_ImageNet/test_500/images/100_sh.JPEG'))[:128, :128]
-        # sharp_img = sharp_img[..., ::-1]
-        # sharp_img = np.transpose(sharp_img, (2, 0, 1))
-        # plt.figure('sharp')
-        # plt_img(sharp_img)
+            for i in range(len(list_ids)):
+                img_savepath = imgs_savedir + '/' + str(list_ids[i]) + '_' + train_name + '_' + iter_name
+                imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
+                imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
+                imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
+        else:
+            model = keras.models.load_model(model_path, custom_objects=custom_objects)
+            predict_img_patches = model.predict(img_patches)
 
-        # plt.show()
+            predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches), np.float32)  # HxWxC -> CxHxW
+            predict_img = get_img_from_patches(predict_img_patches, original_img)
+            predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
+
+            img_savepath = imgs_savedir + '/' + os.path.splitext(img_name)[0] + '_' + train_name + '_' + iter_name
+            imsave(img_savepath + '_blur.png', original_img)
+            imsave(img_savepath + '_pred.png', predict_img)
+
+
+
+# mpl.rcParams['figure.figsize'] = [6.4, 4.8]
+mpl.rcParams['figure.dpi'] = 500
+mpl.rcParams['lines.linewidth'] = 0.7
+mpl.rcParams['axes.linewidth'] = 0.3
+
+work_dir = '/home/doleinik/trained_models'
+# work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'
+
 
 if __name__ == '__main__':
 
-    evaluate_from_img()
+    # train_names = [
+    #     # ['mean_squared_error_lr_0.001',39500],
+    #     # ['mean_squared_error_lr_0.00002',500],
+    #     # ['laplacian_gray_loss',37500],
+    #     # ['sub_loss',39500],
+    #     # ['clip_laplacian_color_loss',500],
+    #     # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
+    #     # ['spn_mean_squared_error_lr_0.001', 13000],
+    #     # ['spn_cosine_proximity', 29000],
+    #     # ['spn_mean_squared_error_lr_0.001_', 250]
+    #     ['l15_mean_squared_error_lr_0.001']
+    # ]
 
-    if False:
-        # mpl.rcParams['figure.figsize'] = [6.4, 4.8]
-        mpl.rcParams['figure.dpi'] = 500
+    train_names = [
+        ['clip_laplacian_color_loss'],
+        ['l15_mean_squared_error_lr_0.001'],
+        ['laplacian_gray_loss'],
+        ['mean_squared_error_lr_0.00002'],
+        ['mean_squared_error_lr_0.001'],
+        ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
+        ['spn_cosine_proximity'],
+        ['spn_mean_squared_error_lr_0.001'],
+        ['spn_mean_squared_error_lr_0.001_'],
+        ['sub_loss']
+    ]
+    for tr in train_names:
+        graph_metrics(tr[0], True, False)
 
-        train_names = [
-            ['mean_squared_error_lr_0.001',39500],
-            ['mean_squared_error_lr_0.00002',500],
-            ['laplacian_gray_loss',37500],
-            ['sub_loss',39500],
-            ['clip_laplacian_color_loss',500],
-            ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
-            ['spn_mean_squared_error_lr_0.001', 13000],
-            ['spn_cosine_proximity', 29000],
-            ['spn_mean_squared_error_lr_0.001_', 250]
-        ]
-        for tr in train_names:
-            print('--> step ' + tr[0])
-            # graph_metrics(tr[0], True, True)
-            # graph_metrics(tr[0], True, False)
-            evaluate_from_db(tr[0], tr[1])
-        print('>------end------<')
+        if len(tr) == 1:
+            evaluate(True, tr[0])
+        elif len(tr) == 2:
+            evaluate(True, tr[0], tr[1])
+
+    print('--> end')

@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 
-import keras
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -17,6 +16,7 @@ print('Caffe found = '+str(found_caffe))
 
 from datetime import datetime
 
+import keras
 from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
 from keras.layers import Input,Conv2D,MaxPooling2D,Conv2DTranspose,Cropping2D, Concatenate, concatenate
 from keras.models import Model
@@ -27,16 +27,13 @@ from keras import backend as K
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
-
 limit_mem = False
 if limit_mem:
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = 0.3
     set_session(tf.Session(config=config))
 
-# IMG_H, IMG_W = (375, 500)
-IMG_H, IMG_W = (128, 128)
-K.set_image_data_format('channels_first')
+
 
 def gen_batch_keylists(N, batch_size):
     '''
@@ -706,16 +703,15 @@ def get_L15():
     return model
 
 
-def save_model(model, iter_num):
+def save_model(model, train_name, iter_num):
     # Save model and weights
-    save_dir = '/home/doleinik/SP_saved_models'
-    if not os.path.isdir(save_dir):
-        os.makedirs(save_dir)
+    models_dir = work_dir + '/' + train_name + '/saved_models'
+    if not os.path.isdir(models_dir):
+        os.makedirs(models_dir)
 
-    model_name = 'SP_model_iter_' + str(iter_num) + '.h5'
-    model_path = os.path.join(save_dir, model_name)
-    model.save(model_path)
-    print(str(datetime.now())+' save model at: {}'.format(model_path))
+    model_savepath = models_dir + '/iter_' + str(iter_num) + '.h5'
+    model.save(model_savepath)
+    print(str(datetime.now())+' save model at: {}'.format(model_savepath))
 
 def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     res_str = str(datetime.now()) + ' {} iter:{} ep:{}/{} batch_count:{}/{} '.format(process_name, iter, e, epochs, batch_count, N)
@@ -723,42 +719,51 @@ def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     print(res_str)
 
 
+work_dir = '/home/doleinik/trained_models'
+# IMG_H, IMG_W = (375, 500)
+IMG_H, IMG_W = (128, 128)
+K.set_image_data_format('channels_first')
 
 if __name__ == '__main__':
 
-    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
-    train_paths = [lmdb_path+'train_blur_lmdb_128', lmdb_path+'train_sharp_lmdb_128']
-    test_paths = [lmdb_path+'test_blur_lmdb_128', lmdb_path+'test_sharp_lmdb_128']
-    val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
+    train_name = 'l15_mean_squared_error_lr_0.001'
 
     epochs = 1000
-    batch_size = 20
-    save_model_step = 250
+    batch_size = 25
+    save_model_step = 200
+
     resume_training = False
 
-    N_train = 133527 * 3
-    N_test = 11853 * 3
-    N_val = 5936 * 3
-
-    # resume training
     if resume_training:
-        epoch_start = 35
-        iter_num = 62000
-        model_path = '/home/doleinik/SP_saved_models/SP_model_iter_' + str(iter_num) + '.h5'
+        epoch_start = 1
+        iter_num = 1000
+
+        model_path = work_dir + '/' + train_name + '/saved_models/iter_' + str(iter_num) + '.h5'
         print('Loading model:' + model_path + ' ...')
         model = keras.models.load_model(model_path)
-        model.compile(optimizer=Adam(2e-6), loss='mean_squared_error', metrics=['accuracy'])
+        # model.compile(optimizer=Adam(2e-6), loss='mean_squared_error', metrics=['accuracy'])
         model.summary()
-        f_metrics = open('/home/doleinik/SP_metrics.csv', 'a') # csv for ploting graph
+        f_metrics = open(work_dir + '/' + train_name + '/metrics.csv', 'a') # csv for ploting graph
     else:
         epoch_start = 1
         iter_num = 0
+
         print('Getting model...')
         # model = get_unet_128()
         # model = get_unet_128_w_BN_kernel_init()
         # model = get_SPN()
         model = get_L15()
-        f_metrics = open('/home/doleinik/SP_metrics.csv', 'w') # csv for ploting graph
+        f_metrics = open(work_dir + '/' + train_name + '/metrics.csv', 'w') # csv for ploting graph
+
+    N_train = 133527 * 3
+    N_val = 5936 * 3
+    N_test = 11853 * 3
+
+    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+    train_paths = [lmdb_path+'train_blur_lmdb_128', lmdb_path+'train_sharp_lmdb_128']
+    val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
+    test_paths = [lmdb_path + 'test_blur_lmdb_128', lmdb_path + 'test_sharp_lmdb_128']
+
 
     print('\nRun training...\n')
 
@@ -771,29 +776,22 @@ if __name__ == '__main__':
         for train_keylist in train_batch_keylists:
             iter_num += 1
             train_batch_count += len(train_keylist)
-
             train_blur_data, train_sharp_data = get_data_from_keys(train_paths, train_keylist)
-
             # print(str(datetime.now())+'    Train...')
             train_scores = model.train_on_batch(train_blur_data, train_sharp_data) # fit, fit_generator, train_on_batch
             if not isinstance(train_scores, (list, tuple)):
                 train_scores = [train_scores]
             print_state('training', iter_num, e, epochs, train_batch_count, N_train, model, train_scores)
 
-
             # save model
             if((iter_num % save_model_step) == 0):
-                save_model(model, iter_num)
+                save_model(model, train_name, iter_num)
 
             # score trained model on val data
             val_batch_count = 0
             val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-            val_iter_count = int(1000 / batch_size)
+            val_iter_count = int(300 / batch_size)
             val_scores = []
-
-            # for val_keylist in val_batch_keylists:
-                # val_batch_count += len(val_keylist)
-                # val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_keylist)
             for val_iter_id in range(val_iter_count):
                 val_batch_count += len(val_batch_keylists[val_iter_id])
                 val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_batch_keylists[val_iter_id])

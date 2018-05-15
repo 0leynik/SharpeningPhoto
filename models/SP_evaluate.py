@@ -5,12 +5,12 @@ from __future__ import print_function
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-os.environ["DISPLAY"] = "localhost:12.0"
 
 import glob
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 import cv2
 from skimage.io import imread, imshow, imsave
 import skimage

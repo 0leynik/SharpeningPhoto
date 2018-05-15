@@ -136,25 +136,25 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
     if load_imgs_from_db:
         # load db images
         list_ids = [27,
-                        42,
-                        68,
-                        84,
-                        138,
-                        176,
-                        179,
-                        201,
-                        212,
-                        284,
-                        561,
-                        620,
-                        650,
-                        791,
-                        841,
-                        922,
-                        934,
-                        937,
-                        956,
-                        959]
+                    42,
+                    68,
+                    84]#,
+                    # 138,
+                    # 176,
+                    # 179,
+                    # 201,
+                    # 212,
+                    # 284,
+                    # 561,
+                    # 620,
+                    # 650,
+                    # 791,
+                    # 841,
+                    # 922,
+                    # 934,
+                    # 937,
+                    # 956,
+                    # 959]
         ids = ['{:08}'.format(i) for i in list_ids]
         lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
         paths = [lmdb_path + '/test_blur_lmdb_128', lmdb_path + '/test_sharp_lmdb_128']
@@ -188,6 +188,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
             predict_data = model.predict(blur_data)
 
             for i in range(len(list_ids)):
+                print(i)
                 img_savepath = imgs_savedir + '/' + str(list_ids[i]) + '_' + train_name + '_' + iter_name
                 imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
                 imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
@@ -243,7 +244,7 @@ if __name__ == '__main__':
         ['sub_loss']
     ]
     for tr in train_names:
-        graph_metrics(tr[0], True, False)
+        # graph_metrics(tr[0], True, False)
 
         if len(tr) == 1:
             evaluate(True, tr[0])

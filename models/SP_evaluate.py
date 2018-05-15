@@ -180,6 +180,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
     for model_path in models_paths:
 
         iter_name = os.path.splitext(os.path.basename(model_path))[0]
+        print(iter_name)
 
         if load_imgs_from_db:
             model = keras.models.load_model(model_path, custom_objects=custom_objects)

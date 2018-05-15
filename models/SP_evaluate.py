@@ -5,6 +5,7 @@ from __future__ import print_function
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["DISPLAY"] = "localhost:12.0"
 
 import glob
 import numpy as np

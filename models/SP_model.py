@@ -726,11 +726,11 @@ K.set_image_data_format('channels_first')
 
 if __name__ == '__main__':
 
-    train_name = 'l15_mean_squared_error_lr_0.001'
-
     epochs = 1000
-    batch_size = 25
     save_model_step = 200
+    batch_size = 25
+    print('BATCH SIZE = ' + str(batch_size))
+    train_name = 'l15_mean_squared_error_lr_0.001'
 
     resume_training = False
 

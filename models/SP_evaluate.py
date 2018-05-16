@@ -162,6 +162,19 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
     else:
         img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
         img_name = 'image58.jpeg'
+
+        # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja'
+        # img_name = '18.png'
+        # img_name = '49.png'
+        # img_name = '139.png'
+        # img_name = '155.png'
+        # img_name = '6044.png'
+        # img_name = '6108.png'
+        # img_name = '6146.png'
+        # img_name = '6328.png'
+        # img_name = '6331.png'
+        # img_name = '6345.png'
+
         img_path = img_dir + '/' + img_name
 
         original_img = skimage.img_as_float(imread(img_path)[..., :3])
@@ -214,6 +227,7 @@ mpl.rcParams['axes.linewidth'] = 0.3
 
 work_dir = '/home/doleinik/trained_models'
 # work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'
+load_imgs_from_db = True
 
 
 if __name__ == '__main__':
@@ -232,23 +246,23 @@ if __name__ == '__main__':
     # ]
 
     train_names = [
-        ['clip_laplacian_color_loss'],
-        ['l15_mean_squared_error_lr_0.001'],
-        ['laplacian_gray_loss'],
-        ['mean_squared_error_lr_0.00002'],
+        # ['clip_laplacian_color_loss'],
+        # ['l15_mean_squared_error_lr_0.001'],
+        # ['laplacian_gray_loss'],
+        # ['mean_squared_error_lr_0.00002'],
         ['mean_squared_error_lr_0.001'],
-        ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
-        ['spn_cosine_proximity'],
-        ['spn_mean_squared_error_lr_0.001'],
-        ['spn_mean_squared_error_lr_0.001_'],
-        ['sub_loss']
+        # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
+        # ['spn_cosine_proximity'],
+        # ['spn_mean_squared_error_lr_0.001'],
+        # ['spn_mean_squared_error_lr_0.001_'],
+        # ['sub_loss']
     ]
     for tr in train_names:
-        # graph_metrics(tr[0], True, False)
+        graph_metrics(train_name=tr[0])
 
         if len(tr) == 1:
-            evaluate(True, tr[0])
+            evaluate(load_imgs_from_db, train_name=tr[0])
         elif len(tr) == 2:
-            evaluate(True, tr[0], tr[1])
+            evaluate(load_imgs_from_db, train_name=tr[0], iter_num=tr[1])
 
     print('\n--> end')

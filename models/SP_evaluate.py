@@ -99,9 +99,9 @@ def get_patches_from_img(img):
     patches = np.zeros((h_count * w_count, h_step, w_step, c), dtype=np.float32)
 
     for height in np.split(img_new, h_count, axis=0):
-        print(height.shape)
+        # print(height.shape)
         for width in np.split(height, w_count, axis=1):
-            print(width.shape)
+            # print(width.shape)
             patches[i] = width
             i += 1
 
@@ -110,7 +110,7 @@ def get_patches_from_img(img):
 def get_img_from_patches(patches, img):
     h, w, c = img.shape
     b_count = patches.shape[0]
-    print(patches.shape)
+    # print(patches.shape)
     extended_img = np.zeros((h_count * h_step, w_count * w_step, c), dtype=np.float32)
     k = 0
     for i in range(h_count):
@@ -163,7 +163,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
         # img_names = ['image58.jpeg']
 
-        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja'
+        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
         img_names = ['4.png',
                      '10.png',
                      '18.png',
@@ -248,7 +248,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
         else:
             for img_name in img_names:
-
+                print(img_name)
                 img_path = img_dir + '/' + img_name
 
                 original_img = skimage.img_as_float(imread(img_path)[..., :3])
@@ -310,7 +310,7 @@ if __name__ == '__main__':
         # ['sub_loss']
     ]
     for tr in train_names:
-        graph_metrics(train_name=tr[0])
+        # graph_metrics(train_name=tr[0])
 
         if len(tr) == 1:
             evaluate(load_imgs_from_db, train_name=tr[0])

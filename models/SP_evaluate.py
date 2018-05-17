@@ -277,10 +277,10 @@ mpl.rcParams['figure.dpi'] = 500
 mpl.rcParams['lines.linewidth'] = 0.7
 mpl.rcParams['axes.linewidth'] = 0.3
 
-work_dir = '/home/doleinik/trained_models'
-# work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'
-load_imgs_from_db = True
-
+# work_dir = '/home/doleinik/trained_models'
+# load_imgs_from_db = True
+work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'
+load_imgs_from_db = False
 
 if __name__ == '__main__':
 

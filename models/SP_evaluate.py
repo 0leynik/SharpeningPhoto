@@ -3,8 +3,8 @@
 from __future__ import print_function
 
 import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import glob
 import numpy as np
@@ -277,10 +277,13 @@ mpl.rcParams['figure.dpi'] = 500
 mpl.rcParams['lines.linewidth'] = 0.7
 mpl.rcParams['axes.linewidth'] = 0.3
 
-# work_dir = '/home/doleinik/trained_models'
-# load_imgs_from_db = True
-work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'
-load_imgs_from_db = False
+on_cluster = False
+if on_cluster:
+    work_dir = '/home/doleinik/trained_models'
+    load_imgs_from_db = True
+else:
+    work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'
+    load_imgs_from_db = False
 
 if __name__ == '__main__':
 

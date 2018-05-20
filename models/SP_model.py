@@ -629,20 +629,6 @@ def get_SPN():
     # ~/spn_mean_squared_error_lr_0.001
     model.compile(optimizer='adam', loss='mean_squared_error')
 
-    # # ~/mean_squared_error_lr_0.2 (loss = nan)
-    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
-    # ~/mean_squared_error_lr_0.00002
-    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
-
-    # ~/laplacian_gray_loss (делает красным)
-    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
-
-    # ~/sub_loss ( + - аналогично mse)
-    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
-
-    # ~/clip_laplacian_color_loss
-    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
-
     # ~/spn_cosine_proximity
     # model.compile(optimizer='adam', loss='cosine_proximity', metrics=['accuracy'])
 
@@ -680,23 +666,6 @@ def get_L15():
     # ~/l15_mean_squared_error_lr_0.001
     model.compile(optimizer='adam', loss='mean_squared_error')
 
-    # # ~/mean_squared_error_lr_0.2 (loss = nan)
-    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
-    # ~/mean_squared_error_lr_0.00002
-    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
-
-    # ~/laplacian_gray_loss (делает красным)
-    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
-
-    # ~/sub_loss ( + - аналогично mse)
-    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
-
-    # ~/clip_laplacian_color_loss
-    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
-
-    # ~/spn_cosine_proximity
-    # model.compile(optimizer='adam', loss='cosine_proximity', metrics=['accuracy'])
-
     model.summary()
     print('Metrics: ' + str(model.metrics_names))
 
@@ -728,15 +697,15 @@ if __name__ == '__main__':
 
     epochs = 1000
     save_model_step = 200
-    batch_size = 25
+    batch_size = 40
     print('BATCH SIZE = ' + str(batch_size))
     train_name = 'l15_mean_squared_error_lr_0.001'
 
-    resume_training = False
+    resume_training = True
 
     if resume_training:
         epoch_start = 1
-        iter_num = 1000
+        iter_num = 2000
 
         model_path = work_dir + '/' + train_name + '/saved_models/iter_' + str(iter_num) + '.h5'
         print('Loading model:' + model_path + ' ...')
@@ -790,7 +759,7 @@ if __name__ == '__main__':
             # score trained model on val data
             val_batch_count = 0
             val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-            val_iter_count = int(300 / batch_size)
+            val_iter_count = int(250 / batch_size)
             val_scores = []
             for val_iter_id in range(val_iter_count):
                 val_batch_count += len(val_batch_keylists[val_iter_id])

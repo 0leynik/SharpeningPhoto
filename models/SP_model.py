@@ -697,7 +697,7 @@ if __name__ == '__main__':
 
     epochs = 1000
     save_model_step = 200
-    batch_size = 55
+    batch_size = 45
     train_name = 'l15_mean_squared_error_lr_0.001'
     print('main params: TRAIN_NAME=' + train_name + ' BATCH SIZE=' + str(batch_size))
 

@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import numpy as np
 import os
+import sys
 import matplotlib.pyplot as plt
 import cv2
 import lmdb
@@ -476,25 +477,6 @@ def get_unet_128():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # ~/mean_squared_error_lr_0.001
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-    # # ~/mean_squared_error_lr_0.2 (loss = nan)
-    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
-    # ~/mean_squared_error_lr_0.00002
-    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
-
-    # ~/laplacian_gray_loss (делает красным)
-    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
-
-    # ~/sub_loss ( + - аналогично mse)
-    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
-
-    # ~/clip_laplacian_color_loss
-    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-
     return model
 
 
@@ -557,25 +539,6 @@ def get_unet_128_w_BN_kernel_init():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # ~/mean_squared_error_lr_0.001_w_BN_kernel_init
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-    # # ~/mean_squared_error_lr_0.2
-    # model.compile(optimizer=Adam(lr=0.2), loss='mean_squared_error', metrics=['accuracy'])
-    # ~/mean_squared_error_lr_0.00002
-    # model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error', metrics=['accuracy'])
-
-    # ~/laplacian_gray_loss (делает красным)
-    # model.compile(optimizer='adam', loss=laplacian_gray_loss, metrics=['accuracy'])
-
-    # ~/sub_loss ( + - аналогично mse)
-    # model.compile(optimizer='adam', loss=sub_loss, metrics=['accuracy'])
-
-    # ~/clip_laplacian_color_loss
-    # model.compile(optimizer='adam', loss=clip_laplacian_color_loss, metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-
     return model
 
 
@@ -626,15 +589,6 @@ def get_SPN():
 
     model = Model(inputs=[inputs], outputs=[outputs])
 
-    # ~/spn_mean_squared_error_lr_0.001
-    model.compile(optimizer='adam', loss='mean_squared_error')
-
-    # ~/spn_cosine_proximity
-    # model.compile(optimizer='adam', loss='cosine_proximity', metrics=['accuracy'])
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
-
     return model
 
 def get_L15():
@@ -662,12 +616,6 @@ def get_L15():
     conv15 = Conv2D(3, (7, 7), activation='sigmoid', padding='same')(conv14)
 
     model = Model(inputs=[inputs], outputs=[conv15])
-
-    # ~/l15_mean_squared_error_lr_0.001
-    model.compile(optimizer='adam', loss='mean_squared_error')
-
-    model.summary()
-    print('Metrics: ' + str(model.metrics_names))
 
     return model
 
@@ -697,32 +645,79 @@ if __name__ == '__main__':
 
     epochs = 1000
     save_model_step = 200
-    batch_size = 40
-    train_name = 'l15_mean_squared_error_lr_0.001'
-    print('main params: TRAIN_NAME=' + train_name + ' BATCH SIZE=' + str(batch_size))
+    model_params = {
+        'mean_squared_error_lr_0.001': [224, get_unet_128],
+        'mean_squared_error_lr_0.00002': [224, get_unet_128],
+        'laplacian_gray_loss': [224, get_unet_128],
+        'clip_laplacian_color_loss': [224, get_unet_128],
+        'sub_loss': [224, get_unet_128],
 
-    resume_training = True
+        'mean_squared_error_lr_0.001_w_BN_kernel_init': [50, get_unet_128_w_BN_kernel_init],
 
-    if resume_training:
-        epoch_start = 1
-        iter_num = 2000
+        'spn_mean_squared_error_lr_0.001': [100, get_SPN],
+        'spn_cosine_proximity': [100, get_SPN],
+
+        'l15_mean_squared_error_lr_0.001': [40, get_L15]
+    }
+
+
+    train_name = sys.argv[1]
+    batch_size = model_params[train_name][0]
+
+    if len(sys.argv)==4: #resume_training
+        f_metrics = open(work_dir + '/' + train_name + '/metrics.csv', 'a')  # csv for ploting graph
+
+        iter_num = int(sys.argv[2])
+        epoch_start = int(sys.argv[3])
 
         model_path = work_dir + '/' + train_name + '/saved_models/iter_' + str(iter_num) + '.h5'
         print('Loading model:' + model_path + ' ...')
-        model = keras.models.load_model(model_path)
+
+        custom_objects = {
+            'laplacian_gray_loss': laplacian_gray_loss,
+            'clip_laplacian_color_loss': clip_laplacian_color_loss,
+            'sub_loss': sub_loss
+        }
+        model = keras.models.load_model(model_path, custom_objects=custom_objects)
         # model.compile(optimizer=Adam(2e-6), loss='mean_squared_error', metrics=['accuracy'])
-        model.summary()
-        f_metrics = open(work_dir + '/' + train_name + '/metrics.csv', 'a') # csv for ploting graph
+
     else:
-        epoch_start = 1
+        train_dir = work_dir + '/' + train_name
+        if not os.path.isdir(train_dir):
+            os.makedirs(train_dir)
+        f_metrics = open(work_dir + '/' + train_name + '/metrics.csv', 'w')  # csv for ploting graph
+
         iter_num = 0
+        epoch_start = 1
 
         print('Getting model...')
-        # model = get_unet_128()
-        # model = get_unet_128_w_BN_kernel_init()
-        # model = get_SPN()
-        model = get_L15()
-        f_metrics = open(work_dir + '/' + train_name + '/metrics.csv', 'w') # csv for ploting graph
+        model = model_params[train_name][1]()
+
+        if train_name == 'mean_squared_error_lr_0.001':
+            model.compile(optimizer='adam', loss='mean_squared_error')
+        if train_name == 'mean_squared_error_lr_0.00002':
+            model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error')
+        if train_name == 'laplacian_gray_loss': # (делает красным)
+            model.compile(optimizer='adam', loss=laplacian_gray_loss)
+        if train_name == 'clip_laplacian_color_loss':
+            model.compile(optimizer='adam', loss=clip_laplacian_color_loss)
+        if train_name == 'sub_loss': #( + - аналогично mse)
+            model.compile(optimizer='adam', loss=sub_loss)
+
+        if train_name == 'mean_squared_error_lr_0.001_w_BN_kernel_init':
+            model.compile(optimizer='adam', loss='mean_squared_error')
+
+        if train_name == 'spn_mean_squared_error_lr_0.001':
+            model.compile(optimizer='adam', loss='mean_squared_error')
+        if train_name == 'spn_cosine_proximity':
+            model.compile(optimizer='adam', loss='cosine_proximity')
+
+        if train_name == 'l15_mean_squared_error_lr_0.001':
+            model.compile(optimizer='adam', loss='mean_squared_error')
+
+    model.summary()
+    print('Metrics: ' + str(model.metrics_names))
+
 
     N_train = 133527 * 3
     N_val = 5936 * 3
@@ -734,6 +729,7 @@ if __name__ == '__main__':
     test_paths = [lmdb_path + 'test_blur_lmdb_128', lmdb_path + 'test_sharp_lmdb_128']
 
 
+    print('main params: train_name=' + train_name + ' batch_size=' + str(batch_size) + ' iter_num='+str(iter_num) + ' epoch_start=' + str(epoch_start))
     print('\nRun training...\n')
 
     for e in range(epoch_start, epochs+1):
@@ -759,7 +755,7 @@ if __name__ == '__main__':
             # score trained model on val data
             val_batch_count = 0
             val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-            val_iter_count = int(250 / batch_size)
+            val_iter_count = int(300 / batch_size)
             val_scores = []
             for val_iter_id in range(val_iter_count):
                 val_batch_count += len(val_batch_keylists[val_iter_id])

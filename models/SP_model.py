@@ -697,7 +697,7 @@ if __name__ == '__main__':
 
     epochs = 1000
     save_model_step = 200
-    batch_size = 40
+    batch_size = 75
     print('BATCH SIZE = ' + str(batch_size))
     train_name = 'l15_mean_squared_error_lr_0.001'
 
@@ -774,6 +774,7 @@ if __name__ == '__main__':
 
             # write score to csv
             f_metrics.write(','.join([str(i) for i in [iter_num] + train_scores + val_scores]) + '\n')
+            f_metrics.flush()
 
     # score trained model on test data
     test_batch_count = 0

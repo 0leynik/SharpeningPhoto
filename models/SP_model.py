@@ -636,7 +636,8 @@ def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     print(res_str)
 
 
-work_dir = '/home/doleinik/trained_models'
+# work_dir = '/home/doleinik/trained_models'
+work_dir = '/home/cudauser/trained_models'
 # IMG_H, IMG_W = (375, 500)
 IMG_H, IMG_W = (128, 128)
 K.set_image_data_format('channels_first')
@@ -645,19 +646,20 @@ if __name__ == '__main__':
 
     epochs = 1000
     save_model_step = 200
+    factor = 1.5
     model_params = {
-        'mean_squared_error_lr_0.001': [224, get_unet_128],
-        'mean_squared_error_lr_0.00002': [224, get_unet_128],
-        'laplacian_gray_loss': [224, get_unet_128],
-        'clip_laplacian_color_loss': [224, get_unet_128],
-        'sub_loss': [224, get_unet_128],
+        'mean_squared_error_lr_0.001': [int(factor * 224), get_unet_128],
+        'mean_squared_error_lr_0.00002': [int(factor * 224), get_unet_128],
+        'laplacian_gray_loss': [int(factor * 224), get_unet_128],
+        'clip_laplacian_color_loss': [int(factor * 224), get_unet_128],
+        'sub_loss': [int(factor * 224), get_unet_128],
 
-        'mean_squared_error_lr_0.001_w_BN_kernel_init': [50, get_unet_128_w_BN_kernel_init],
+        'mean_squared_error_lr_0.001_w_BN_kernel_init': [int(factor * 50), get_unet_128_w_BN_kernel_init],
 
-        'spn_mean_squared_error_lr_0.001': [100, get_SPN],
-        'spn_cosine_proximity': [100, get_SPN],
+        'spn_mean_squared_error_lr_0.001': [int(factor * 100), get_SPN],
+        'spn_cosine_proximity': [int(factor * 100), get_SPN],
 
-        'l15_mean_squared_error_lr_0.001': [40, get_L15]
+        'l15_mean_squared_error_lr_0.001': [int(factor * 40), get_L15]
     }
 
 
@@ -723,7 +725,7 @@ if __name__ == '__main__':
     N_val = 5936 * 3
     N_test = 11853 * 3
 
-    lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb/'
+    lmdb_path = '/home/cudauser/SharpeningPhoto/lmdb/'
     train_paths = [lmdb_path+'train_blur_lmdb_128', lmdb_path+'train_sharp_lmdb_128']
     val_paths = [lmdb_path+'val_blur_lmdb_128', lmdb_path+'val_sharp_lmdb_128']
     test_paths = [lmdb_path + 'test_blur_lmdb_128', lmdb_path + 'test_sharp_lmdb_128']

@@ -757,12 +757,13 @@ if __name__ == '__main__':
             # score trained model on val data
             val_batch_count = 0
             val_batch_keylists = gen_batch_keylists(N_val, batch_size)
-            val_iter_count = int(300 / batch_size)
+            val_iter_count = 4
             val_scores = []
             for val_iter_id in range(val_iter_count):
                 val_batch_count += len(val_batch_keylists[val_iter_id])
                 val_blur_data, val_sharp_data = get_data_from_keys(val_paths, val_batch_keylists[val_iter_id])
-                val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
+                # val_score = model.evaluate(val_blur_data, val_sharp_data, batch_size, 0)
+                val_score = model.test_on_batch(val_blur_data, val_sharp_data)
                 val_scores.append(val_score)
             val_scores = np.array(val_scores)
             val_scores = val_scores.mean(axis=0)

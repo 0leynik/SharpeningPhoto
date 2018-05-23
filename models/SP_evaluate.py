@@ -156,75 +156,78 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                     # 956,
                     # 959]
         ids = ['{:08}'.format(i) for i in list_ids]
-        lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
+        if on_P:
+            lmdb_path = '/home/cudauser/SharpeningPhoto/lmdb'
+        else:
+            lmdb_path = '/home/doleinik/SharpeningPhoto/lmdb'
         paths = [lmdb_path + '/test_blur_lmdb_128', lmdb_path + '/test_sharp_lmdb_128']
         blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
     else:
-        # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
-        # img_names = ['image58.jpeg']
+        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
+        img_names = ['sat1.jpg','sat6.jpg']
 
-        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
-        img_names = ['4.png',
-                     '10.png',
-                     '18.png',
-                     '32.png',
-                     '35.png',
-                     '54.png',
-                     '72.png',
-                     '83.png',
-                     '144.png',
-                     '155.png',
-                     '159.png',
-                     '2288.png',
-                     '2471.png',
-                     '2486.png',
-                     '2504.png',
-                     '2556.png',
-                     '2584.png',
-                     '2647.png',
-                     '2652.png',
-                     '2708.png',
-                     '2711.png',
-                     '2731.png',
-                     '2786.png',
-                     '2912.png',
-                     '2923.png',
-                     '3024.png',
-                     '3061.png',
-                     '3134.png',
-                     '3156.png',
-                     '3221.png',
-                     '3237.png',
-                     '3249.png',
-                     '3274.png',
-                     '3702.png',
-                     '3733.png',
-                     '3782.png',
-                     '3802.png',
-                     '3825.png',
-                     '3893.png',
-                     '4081.png',
-                     '4112.png',
-                     '4144.png',
-                     '4155.png',
-                     '4172.png',
-                     '4208.png',
-                     '4287.png',
-                     '4292.png',
-                     '4298.png',
-                     '4354.png',
-                     '4361.png',
-                     '4606.png',
-                     '6044.png',
-                     '6097.png',
-                     '6142.png',
-                     '6143.png',
-                     '6146.png',
-                     '6192.png',
-                     '6240.png',
-                     '6290.png',
-                     '6311.png',
-                     '6328.png']
+        # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
+        # img_names = ['4.png',
+        #              '10.png',
+        #              '18.png',
+        #              '32.png',
+        #              '35.png',
+        #              '54.png',
+        #              '72.png',
+        #              '83.png',
+        #              '144.png',
+        #              '155.png',
+        #              '159.png',
+        #              '2288.png',
+        #              '2471.png',
+        #              '2486.png',
+        #              '2504.png',
+        #              '2556.png',
+        #              '2584.png',
+        #              '2647.png',
+        #              '2652.png',
+        #              '2708.png',
+        #              '2711.png',
+        #              '2731.png',
+        #              '2786.png',
+        #              '2912.png',
+        #              '2923.png',
+        #              '3024.png',
+        #              '3061.png',
+        #              '3134.png',
+        #              '3156.png',
+        #              '3221.png',
+        #              '3237.png',
+        #              '3249.png',
+        #              '3274.png',
+        #              '3702.png',
+        #              '3733.png',
+        #              '3782.png',
+        #              '3802.png',
+        #              '3825.png',
+        #              '3893.png',
+        #              '4081.png',
+        #              '4112.png',
+        #              '4144.png',
+        #              '4155.png',
+        #              '4172.png',
+        #              '4208.png',
+        #              '4287.png',
+        #              '4292.png',
+        #              '4298.png',
+        #              '4354.png',
+        #              '4361.png',
+        #              '4606.png',
+        #              '6044.png',
+        #              '6097.png',
+        #              '6142.png',
+        #              '6143.png',
+        #              '6146.png',
+        #              '6192.png',
+        #              '6240.png',
+        #              '6290.png',
+        #              '6311.png',
+        #              '6328.png']
 
     if iter_num is None:
         models_paths = get_models_paths(work_dir+'/'+train_name)
@@ -278,8 +281,12 @@ mpl.rcParams['lines.linewidth'] = 0.7
 mpl.rcParams['axes.linewidth'] = 0.3
 
 on_cluster = False
+on_P = True
 if on_cluster:
-    work_dir = '/home/doleinik/trained_models'
+    if on_P:
+        work_dir = '/home/cudauser/trained_models'
+    else:
+        work_dir = '/home/doleinik/trained_models'
     load_imgs_from_db = True
 else:
     work_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/trained_models'

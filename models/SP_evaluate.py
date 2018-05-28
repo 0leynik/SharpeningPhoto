@@ -40,7 +40,7 @@ def graph_metrics(train_name, savefig=True, show=False):
     plt.plot(metrics[:, 1])
     if metrics.shape[1]==3:
         plt.plot(metrics[:, 2])
-        plt.legend(['train', 'val'], loc='upper left')
+        plt.legend(['train', 'val'])
     plt.ylabel('loss')
     plt.xlabel('iter')
     plt.grid(True, linestyle='--')

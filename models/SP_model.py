@@ -429,7 +429,7 @@ def sub_loss(y_true, y_pred):
 
 def get_unet_128():
 
-    img_shape = (3, IMG_H, IMG_W)
+    img_shape = (3, None, None)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -482,7 +482,7 @@ def get_unet_128():
 
 def get_unet_128_w_BN_kernel_init():
 
-    img_shape = (3, IMG_H, IMG_W)
+    img_shape = (3, None, None)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -544,7 +544,7 @@ def get_unet_128_w_BN_kernel_init():
 
 def get_SPN():
 
-    img_shape = (3, IMG_H, IMG_W)
+    img_shape = (3, None, None)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)
@@ -593,7 +593,7 @@ def get_SPN():
 
 def get_L15():
 
-    img_shape = (3, IMG_H, IMG_W)
+    img_shape = (3, None, None)
     concat_axis = 1
 
     inputs = Input(shape=img_shape)

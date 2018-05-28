@@ -163,71 +163,74 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         paths = [lmdb_path + '/test_blur_lmdb_128', lmdb_path + '/test_sharp_lmdb_128']
         blur_data, sharp_data = SP_model.get_data_from_keys(paths, ids)
     else:
-        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
-        img_names = ['sat1.jpg','sat6.jpg']
+        # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs'
+        # img_names = ['sat1.jpg','sat6.jpg']
 
-        # img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
-        # img_names = ['4.png',
-        #              '10.png',
-        #              '18.png',
-        #              '32.png',
-        #              '35.png',
-        #              '54.png',
-        #              '72.png',
-        #              '83.png',
-        #              '144.png',
-        #              '155.png',
-        #              '159.png',
-        #              '2288.png',
-        #              '2471.png',
-        #              '2486.png',
-        #              '2504.png',
-        #              '2556.png',
-        #              '2584.png',
-        #              '2647.png',
-        #              '2652.png',
-        #              '2708.png',
-        #              '2711.png',
-        #              '2731.png',
-        #              '2786.png',
-        #              '2912.png',
-        #              '2923.png',
-        #              '3024.png',
-        #              '3061.png',
-        #              '3134.png',
-        #              '3156.png',
-        #              '3221.png',
-        #              '3237.png',
-        #              '3249.png',
-        #              '3274.png',
-        #              '3702.png',
-        #              '3733.png',
-        #              '3782.png',
-        #              '3802.png',
-        #              '3825.png',
-        #              '3893.png',
-        #              '4081.png',
-        #              '4112.png',
-        #              '4144.png',
-        #              '4155.png',
-        #              '4172.png',
-        #              '4208.png',
-        #              '4287.png',
-        #              '4292.png',
-        #              '4298.png',
-        #              '4354.png',
-        #              '4361.png',
-        #              '4606.png',
-        #              '6044.png',
-        #              '6097.png',
-        #              '6142.png',
-        #              '6143.png',
-        #              '6146.png',
-        #              '6192.png',
-        #              '6240.png',
-        #              '6290.png',
-        #              '6311.png',
-        #              '6328.png']
+        img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
+        img_names = ['wall_input_small.png',
+                     'wall_x4_bicubic.jpg',
+                     '1blur.JPG',
+                     '4.png',
+                     '10.png',
+                     '18.png',
+                     '32.png',
+                     '35.png',
+                     '54.png',
+                     '72.png',
+                     '83.png',
+                     '144.png',
+                     '155.png',
+                     '159.png',
+                     '2288.png',
+                     '2471.png',
+                     '2486.png',
+                     '2504.png',
+                     '2556.png',
+                     '2584.png',
+                     '2647.png',
+                     '2652.png',
+                     '2708.png',
+                     '2711.png',
+                     '2731.png',
+                     '2786.png',
+                     '2912.png',
+                     '2923.png',
+                     '3024.png',
+                     '3061.png',
+                     '3134.png',
+                     '3156.png',
+                     '3221.png',
+                     '3237.png',
+                     '3249.png',
+                     '3274.png',
+                     '3702.png',
+                     '3733.png',
+                     '3782.png',
+                     '3802.png',
+                     '3825.png',
+                     '3893.png',
+                     '4081.png',
+                     '4112.png',
+                     '4144.png',
+                     '4155.png',
+                     '4172.png',
+                     '4208.png',
+                     '4287.png',
+                     '4292.png',
+                     '4298.png',
+                     '4354.png',
+                     '4361.png',
+                     '4606.png',
+                     '6044.png',
+                     '6097.png',
+                     '6142.png',
+                     '6143.png',
+                     '6146.png',
+                     '6192.png',
+                     '6240.png',
+                     '6290.png',
+                     '6311.png',
+                     '6328.png']
 
     if iter_num is None:
         models_paths = get_models_paths(work_dir+'/'+train_name)
@@ -254,24 +257,54 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 print(img_name)
                 img_path = img_dir + '/' + img_name
 
+                # original_img = skimage.img_as_float(imread(img_path)[..., :3])
+                # # print('shape original: ' + str(original_img.shape))
+                #
+                # img = original_img[:, :, ::-1]  # RGB -> BGR
+                # img_patches = get_patches_from_img(img)
+                # img_patches = np.array(map(lambda i: np.transpose(i, (2, 0, 1)), img_patches), np.float32)  # HxWxC -> CxHxW
+                # # print('shape patches: ' + str(img_patches.shape))
+                #
+                # model = keras.models.load_model(model_path, custom_objects=custom_objects)
+                # predict_img_patches = model.predict(img_patches)
+                #
+                # predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches), np.float32)  # HxWxC -> CxHxW
+                # predict_img = get_img_from_patches(predict_img_patches, original_img)
+                # predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
+                #
+                # img_savepath = imgs_savedir + '/' + os.path.splitext(img_name)[0] + '_' + train_name + '_' + iter_name
+                # imsave(img_savepath + '_blur.png', original_img)
+                # imsave(img_savepath + '_pred.png', predict_img)
+
+
                 original_img = skimage.img_as_float(imread(img_path)[..., :3])
-                # print('shape original: ' + str(original_img.shape))
+                print('shape original: ' + str(original_img.shape))
 
                 img = original_img[:, :, ::-1]  # RGB -> BGR
-                img_patches = get_patches_from_img(img)
-                img_patches = np.array(map(lambda i: np.transpose(i, (2, 0, 1)), img_patches), np.float32)  # HxWxC -> CxHxW
-                # print('shape patches: ' + str(img_patches.shape))
+                h, w, c = img.shape
+                img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
 
-                model = keras.models.load_model(model_path, custom_objects=custom_objects)
-                predict_img_patches = model.predict(img_patches)
+                img_to_pred = np.empty((1, c, 128 * (h/128 + 1), 128 * (w/128 + 1)))
+                print('shape pred: ' + str(img_to_pred.shape))
+                img_to_pred[0, :, :h, :w] = img
 
-                predict_img_patches = np.array(map(lambda i: np.transpose(i, (1, 2, 0)), predict_img_patches), np.float32)  # HxWxC -> CxHxW
-                predict_img = get_img_from_patches(predict_img_patches, original_img)
+                model = SP_model.get_unet_128()
+                model.summary()
+                'input_1'
+                # print('Metrics: ' + str(model.metrics_names))
+                # model.compile(optimizer='adam', loss='mean_squared_error')
+                model.load_weights(model_path)
+                predict_img = model.predict(img_to_pred)
+
+
+                predict_img = np.transpose(predict_img[0, :, :h, :w] , (1, 2, 0))  # HxWxC -> CxHxW
                 predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
 
                 img_savepath = imgs_savedir + '/' + os.path.splitext(img_name)[0] + '_' + train_name + '_' + iter_name
                 imsave(img_savepath + '_blur.png', original_img)
                 imsave(img_savepath + '_pred.png', predict_img)
+
+
 
 
 

@@ -453,22 +453,74 @@ def get_unet_128():
     conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
     conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv5)
 
-    deconv6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(conv5)
+    deconv6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(conv5)  # activation='relu',
     up6 = concatenate([deconv6, conv4], axis=concat_axis)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv6)
 
-    deconv7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6)
+    deconv7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6)  # activation='relu',
     up7 = concatenate([deconv7, conv3], axis=concat_axis)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
 
-    deconv8 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv7)
+    deconv8 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv7)  # activation='relu',
     up8 = concatenate([deconv8, conv2], axis=concat_axis)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
 
-    deconv9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8)
+    deconv9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8)  # activation='relu',
+    up9 = concatenate([deconv9, conv1], axis=concat_axis)
+    conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
+    conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv9)
+
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    return model
+
+def get_unet_128_w_relu():
+
+    img_shape = (3, None, None)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv1)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv2)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv3)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+
+    conv4 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
+    conv4 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+
+    conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
+    conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv5)
+
+    deconv6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv5)  # activation='relu',
+    up6 = concatenate([deconv6, conv4], axis=concat_axis)
+    conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
+    conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv6)
+
+    deconv7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv6)  # activation='relu',
+    up7 = concatenate([deconv7, conv3], axis=concat_axis)
+    conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
+    conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
+
+    deconv8 = Conv2DTranspose(64, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv7)  # activation='relu',
+    up8 = concatenate([deconv8, conv2], axis=concat_axis)
+    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
+    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
+
+    deconv9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv8)  # activation='relu',
     up9 = concatenate([deconv9, conv1], axis=concat_axis)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv9)
@@ -487,7 +539,7 @@ def get_unet_128_w_BN_kernel_init():
 
     inputs = Input(shape=img_shape)
 
-    conv1 = Conv2D(32, (3, 3), padding='same', kernel_initializer='glorot_normal')(inputs)
+    conv1 = Conv2D(32, (3, 3), padding='same', kernel_initializer='glorot_normal')(inputs)  # убрать kernel_initializer!!!!!!!!
     conv1 = BatchNormalization()(conv1)
     conv1 = Activation('relu')(conv1)
 
@@ -552,7 +604,7 @@ def get_SPN():
     # 1-line
     conv1_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(inputs)
     conv1_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv1_1)
-    deconv1_1 = Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='same')(conv1_1)
+    deconv1_1 = Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='same')(conv1_1)   # activation='relu',
 
     conv2_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(deconv1_1)
     conv2_1 = Conv2D(16, (3, 3), activation='relu', padding='same')(conv2_1)
@@ -565,7 +617,7 @@ def get_SPN():
     # 2-line
     conv1_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(inputs)
     conv1_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(conv1_2)
-    deconv1_2 = Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same')(conv1_2)
+    deconv1_2 = Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same')(conv1_2)  # activation='relu',
 
     conv2_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(deconv1_2)
     conv2_2 = Conv2D(16, (5, 5), activation='relu', padding='same')(conv2_2)
@@ -658,6 +710,7 @@ if __name__ == '__main__':
 
     model_params = {
         'mean_squared_error_lr_0.001': [int(factor * 224), get_unet_128],
+        'mean_squared_error_lr_0.001_w_relu': [int(factor * 224), get_unet_128_w_relu],
         'mean_squared_error_lr_0.00002': [int(factor * 224), get_unet_128],
         'laplacian_gray_loss': [int(factor * 224), get_unet_128],
         'clip_laplacian_color_loss': [int(factor * 224), get_unet_128],

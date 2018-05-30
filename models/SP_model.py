@@ -759,6 +759,8 @@ if __name__ == '__main__':
 
         if train_name == 'mean_squared_error_lr_0.001':
             model.compile(optimizer='adam', loss='mean_squared_error')
+        if train_name == 'mean_squared_error_lr_0.001_w_relu':
+            model.compile(optimizer='adam', loss='mean_squared_error')
         if train_name == 'mean_squared_error_lr_0.00002':
             model.compile(optimizer=Adam(lr=0.00002), loss='mean_squared_error')
         if train_name == 'laplacian_gray_loss': # (делает красным)

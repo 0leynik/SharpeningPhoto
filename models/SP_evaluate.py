@@ -3,8 +3,8 @@
 from __future__ import print_function
 
 import os
-#os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import glob
 import numpy as np
@@ -353,11 +353,11 @@ if __name__ == '__main__':
     # ]
     train_names = [
         # ['clip_laplacian_color_loss'],
-        ['l15_mean_squared_error_lr_0.001'],
+        ['l15_mean_squared_error_lr_0.001']
         # ['laplacian_gray_loss'],
-        ['mean_squared_error_lr_0.00002'],
-        ['mean_squared_error_lr_0.001'],
-        ['mean_squared_error_lr_0.001_w_relu'],
+        # +['mean_squared_error_lr_0.00002'],
+        # +['mean_squared_error_lr_0.001'],
+        # +['mean_squared_error_lr_0.001_w_relu'],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
         # ['spn_mean_squared_error_lr_0.001'],
         # ['sub_loss']
@@ -365,9 +365,9 @@ if __name__ == '__main__':
     for tr in train_names:
         graph_metrics(train_name=tr[0])
 
-        if len(tr) == 1:
-            evaluate(load_imgs_from_db, train_name=tr[0])
-        elif len(tr) == 2:
-            evaluate(load_imgs_from_db, train_name=tr[0], iter_num=tr[1])
+        # if len(tr) == 1:
+        #     evaluate(load_imgs_from_db, train_name=tr[0])
+        # elif len(tr) == 2:
+        #     evaluate(load_imgs_from_db, train_name=tr[0], iter_num=tr[1])
 
     print('\n--> end')

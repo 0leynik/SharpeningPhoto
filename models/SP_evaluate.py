@@ -316,7 +316,7 @@ mpl.rcParams['lines.linewidth'] = 0.7
 mpl.rcParams['axes.linewidth'] = 0.3
 
 on_cluster = True
-on_P = False
+on_P = True
 if on_cluster:
     if on_P:
         work_dir = '/home/cudauser/trained_models'
@@ -352,15 +352,15 @@ if __name__ == '__main__':
     #     ['sub_loss',11200]
     # ]
     train_names = [
-        # ['clip_laplacian_color_loss'],
-        ['l15_mean_squared_error_lr_0.001'],
-        # ['laplacian_gray_loss'],
-        ['mean_squared_error_lr_0.00002'],
-        ['mean_squared_error_lr_0.001'],
-        ['mean_squared_error_lr_0.001_w_relu'],
-        # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
-        # ['spn_mean_squared_error_lr_0.001'],
-        # ['sub_loss']
+        ['clip_laplacian_color_loss'],
+        # ['l15_mean_squared_error_lr_0.001'],
+        ['laplacian_gray_loss'],
+        # ['mean_squared_error_lr_0.00002'],
+        # ['mean_squared_error_lr_0.001'],
+        # ['mean_squared_error_lr_0.001_w_relu'],
+        ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
+        ['spn_mean_squared_error_lr_0.001'],
+        ['sub_loss']
     ]
     for tr in train_names:
         graph_metrics(train_name=tr[0])

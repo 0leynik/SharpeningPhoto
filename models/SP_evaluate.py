@@ -365,9 +365,9 @@ if __name__ == '__main__':
     for tr in train_names:
         graph_metrics(train_name=tr[0])
 
-        # if len(tr) == 1:
-        #     evaluate(load_imgs_from_db, train_name=tr[0])
-        # elif len(tr) == 2:
-        #     evaluate(load_imgs_from_db, train_name=tr[0], iter_num=tr[1])
+        if len(tr) == 1:
+            evaluate(load_imgs_from_db, train_name=tr[0])
+        elif len(tr) == 2:
+            evaluate(load_imgs_from_db, train_name=tr[0], iter_num=tr[1])
 
     print('\n--> end')

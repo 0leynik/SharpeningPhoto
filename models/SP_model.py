@@ -769,7 +769,6 @@ if __name__ == '__main__':
 
         'spn_mean_squared_error_lr_0.001': [int(factor * 100), get_SPN],
         'spn_mean_squared_error_w_relu': [int(factor * 100), get_SPN_w_relu],
-        'spn_cosine_proximity': [int(factor * 100), get_SPN],
 
         'l15_mean_squared_error_lr_0.001': [int(factor * 40), get_L15]
     }
@@ -827,8 +826,6 @@ if __name__ == '__main__':
             model.compile(optimizer='adam', loss='mean_squared_error')
         if train_name == 'spn_mean_squared_error_w_relu':
             model.compile(optimizer='adam', loss='mean_squared_error')
-        if train_name == 'spn_cosine_proximity':
-            model.compile(optimizer='adam', loss='cosine_proximity')
 
         if train_name == 'l15_mean_squared_error_lr_0.001':
             model.compile(optimizer='adam', loss='mean_squared_error')

@@ -337,7 +337,6 @@ if __name__ == '__main__':
     #     # ['clip_laplacian_color_loss',500],
     #     # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
     #     # ['spn_mean_squared_error_lr_0.001', 13000],
-    #     # ['spn_cosine_proximity', 29000],
     #     ['l15_mean_squared_error_lr_0.001']
     # ]
 
@@ -349,7 +348,6 @@ if __name__ == '__main__':
     #     # ['mean_squared_error_lr_0.00002'],
     #     # ['mean_squared_error_lr_0.001'],
     #     ['mean_squared_error_lr_0.001_w_BN_kernel_init',11800],
-    #     # ['spn_cosine_proximity'],
     #     ['spn_mean_squared_error_lr_0.001',8000],
     #     ['sub_loss',11200]
     # ]
@@ -361,7 +359,6 @@ if __name__ == '__main__':
         ['mean_squared_error_lr_0.001'],
         ['mean_squared_error_lr_0.001_w_relu'],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
-        ['spn_cosine_proximity'],
         # ['spn_mean_squared_error_lr_0.001'],
         # ['sub_loss']
     ]

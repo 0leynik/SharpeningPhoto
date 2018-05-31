@@ -505,22 +505,22 @@ def get_unet_128_w_relu():
     conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
     conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv5)
 
-    deconv6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv5)  # activation='relu',
+    deconv6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv5)
     up6 = concatenate([deconv6, conv4], axis=concat_axis)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv6)
 
-    deconv7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv6)  # activation='relu',
+    deconv7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv6)
     up7 = concatenate([deconv7, conv3], axis=concat_axis)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
 
-    deconv8 = Conv2DTranspose(64, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv7)  # activation='relu',
+    deconv8 = Conv2DTranspose(64, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv7)
     up8 = concatenate([deconv8, conv2], axis=concat_axis)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
 
-    deconv9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv8)  # activation='relu',
+    deconv9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), activation='relu', padding='same')(conv8)
     up9 = concatenate([deconv9, conv1], axis=concat_axis)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv9)

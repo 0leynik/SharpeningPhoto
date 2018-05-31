@@ -353,7 +353,7 @@ if __name__ == '__main__':
     # ]
     train_names = [
         # ['clip_laplacian_color_loss'],
-        ['l15_mean_squared_error_lr_0.001',200],
+        ['l15_mean_squared_error_lr_0.001',250],
         # ['laplacian_gray_loss'],
         # ['mean_squared_error_lr_0.00002'],
         # ['mean_squared_error_lr_0.001'],

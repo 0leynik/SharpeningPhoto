@@ -18,7 +18,6 @@ import skimage
 import keras
 import keras.backend as K
 import SP_model
-from sklearn.feature_extraction.image import extract_patches_2d, reconstruct_from_patches_2d
 
 
 def get_models_paths(train_dir):

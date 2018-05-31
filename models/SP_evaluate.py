@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.image as mplimg
 import cv2
 from skimage.io import imread, imshow, imsave
 import skimage
@@ -45,7 +46,9 @@ def graph_metrics(train_name, savefig=True, show=False):
     plt.xlabel('iter')
     plt.grid(True, linestyle='--')
     # plt.yticks(np.linspace(0., 0.2, 10))
-    # plt.ylim(0., 0.25)
+    # plt.ylim(0,0.05)
+    # plt.xticks(np.linspace(0., 0.2, 10))
+    # plt.xlim(0, 5000)
     if savefig:
         plt.savefig(graphs_savedir + '/' + loss_name + '.png')
     plt.close()
@@ -138,23 +141,23 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         list_ids = [27,
                     42,
                     68,
-                    84]#,
-                    # 138,
-                    # 176,
-                    # 179,
-                    # 201,
-                    # 212,
-                    # 284,
-                    # 561,
-                    # 620,
-                    # 650,
-                    # 791,
-                    # 841,
-                    # 922,
-                    # 934,
-                    # 937,
-                    # 956,
-                    # 959]
+                    84,
+                    138,
+                    176,
+                    179,
+                    201,
+                    212,
+                    284,
+                    561,
+                    620,
+                    650,
+                    791,
+                    841,
+                    922,
+                    934,
+                    937,
+                    956,
+                    959]
         ids = ['{:08}'.format(i) for i in list_ids]
         if on_P:
             lmdb_path = '/home/cudauser/SharpeningPhoto/lmdb'
@@ -235,7 +238,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
     if iter_num is None:
         models_paths = get_models_paths(work_dir+'/'+train_name)
     else:
-        models_paths = [work_dir + '/' + train_name + '/models/iter_' + str(iter_num) + '.h5']
+        models_paths = [work_dir + '/' + train_name + '/saved_models/iter_' + str(iter_num) + '.h5']
 
     for model_path in models_paths:
 
@@ -249,9 +252,9 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
             for i in range(len(list_ids)):
                 print(i)
                 img_savepath = imgs_savedir + '/' + str(list_ids[i]) + '_' + train_name + '_' + iter_name
-                imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
-                imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
-                imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
+                mplimg.imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
+                mplimg.imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
+                mplimg.imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
         else:
             for img_name in img_names:
                 print(img_name)
@@ -273,8 +276,8 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 # predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
                 #
                 # img_savepath = imgs_savedir + '/' + os.path.splitext(img_name)[0] + '_' + train_name + '_' + iter_name
-                # imsave(img_savepath + '_blur.png', original_img)
-                # imsave(img_savepath + '_pred.png', predict_img)
+                # mplimg.imsave(img_savepath + '_blur.png', original_img)
+                # mplimg.imsave(img_savepath + '_pred.png', predict_img)
 
 
                 original_img = skimage.img_as_float(imread(img_path)[..., :3])
@@ -301,8 +304,8 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 predict_img = predict_img[:, :, ::-1]  # BGR -> RGB
 
                 img_savepath = imgs_savedir + '/' + os.path.splitext(img_name)[0] + '_' + train_name + '_' + iter_name
-                imsave(img_savepath + '_blur.png', original_img)
-                imsave(img_savepath + '_pred.png', predict_img)
+                mplimg.imsave(img_savepath + '_blur.png', original_img)
+                mplimg.imsave(img_savepath + '_pred.png', predict_img)
 
 
 
@@ -313,7 +316,7 @@ mpl.rcParams['figure.dpi'] = 500
 mpl.rcParams['lines.linewidth'] = 0.7
 mpl.rcParams['axes.linewidth'] = 0.3
 
-on_cluster = False
+on_cluster = True
 on_P = True
 if on_cluster:
     if on_P:
@@ -336,24 +339,34 @@ if __name__ == '__main__':
     #     # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
     #     # ['spn_mean_squared_error_lr_0.001', 13000],
     #     # ['spn_cosine_proximity', 29000],
-    #     # ['spn_mean_squared_error_lr_0.001_', 250]
     #     ['l15_mean_squared_error_lr_0.001']
     # ]
 
+    # train_names = [
+    #     ['clip_laplacian_color_loss',7800],
+    #     ['clip_laplacian_color_loss',3000],
+    #     # ['l15_mean_squared_error_lr_0.001'],
+    #     ['laplacian_gray_loss',4800],
+    #     # ['mean_squared_error_lr_0.00002'],
+    #     # ['mean_squared_error_lr_0.001'],
+    #     ['mean_squared_error_lr_0.001_w_BN_kernel_init',11800],
+    #     # ['spn_cosine_proximity'],
+    #     ['spn_mean_squared_error_lr_0.001',8000],
+    #     ['sub_loss',11200]
+    # ]
     train_names = [
-        # ['clip_laplacian_color_loss'],
+        ['clip_laplacian_color_loss'],
         # ['l15_mean_squared_error_lr_0.001'],
-        # ['laplacian_gray_loss'],
+        ['laplacian_gray_loss'],
         # ['mean_squared_error_lr_0.00002'],
-        ['mean_squared_error_lr_0.001'],
-        # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
+        # ['mean_squared_error_lr_0.001'],
+        ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
         # ['spn_cosine_proximity'],
-        # ['spn_mean_squared_error_lr_0.001'],
-        # ['spn_mean_squared_error_lr_0.001_'],
-        # ['sub_loss']
+        ['spn_mean_squared_error_lr_0.001'],
+        ['sub_loss']
     ]
     for tr in train_names:
-        # graph_metrics(train_name=tr[0])
+        graph_metrics(train_name=tr[0])
 
         if len(tr) == 1:
             evaluate(load_imgs_from_db, train_name=tr[0])

@@ -251,8 +251,8 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
             for i in range(len(list_ids)):
                 print(i)
                 img_savepath = imgs_savedir + '/' + str(list_ids[i]) + '_' + train_name + '_' + iter_name
-                mplimg.imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
-                mplimg.imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
+                # mplimg.imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
+                # mplimg.imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
                 mplimg.imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
         else:
             for img_name in img_names:
@@ -353,11 +353,11 @@ if __name__ == '__main__':
     # ]
     train_names = [
         # ['clip_laplacian_color_loss'],
-        ['l15_mean_squared_error_lr_0.001',250],
+        ['l15_mean_squared_error_lr_0.001'],
         # ['laplacian_gray_loss'],
-        # ['mean_squared_error_lr_0.00002'],
-        # ['mean_squared_error_lr_0.001'],
-        # ['mean_squared_error_lr_0.001_w_relu'],
+        ['mean_squared_error_lr_0.00002'],
+        ['mean_squared_error_lr_0.001'],
+        ['mean_squared_error_lr_0.001_w_relu'],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
         # ['spn_mean_squared_error_lr_0.001'],
         # ['sub_loss']

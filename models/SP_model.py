@@ -737,7 +737,7 @@ def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     print(res_str)
 
 
-on_P = False
+on_P = True
 if on_P:
     work_dir = '/home/cudauser/trained_models'
 else:

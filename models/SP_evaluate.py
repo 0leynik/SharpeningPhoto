@@ -3,8 +3,8 @@
 from __future__ import print_function
 
 import os
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import glob
 import numpy as np
@@ -353,7 +353,8 @@ if __name__ == '__main__':
     # ]
     train_names = [
         # ['clip_laplacian_color_loss'],
-        ['l15_mean_squared_error_lr_0.001']
+        # ['l15_mean_squared_error_lr_0.001']
+        ['l15_mean_squared_error_lr_0.001_b1']
         # ['laplacian_gray_loss'],
         # +['mean_squared_error_lr_0.00002'],
         # +['mean_squared_error_lr_0.001'],

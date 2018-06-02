@@ -737,7 +737,7 @@ def print_state(process_name, iter, e, epochs, batch_count, N, model, scores):
     print(res_str)
 
 
-on_P = True
+on_P = False
 if on_P:
     work_dir = '/home/cudauser/trained_models'
 else:
@@ -759,6 +759,7 @@ if __name__ == '__main__':
 
     model_params = {
         'mean_squared_error_lr_0.001': [int(factor * 224), get_unet_128],
+        'mean_squared_error_lr_0.001_b1': [int(factor * 1), get_unet_128_w_relu],
         'mean_squared_error_lr_0.001_w_relu': [int(factor * 224), get_unet_128_w_relu],
         'mean_squared_error_lr_0.00002': [int(factor * 224), get_unet_128],
         'laplacian_gray_loss': [int(factor * 224), get_unet_128],
@@ -807,6 +808,8 @@ if __name__ == '__main__':
         model = model_params[train_name][1]()
 
         if train_name == 'mean_squared_error_lr_0.001':
+            model.compile(optimizer='adam', loss='mean_squared_error')
+        if train_name == 'mean_squared_error_lr_0.001_b1':
             model.compile(optimizer='adam', loss='mean_squared_error')
         if train_name == 'mean_squared_error_lr_0.001_w_relu':
             model.compile(optimizer='adam', loss='mean_squared_error')

@@ -157,6 +157,9 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                     937,
                     956,
                     959]
+        list_ids = []
+        for i in range(1001, 3000):
+            list_ids.append(i)
         ids = ['{:08}'.format(i) for i in list_ids]
         if on_P:
             lmdb_path = '/home/cudauser/SharpeningPhoto/lmdb'
@@ -245,15 +248,15 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         print(iter_name)
 
         if load_imgs_from_db:
-            model = keras.models.load_model(model_path, custom_objects=custom_objects)
-            predict_data = model.predict(blur_data)
+            # model = keras.models.load_model(model_path, custom_objects=custom_objects)
+            # predict_data = model.predict(blur_data)
 
             for i in range(len(list_ids)):
                 print(i)
                 img_savepath = imgs_savedir + '/' + str(list_ids[i]) + '_' + train_name + '_' + iter_name
-                # mplimg.imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
-                # mplimg.imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
-                mplimg.imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
+                mplimg.imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
+                mplimg.imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
+                # mplimg.imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
         else:
             for img_name in img_names:
                 print(img_name)
@@ -357,11 +360,7 @@ if __name__ == '__main__':
         # ['laplacian_gray_loss'],
         # +['mean_squared_error_lr_0.00002'],
         # +['mean_squared_error_lr_0.001'],
-        ['mean_squared_error_lr_0.001_b1',20000],
-        ['mean_squared_error_lr_0.001_b1',40000],
-        ['mean_squared_error_lr_0.001_b1',100000],
-        ['mean_squared_error_lr_0.001_b1',140000],
-        ['mean_squared_error_lr_0.001_b1',157000]
+        ['mean_squared_error_lr_0.001_b1'],
         # +['mean_squared_error_lr_0.001_w_relu'],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
         # ['spn_mean_squared_error_lr_0.001'],

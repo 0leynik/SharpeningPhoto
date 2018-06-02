@@ -354,10 +354,10 @@ if __name__ == '__main__':
     train_names = [
         # ['clip_laplacian_color_loss'],
         # ['l15_mean_squared_error_lr_0.001']
-        ['l15_mean_squared_error_lr_0.001_b1']
         # ['laplacian_gray_loss'],
         # +['mean_squared_error_lr_0.00002'],
         # +['mean_squared_error_lr_0.001'],
+        ['mean_squared_error_lr_0.001_b1']
         # +['mean_squared_error_lr_0.001_w_relu'],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
         # ['spn_mean_squared_error_lr_0.001'],

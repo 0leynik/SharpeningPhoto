@@ -360,7 +360,7 @@ if __name__ == '__main__':
         # ['laplacian_gray_loss'],
         # +['mean_squared_error_lr_0.00002'],
         # +['mean_squared_error_lr_0.001'],
-        ['mean_squared_error_lr_0.001_b1'],
+        ['mean_squared_error_lr_0.001_b1', 200]
         # +['mean_squared_error_lr_0.001_w_relu'],
         # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
         # ['spn_mean_squared_error_lr_0.001'],

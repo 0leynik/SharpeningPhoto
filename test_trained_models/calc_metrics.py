@@ -37,12 +37,13 @@ if __name__ == '__main__':
                 956,
                 959]
     models_postfix = ['_l15_mean_squared_error_lr_0.001_iter_4800_pred.png',
-                     '_mean_squared_error_lr_0.001_iter_5600_pred.png',
-                     '_mean_squared_error_lr_0.001_w_BN_kernel_init_iter_5000_pred.png',
-                     '_mean_squared_error_lr_0.001_w_relu_iter_5200_pred.png',
-                     '_mean_squared_error_lr_0.00002_iter_5000_pred.png',
-                     '_spn_mean_squared_error_lr_0.001_iter_5000_pred.png',
-                     '_sub_loss_iter_5000_pred.png']
+                      '_mean_squared_error_lr_0.001_b1_iter_140000_pred.png',
+                      '_mean_squared_error_lr_0.001_iter_5600_pred.png',
+                      '_mean_squared_error_lr_0.001_w_BN_kernel_init_iter_5000_pred.png',
+                      '_mean_squared_error_lr_0.001_w_relu_iter_5200_pred.png',
+                      '_mean_squared_error_lr_0.00002_iter_5000_pred.png',
+                      '_spn_mean_squared_error_lr_0.001_iter_5000_pred.png',
+                      '_sub_loss_iter_5000_pred.png']
     img_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/test_trained_models/final'
 
     metrics_mean = []

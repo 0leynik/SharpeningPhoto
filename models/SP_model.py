@@ -593,6 +593,58 @@ def get_unet_128_w_BN_kernel_init():
 
     return model
 
+def get_unet_128_w_BN():
+
+    img_shape = (3, None, None)
+    concat_axis = 1
+
+    inputs = Input(shape=img_shape)
+
+    conv1 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same')(inputs)))
+    conv1 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same')(conv1)))
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+    conv2 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same')(pool1)))
+    conv2 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same')(conv2)))
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+    conv3 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same')(pool2)))
+    conv3 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same')(conv3)))
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+
+    conv4 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same')(pool3)))
+    conv4 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same')(conv4)))
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+
+    conv5 = Activation('relu')(BatchNormalization()(Conv2D(512, (3, 3), padding='same')(pool4)))
+    conv5 = Activation('relu')(BatchNormalization()(Conv2D(512, (3, 3), padding='same')(conv5)))
+
+    deconv6 = Activation('relu')(BatchNormalization()(Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(conv5)))
+    up6 = Concatenate(axis=concat_axis)([deconv6, conv4])
+    conv6 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same')(up6)))
+    conv6 = Activation('relu')(BatchNormalization()(Conv2D(256, (3, 3), padding='same')(conv6)))
+
+    deconv7 = Activation('relu')(BatchNormalization()(Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6)))
+    up7 = Concatenate(axis=concat_axis)([deconv7, conv3])
+    conv7 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same')(up7)))
+    conv7 = Activation('relu')(BatchNormalization()(Conv2D(128, (3, 3), padding='same')(conv7)))
+
+    deconv8 = Activation('relu')(BatchNormalization()(Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv7)))
+    up8 = Concatenate(axis=concat_axis)([deconv8, conv2])
+    conv8 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same')(up8)))
+    conv8 = Activation('relu')(BatchNormalization()(Conv2D(64, (3, 3), padding='same')(conv8)))
+
+    deconv9 = Activation('relu')(BatchNormalization()(Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8)))
+    up9 = Concatenate(axis=concat_axis)([deconv9, conv1])
+    conv9 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same')(up9)))
+    conv9 = Activation('relu')(BatchNormalization()(Conv2D(32, (3, 3), padding='same')(conv9)))
+
+    outputs = Conv2D(3, (1, 1), activation='sigmoid')(conv9)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    return model
+
 
 def get_SPN():
 
@@ -695,11 +747,9 @@ def get_SPN_w_relu():
 def get_L15():
 
     img_shape = (3, None, None)
-    concat_axis = 1
 
     inputs = Input(shape=img_shape)
 
-    # 1-line
     conv1 = Conv2D(128, (19, 19), activation='relu', padding='same')(inputs)
     conv2 = Conv2D(320, (1, 1), activation='relu', padding='same')(conv1)
     conv3 = Conv2D(320, (1, 1), activation='relu', padding='same')(conv2)

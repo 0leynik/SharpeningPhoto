@@ -256,7 +256,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 img_savepath = imgs_savedir + '/' + str(list_ids[i]) + '_' + train_name + '_' + iter_name
                 mplimg.imsave(img_savepath + '_blur.png', plt_img(blur_data[i]))
                 mplimg.imsave(img_savepath + '_sharp.png', plt_img(sharp_data[i]))
-                # mplimg.imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
+                mplimg.imsave(img_savepath + '_pred.png', plt_img(predict_data[i]))
         else:
             for img_name in img_names:
                 print(img_name)

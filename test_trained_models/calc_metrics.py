@@ -41,11 +41,9 @@ if __name__ == '__main__':
     metrics_mean = []
     metrics_std = []
     metrics_PSNR = []
-
     metrics_mean.append(['img_id', 'sharp', 'blur'])
     metrics_std.append(['img_id', 'sharp', 'blur'])
     metrics_PSNR.append(['img_id', 'blur'])
-
     for mp in models_postfix:
         metrics_mean[0].append(mp)
         metrics_std[0].append(mp)
@@ -92,13 +90,16 @@ if __name__ == '__main__':
         metrics_PSNR.append(l_PSNR)
 
     f_mean = open('metrics_mean.csv','w')
-    for i in metrics_mean:
-        f_mean.write(','.join(str(x) for x in i) + '\n')
+    f_mean.write(','.join(metrics_mean[0]) + '\n')
+    for i in metrics_mean[1:]:
+        f_mean.write(','.join('{:.2f}'.format(x) for x in i) + '\n')
 
     f_std = open('metrics_std.csv','w')
-    for i in metrics_std:
-        f_std.write(','.join(str(x) for x in i) + '\n')
+    f_std.write(','.join(metrics_std[0]) + '\n')
+    for i in metrics_std[1:]:
+        f_std.write(','.join('{:.2f}'.format(x) for x in i) + '\n')
 
     f_PSNR = open('metrics_PSNR.csv','w')
-    for i in metrics_PSNR:
-        f_PSNR.write(','.join(str(x) for x in i) + '\n')
+    f_PSNR.write(','.join(metrics_PSNR[0]) + '\n')
+    for i in metrics_PSNR[1:]:
+        f_PSNR.write(','.join('{:.2f}'.format(x) for x in i) + '\n')

@@ -36,18 +36,18 @@ def graph_metrics(train_name, savefig=True, show=False):
 
     loss_name = train_name + ' loss'
     plt.figure(loss_name)
-    plt.title(loss_name)
+    # plt.title(loss_name)
     plt.plot(metrics[:, 1])
     if metrics.shape[1]==3:
         plt.plot(metrics[:, 2])
         plt.legend(['train', 'val'])
-    plt.ylabel('loss')
-    plt.xlabel('iter')
+    # plt.ylabel('loss')
+    # plt.xlabel('iter')
     plt.grid(True, linestyle='--')
-    # plt.yticks(np.linspace(0., 0.2, 10))
-    # plt.ylim(0,0.05)
-    # plt.xticks(np.linspace(0., 0.2, 10))
-    # plt.xlim(0, 5000)
+    plt.yticks(np.linspace(0., 0.05, 11))
+    plt.ylim(0,0.05)
+    plt.xticks(np.linspace(0, 5000, 11))
+    plt.xlim(0, 5000)
     if savefig:
         plt.savefig(graphs_savedir + '/' + loss_name + '.png')
     plt.close()
@@ -157,9 +157,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                     937,
                     956,
                     959]
-        list_ids = []
-        for i in range(1001, 3000):
-            list_ids.append(i)
+        list_ids = [1127,1152,1153,1178,1348,1529,1558,1574,2060,2097,2192,2237,2735,2768]
         ids = ['{:08}'.format(i) for i in list_ids]
         if on_P:
             lmdb_path = '/home/cudauser/SharpeningPhoto/lmdb'
@@ -172,70 +170,72 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         # img_names = ['sat1.jpg','sat6.jpg']
 
         img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
-        img_names = ['wall_input_small.png',
-                     'wall_x4_bicubic.jpg',
-                     '1blur.JPG',
-                     '4.png',
-                     '10.png',
-                     '18.png',
-                     '32.png',
-                     '35.png',
-                     '54.png',
-                     '72.png',
-                     '83.png',
-                     '144.png',
-                     '155.png',
-                     '159.png',
-                     '2288.png',
-                     '2471.png',
-                     '2486.png',
-                     '2504.png',
-                     '2556.png',
-                     '2584.png',
-                     '2647.png',
-                     '2652.png',
-                     '2708.png',
-                     '2711.png',
-                     '2731.png',
-                     '2786.png',
-                     '2912.png',
-                     '2923.png',
-                     '3024.png',
-                     '3061.png',
-                     '3134.png',
-                     '3156.png',
-                     '3221.png',
-                     '3237.png',
-                     '3249.png',
-                     '3274.png',
-                     '3702.png',
-                     '3733.png',
-                     '3782.png',
-                     '3802.png',
-                     '3825.png',
-                     '3893.png',
-                     '4081.png',
-                     '4112.png',
-                     '4144.png',
-                     '4155.png',
-                     '4172.png',
-                     '4208.png',
-                     '4287.png',
-                     '4292.png',
-                     '4298.png',
-                     '4354.png',
-                     '4361.png',
-                     '4606.png',
-                     '6044.png',
-                     '6097.png',
-                     '6142.png',
-                     '6143.png',
-                     '6146.png',
-                     '6192.png',
-                     '6240.png',
-                     '6290.png',
-                     '6311.png',
-                     '6328.png']
+        img_names = ['qEQdBFsPaQs.jpg']
+        # img_names = ['q9koKk6tURM.jpg',
+        #              'wall_input_small.png',
+        #              'wall_x4_bicubic.jpg',
+        #              '1blur.JPG',
+        #              '4.png',
+        #              '10.png',
+        #              '18.png',
+        #              '32.png',
+        #              '35.png',
+        #              '54.png',
+        #              '72.png',
+        #              '83.png',
+        #              '144.png',
+        #              '155.png',
+        #              '159.png',
+        #              '2288.png',
+        #              '2471.png',
+        #              '2486.png',
+        #              '2504.png',
+        #              '2556.png',
+        #              '2584.png',
+        #              '2647.png',
+        #              '2652.png',
+        #              '2708.png',
+        #              '2711.png',
+        #              '2731.png',
+        #              '2786.png',
+        #              '2912.png',
+        #              '2923.png',
+        #              '3024.png',
+        #              '3061.png',
+        #              '3134.png',
+        #              '3156.png',
+        #              '3221.png',
+        #              '3237.png',
+        #              '3249.png',
+        #              '3274.png',
+        #              '3702.png',
+        #              '3733.png',
+        #              '3782.png',
+        #              '3802.png',
+        #              '3825.png',
+        #              '3893.png',
+        #              '4081.png',
+        #              '4112.png',
+        #              '4144.png',
+        #              '4155.png',
+        #              '4172.png',
+        #              '4208.png',
+        #              '4287.png',
+        #              '4292.png',
+        #              '4298.png',
+        #              '4354.png',
+        #              '4361.png',
+        #              '4606.png',
+        #              '6044.png',
+        #              '6097.png',
+        #              '6142.png',
+        #              '6143.png',
+        #              '6146.png',
+        #              '6192.png',
+        #              '6240.png',
+        #              '6290.png',
+        #              '6311.png',
+        #              '6328.png']
 
     if iter_num is None:
         models_paths = get_models_paths(work_dir+'/'+train_name)
@@ -248,8 +248,8 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         print(iter_name)
 
         if load_imgs_from_db:
-            # model = keras.models.load_model(model_path, custom_objects=custom_objects)
-            # predict_data = model.predict(blur_data)
+            model = keras.models.load_model(model_path, custom_objects=custom_objects)
+            predict_data = model.predict(blur_data)
 
             for i in range(len(list_ids)):
                 print(i)
@@ -333,39 +333,17 @@ else:
 if __name__ == '__main__':
 
     # train_names = [
-    #     # ['mean_squared_error_lr_0.001',39500],
-    #     # ['mean_squared_error_lr_0.00002',500],
-    #     # ['laplacian_gray_loss',37500],
-    #     # ['sub_loss',39500],
-    #     # ['clip_laplacian_color_loss',500],
-    #     # ['mean_squared_error_lr_0.001_w_BN_kernel_init',4500],
-    #     # ['spn_mean_squared_error_lr_0.001', 13000],
-    #     ['l15_mean_squared_error_lr_0.001']
-    # ]
-
-    # train_names = [
-    #     ['clip_laplacian_color_loss',7800],
-    #     ['clip_laplacian_color_loss',3000],
-    #     # ['l15_mean_squared_error_lr_0.001'],
-    #     ['laplacian_gray_loss',4800],
-    #     # ['mean_squared_error_lr_0.00002'],
-    #     # ['mean_squared_error_lr_0.001'],
-    #     ['mean_squared_error_lr_0.001_w_BN_kernel_init',11800],
-    #     ['spn_mean_squared_error_lr_0.001',8000],
-    #     ['sub_loss',11200]
+    #     ['mean_squared_error_lr_0.001_w_relu',6200],
+    #     ['mean_squared_error_lr_0.001_w_relu',13600],
+    #     ['mean_squared_error_lr_0.001_w_BN_kernel_init',5000],
+    #     ['spn_mean_squared_error_lr_0.001',5000],
+    #     ['l15_mean_squared_error_lr_0.001',4800]
     # ]
     train_names = [
-        # ['clip_laplacian_color_loss'],
-        # ['l15_mean_squared_error_lr_0.001']
-        # ['laplacian_gray_loss'],
-        # +['mean_squared_error_lr_0.00002'],
-        # +['mean_squared_error_lr_0.001'],
-        ['mean_squared_error_lr_0.001_b1', 200]
-        # +['mean_squared_error_lr_0.001_w_relu'],
-        # ['mean_squared_error_lr_0.001_w_BN_kernel_init'],
-        # ['spn_mean_squared_error_lr_0.001'],
-        # ['sub_loss']
+        ['mean_squared_error_lr_0.001_w_relu',6200],
+        ['mean_squared_error_lr_0.001_w_relu',13600]
     ]
+
     for tr in train_names:
         graph_metrics(train_name=tr[0])
 

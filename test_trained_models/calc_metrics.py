@@ -18,7 +18,9 @@ def calc_of_laplacian(gray_img, type_of_calc):
 if __name__ == '__main__':
     list_ids = [27,
                 68,
-                561]
+                561,
+                1153,
+                2768]
     # models_postfix = ['_l15_mean_squared_error_lr_0.001_iter_4800_pred.png',
     #                   '_mean_squared_error_lr_0.001_b1_iter_140000_pred.png',
     #                   '_mean_squared_error_lr_0.001_iter_5600_pred.png',
@@ -30,10 +32,10 @@ if __name__ == '__main__':
 
     train_names = [
         ['mean_squared_error_lr_0.001_w_relu', 6200],
-        ['mean_squared_error_lr_0.001_w_relu', 13600],
-        ['mean_squared_error_lr_0.001_w_BN_kernel_init', 5000],
-        ['spn_mean_squared_error_lr_0.001', 5000],
-        ['l15_mean_squared_error_lr_0.001', 4800]
+        ['mean_squared_error_lr_0.001_w_relu', 13600]
+        # ['mean_squared_error_lr_0.001_w_BN_kernel_init', 5000],
+        # ['spn_mean_squared_error_lr_0.001', 5000],
+        # ['l15_mean_squared_error_lr_0.001', 4800]
     ]
     models_postfix = map(lambda x:'_'+x[0]+'_iter_'+str(x[1])+'_pred.png', train_names)
     img_path = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/test_trained_models/final'

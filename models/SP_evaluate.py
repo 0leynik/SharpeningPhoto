@@ -170,7 +170,9 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         # img_names = ['sat1.jpg','sat6.jpg']
 
         img_dir = '/Users/dmitryoleynik/PycharmProjects/SharpeningPhoto/models/imgs/images_sereja_2.0'
-        img_names = ['qEQdBFsPaQs.jpg']
+        # img_names = ['DbdoGJUXkAE1KUf.jpg']
+        # img_names = ['Screenshot_63.jpg']
+        img_names = ['rentgen-legkih.jpg']
         # img_names = ['q9koKk6tURM.jpg',
         #              'wall_input_small.png',
         #              'wall_x4_bicubic.jpg',
@@ -293,7 +295,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 print('shape pred: ' + str(img_to_pred.shape))
                 img_to_pred[0, :, :h, :w] = img
 
-                model = SP_model.get_unet_128()
+                model = SP_model.get_unet_128_w_relu()
                 model.summary()
 
                 # print('Metrics: ' + str(model.metrics_names))
@@ -313,12 +315,12 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
 
 
 
-# mpl.rcParams['figure.figsize'] = [6.4, 4.8]
+mpl.rcParams['figure.figsize'] = [8.4, 4.8]
 mpl.rcParams['figure.dpi'] = 500
 mpl.rcParams['lines.linewidth'] = 0.7
 mpl.rcParams['axes.linewidth'] = 0.3
 
-on_cluster = True
+on_cluster = False
 on_P = False
 if on_cluster:
     if on_P:
@@ -340,12 +342,12 @@ if __name__ == '__main__':
     #     ['l15_mean_squared_error_lr_0.001',4800]
     # ]
     train_names = [
-        ['mean_squared_error_lr_0.001_w_relu',6200],
+        # ['mean_squared_error_lr_0.001_w_relu',6200],
         ['mean_squared_error_lr_0.001_w_relu',13600]
     ]
 
     for tr in train_names:
-        graph_metrics(train_name=tr[0])
+        # graph_metrics(train_name=tr[0])
 
         if len(tr) == 1:
             evaluate(load_imgs_from_db, train_name=tr[0])

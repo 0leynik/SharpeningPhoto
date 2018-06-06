@@ -173,6 +173,10 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
         # img_names = ['DbdoGJUXkAE1KUf.jpg']
         # img_names = ['Screenshot_63.jpg']
         img_names = ['rentgen-legkih.jpg']
+        img_names = ['8755c957df48bf75ed3e9017296fb3a7.jpg',
+'d886c65abcdba1ff74fe8b61ecd98d61.jpg',
+'e5335a8a82444a06aae7c6e4b1d6ea0d.jpg',
+'eff36d77a583b46e461c12a3c0037063.png']
         # img_names = ['q9koKk6tURM.jpg',
         #              'wall_input_small.png',
         #              'wall_x4_bicubic.jpg',
@@ -284,7 +288,7 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 # mplimg.imsave(img_savepath + '_pred.png', predict_img)
 
 
-                original_img = skimage.img_as_float(imread(img_path)[..., :3])
+                original_img = (cv2.imread(img_path)/255.)[:, :, ::-1]
                 print('shape original: ' + str(original_img.shape))
 
                 img = original_img[:, :, ::-1]  # RGB -> BGR
@@ -310,9 +314,6 @@ def evaluate(load_imgs_from_db, train_name, iter_num=None):
                 img_savepath = imgs_savedir + '/' + os.path.splitext(img_name)[0] + '_' + train_name + '_' + iter_name
                 mplimg.imsave(img_savepath + '_blur.png', original_img)
                 mplimg.imsave(img_savepath + '_pred.png', predict_img)
-
-
-
 
 
 mpl.rcParams['figure.figsize'] = [8.4, 4.8]

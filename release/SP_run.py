@@ -69,7 +69,11 @@ def get_deploy_unet():
     return model
 
 
-def predict(input_dir, output_dir):
+def deblur_from_folder(input_dir, output_dir=None):
+
+    if output_dir is None:
+        output_dir = input_dir
+
     model = get_deploy_unet()
     # model.summary()
     model.load_weights('model.h5')
@@ -81,7 +85,7 @@ def predict(input_dir, output_dir):
         ext = split[1]
 
 
-        img = cv2.imread(os.path.join(input_dir,img_name))/255.  #BGR
+        img = cv2.imread(os.path.join(input_dir,img_name))/255.  #BGR [0,1]
         h, w, c = img.shape
         # print('shape img: ' + str(img.shape))
 
@@ -98,6 +102,56 @@ def predict(input_dir, output_dir):
         predict_img = np.clip(predict_img, 0, 255)
         predict_img = predict_img.astype(np.uint8)
         cv2.imwrite(os.path.join(output_dir, name+'_sharp'+ext if input_dir == output_dir else img_name), predict_img)
+
+
+def deblur_from_imgs(list_imgs, chanels_order, verbose=True):
+    model = get_deploy_unet()
+    # model.summary()
+    model.load_weights('model.h5')
+
+    if not isinstance(list_imgs, (list, tuple)):
+        list_in = [list_imgs]
+    else:
+        list_in = list_imgs
+
+    list_pred = []
+    count = 0
+    for img in list_in:
+        count = count + 1
+        if verbose:
+            print('Обработка изображения №' + str(count)+ '...')
+
+        h, w, c = img.shape
+
+        if chanels_order.lower() == 'bgr':
+            pass
+        elif chanels_order.lower() == 'rgb':
+            img = img[:, :, ::-1]
+
+        img = img/255.  #BGR [0,1]
+        img = np.transpose(img, (2, 0, 1))  # HxWxC -> CxHxW
+
+        img_to_pred = np.empty((1, c, 128 * (h/128 + 1), 128 * (w/128 + 1)))
+        img_to_pred[0, :, :h, :w] = img
+
+        predict_img = model.predict(img_to_pred)
+
+        predict_img = np.transpose(predict_img[0, :, :h, :w], (1, 2, 0))  # CxHxW -> HxWxC
+        predict_img = predict_img * 255
+        predict_img = np.clip(predict_img, 0, 255)
+        predict_img = predict_img.astype(np.uint8)
+
+        if chanels_order.lower() == 'bgr':
+            pass
+        elif chanels_order.lower() == 'rgb':
+            predict_img = predict_img[:, :, ::-1]
+        list_pred.append(predict_img)
+
+    if not isinstance(list_imgs, (list, tuple)):
+        return list_pred[0]
+    else:
+        return list_pred
+
 
 
 if __name__ == '__main__':
@@ -125,6 +179,21 @@ if __name__ == '__main__':
     print('Директория входных изображений: ' + input_dir)
     print('Директория обработанных изображений: ' + output_dir)
 
-    predict(input_dir, output_dir)
+    deblur_from_folder(input_dir, output_dir)
 
     print('\nЗавершено!')
+
+
+    # # Загрузка и обработка BGR изображения, размерность NxMxC
+    # img_1 = cv2.imread('input_img/123.jpg')
+    # sharp_img_1 = deblur_from_imgs(img_1, 'bgr')
+    #
+    # # Загрузка и обработка RGB изображения, размерность NxMxC
+    # img_2 = cv2.imread('input_img/6328.jpg')[..., ::-1]
+    # sharp_img_2 = deblur_from_imgs(img_2, 'RGB')
+    #
+    # # Загрузка и обработка списка BGR изображений, размерность [NxMxC]
+    # img_1 = cv2.imread('input_img/123.jpg')
+    # img_2 = cv2.imread('input_img/6328.jpg')
+    # list_imgs = [img_1, img_2]
+    # list_sharp_imgs = deblur_from_imgs(list_imgs, 'BGR')

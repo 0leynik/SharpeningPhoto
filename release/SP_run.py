@@ -70,6 +70,17 @@ def get_deploy_unet():
 
 
 def deblur_from_folder(input_dir, output_dir=None):
+    '''
+    Функция увеличения резкости изображений из директории.
+
+    :param input_dir: путь к директории содержащей входные изображения
+
+    :param output_dir: путь к директории для сохранения обработанных изображений.
+    Если параметр output_dir не указан,
+    то обработанные изображения сохраняются в директории input_dir
+    с добавлением постфикса «_sharp» в имя файла.
+
+    '''
 
     if output_dir is None:
         output_dir = input_dir
@@ -105,6 +116,24 @@ def deblur_from_folder(input_dir, output_dir=None):
 
 
 def deblur_from_imgs(list_imgs, chanels_order, verbose=True):
+    '''
+    Функция увеличения резкости изображений в numpy-формате.
+
+    :param list_imgs: одно изображение размера  в виде numpy-массива размерности NxMxC или список таких изображений.
+    Значения массива изображения должны иметь тип numpy.uint8.
+
+    :param chanels_order: порядок следования каналов в массиве, задается строкой.
+    Может приниматься значения 'rgb' или 'bgr'.
+
+    :param verbose: вывод хода обработки изображений в консоль.
+    Принимает значения True или False.
+
+
+    :return: изображение или список изображений с увеличенной резкостью.
+    Размерность и тип возвращаемых данных идентичны входным.
+
+    '''
+
     model = get_deploy_unet()
     # model.summary()
     model.load_weights('model.h5')

@@ -242,9 +242,9 @@ def read_hdf5(filename):
 if __name__ == '__main__':
 
     # создание обучающих баз данных
-    create_hdf5('train', 'train.h5')
-    create_hdf5('val', 'val.h5')
-    create_hdf5('test', 'test.h5')
+    # create_hdf5('train', 'train.h5')
+    # create_hdf5('val', 'val.h5')
+    # create_hdf5('test', 'test.h5')
 
 
     # чтение базы данных
@@ -252,10 +252,10 @@ if __name__ == '__main__':
     # val_data, val_label = read_hdf5('val.h5')
     # test_data, test_label = read_hdf5('test.h5')
     #
-    # f = h5py.File('train.h5', 'r')
-    #
-    # cv2.imshow('data', f['data'][0:1].reshape(block_size, block_size))
-    # cv2.imshow('label', f['label'][0:1].reshape(block_size, block_size))
-    #
-    # f.close()
-    # cv2.waitKey()
+    f = h5py.File('train.h5', 'r')
+
+    cv2.imshow('data', f['data'][0:1].reshape(block_size, block_size))
+    cv2.imshow('label', f['label'][0:1].reshape(block_size, block_size))
+
+    f.close()
+    cv2.waitKey()

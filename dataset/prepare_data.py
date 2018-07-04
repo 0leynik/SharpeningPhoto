@@ -61,8 +61,8 @@ def gen_noise(img, sigma_rand, resize_scale):
 def add_noise(img):
     std_rand = gen_std()
     resize_scale = 0.25 * np.random.random() + 0.75
-    print(std_rand)
-    print(resize_scale)
+    # print(std_rand)
+    # print(resize_scale)
     noise_to_add = gen_noise(img, std_rand, resize_scale)
     noise_to_subtract = gen_noise(img, std_rand, resize_scale)
 
@@ -242,19 +242,20 @@ def read_hdf5(filename):
 if __name__ == '__main__':
 
     # создание обучающих баз данных
-    create_hdf5('dataset/train', 'dataset/train.h5')
-    create_hdf5('dataset/val', 'dataset/val.h5')
-    create_hdf5('dataset/test', 'dataset/test.h5')
+    create_hdf5('train', 'train.h5')
+    create_hdf5('val', 'val.h5')
+    create_hdf5('test', 'test.h5')
 
 
     # чтение базы данных
-    # train_data, train_label = read_hdf5('dataset/train.h5')
-    # val_data, val_label = read_hdf5('dataset/val.h5')
-    # test_data, test_label = read_hdf5('dataset/test.h5')
-
-    f = h5py.File('dataset/train.h5', 'r')
-
-    cv2.imshow('data', f['data'][0].reshape(block_size, block_size))
-    cv2.imshow('label', f['label'][0].reshape(block_size, block_size))
-    f.close()
-    cv2.waitKey()
+    # train_data, train_label = read_hdf5('train.h5')
+    # val_data, val_label = read_hdf5('val.h5')
+    # test_data, test_label = read_hdf5('test.h5')
+    #
+    # f = h5py.File('train.h5', 'r')
+    #
+    # cv2.imshow('data', f['data'][0:1].reshape(block_size, block_size))
+    # cv2.imshow('label', f['label'][0:1].reshape(block_size, block_size))
+    #
+    # f.close()
+    # cv2.waitKey()

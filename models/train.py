@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import h5py
 
+
 def get_srcnn_model():
     inputs = Input(shape=(None, None, 1))
     conv = Conv2D(128, (9, 9), padding='same', activation='relu')(inputs)
@@ -22,6 +23,7 @@ def get_srcnn_model():
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     return model
+
 
 def get_unet_model():
 
@@ -181,6 +183,7 @@ def plot_graph():
     # plt.xticks(np.linspace(0, 5000, 11))
     # plt.xlim(0, 5000)
     plt.savefig(os.path.join(loss_save_dir, 'graph_history_loss.png'))
+
 
 if __name__ == "__main__":
     train()

@@ -8,33 +8,20 @@ import os
 import cv2
 import sys
 import glob
+import train
 
-
-# saved_weights_path = 'weights_loss_HR/iter_1000.h5'
-saved_weights_path = 'weights_loss/iter_850.h5'
-
-
-def main():
-    do_sharp('imgs/_blur.JPG')
-
-    # imgs_dir = get_input_dir_from_argv()
-    # do_sharp_dir(imgs_dir)
-
-    print('\nCompleted!')
-
-
-def predict_model():
-
-    inputs = Input(shape=(None, None, 1))
-    conv = Conv2D(128, (9, 9), padding='same',activation='relu')(inputs)
-    conv = Conv2D(64, (3, 3), padding='same', activation='relu')(conv)
-    outputs = Conv2D(1, (5, 5), padding='same', activation='linear')(conv)
-
-    model = Model(inputs=[inputs], outputs=[outputs])
-    # model.compile(optimizer=Adam(lr=0.0003), loss='mean_squared_error')
-    model.compile(optimizer='adam', loss='mean_squared_error')
-
-    return model
+# def predict_model():
+#
+#     inputs = Input(shape=(None, None, 1))
+#     conv = Conv2D(128, (9, 9), padding='same',activation='relu')(inputs)
+#     conv = Conv2D(64, (3, 3), padding='same', activation='relu')(conv)
+#     outputs = Conv2D(1, (5, 5), padding='same', activation='linear')(conv)
+#
+#     model = Model(inputs=[inputs], outputs=[outputs])
+#     # model.compile(optimizer=Adam(lr=0.0003), loss='mean_squared_error')
+#     model.compile(optimizer='adam', loss='mean_squared_error')
+#
+#     return model
 
 
 def do_sharp(img_path):
@@ -49,7 +36,9 @@ def do_sharp(img_path):
     if not os.path.isfile(img_path):
         print('Specify the path to the image! Error: ' + img_path)
 
-    model = predict_model()
+    # model = train.get_srcnn_model()
+    model = train.get_unet_model()
+
     model.load_weights(saved_weights_path)
 
     img_dir = os.path.dirname(img_path)
@@ -95,5 +84,13 @@ def do_sharp_dir(imgs_dir):
         print('Prepare \"' + img_path + '\"...')
         do_sharp(img_path)
 
+# saved_weights_path = 'weights_loss_HR/iter_1000.h5'
+saved_weights_path = 'weights_loss/iter_50.h5'
+
 if __name__ == "__main__":
-    main()
+    do_sharp('imgs/_blur1.JPG')
+
+    # imgs_dir = get_input_dir_from_argv()
+    # do_sharp_dir(imgs_dir)
+
+    print('\nCompleted!')

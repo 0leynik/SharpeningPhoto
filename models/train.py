@@ -18,7 +18,8 @@ def create_model():
     outputs = Conv2D(1, (5, 5), padding='same', activation='linear')(conv)
 
     model = Model(inputs=[inputs], outputs=[outputs])
-    model.compile(optimizer=Adam(lr=0.0003), loss='mean_squared_error')
+    # model.compile(optimizer=Adam(lr=0.0003), loss='mean_squared_error')
+    model.compile(optimizer='adam', loss='mean_squared_error')
 
     return model
 
@@ -47,7 +48,7 @@ def train():
         iter_num = 0
         epoches = 10
         batch_size = 128
-        save_model_step = 1000
+        save_model_step = 50
 
         ids_train = np.arange(0, len(data_train))
 
@@ -61,7 +62,7 @@ def train():
                 ids_tr_batch = sorted(ids_tr_batch)
                 loss_train_batch = model.train_on_batch(data_train[ids_tr_batch], label_train[ids_tr_batch])
 
-                ids_val_batch = sorted(np.random.choice(len(data_val), batch_size))
+                ids_val_batch = sorted(np.random.choice(len(data_val), batch_size, replace=False))
                 loss_val_batch = model.test_on_batch(data_val[ids_val_batch], label_val[ids_val_batch])
 
                 iter_num += 1

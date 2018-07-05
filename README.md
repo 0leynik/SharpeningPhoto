@@ -19,19 +19,19 @@
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/8_sharp.jpg" height="250"/>
   </tr>
   <tr>
-    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/1.jpg" height="250"/></td>
+    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/1.JPG" height="250"/></td>
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/1_sharp.jpg" height="250"/>
   </tr>
   <tr>
-    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/2.jpg" height="250"/></td>
+    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/2.JPG" height="250"/></td>
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/2_sharp.jpg" height="250"/>
   </tr>
   <tr>
-    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/3.jpg" height="250"/></td>
+    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/3.JPG" height="250"/></td>
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/3_sharp.jpg" height="250"/>
   </tr>
   <tr>
-    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/4.jpg" height="250"/></td>
+    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/4.JPG" height="250"/></td>
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/4_sharp.jpg" height="250"/>
   </tr>
 </table>

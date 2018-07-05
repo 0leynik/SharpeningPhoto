@@ -31,7 +31,7 @@
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/3_sharp.JPG" align="center" height="250"/>
   </tr>
   <tr>
-    <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/4.jpg" align="center" height="250"/></td>
+    <td align="center"><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/4.jpg" height="250"/></td>
     <td><img src="https://github.com/0leynik/SharpeningPhoto/blob/master/release/input_img/4_sharp.jpg" align="center" height="250"/>
   </tr>
 </table>

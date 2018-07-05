@@ -1,6 +1,6 @@
 # SharpeningPhoto
 
-## Result on 13 600 iteration
+## Result modified U-Net on 13 600 iteration
 ### training settings
 - train data: 400 581 x 3 x 128 x 128 imgs
 - val data: 17 808 x 3 x 128 x 128 imgs

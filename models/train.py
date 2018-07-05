@@ -125,5 +125,5 @@ def plot_graph():
     plt.savefig(os.path.join(loss_save_dir, 'graph_history_loss.png'))
 
 if __name__ == "__main__":
-    train()
-    # plot_graph()
+    # train()
+    plot_graph()
